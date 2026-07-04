@@ -343,7 +343,7 @@
     {
       "parameters": {
         "unit": "seconds",
-        "amount": "={{ Math.floor(Math.random() * 121) + 60 }}"
+        "amount": "={{ Math.floor(Math.random() * 8) + 3 }}"
       },
       "type": "n8n-nodes-base.wait",
       "typeVersion": 1.1,
