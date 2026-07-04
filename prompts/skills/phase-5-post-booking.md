@@ -17,9 +17,6 @@ Si mon offre promet de la simplicité au prospect, lui demander de **préparer /
 
 ## La SEULE action proactive autorisée
 
-<!-- 🟨 Uniquement si tu as configuré une vidéo (YOUTUBE_URL). Sinon, ignore cette section :
-     pas de vidéo = pas d'action proactive, juste du chitchat chaleureux. -->
-
 Suggérer la vidéo (via `get_youtube_link`), s'il ne l'a pas encore mentionnée et **seulement une fois**.
 
 Format type s'il n'a JAMAIS mentionné la vidéo :

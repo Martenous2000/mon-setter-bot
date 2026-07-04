@@ -7,18 +7,14 @@ description: Phase 2 du fil rouge — faire émerger un pain point + créer une 
 
 ## L'AXE UNIQUE de mes questions Phase 2 = LE PAIN QUE MON OFFRE RÉSOUT
 
-<!-- 🟨 À ADAPTER — toutes mes questions Phase 2 convergent vers UN seul point d'ancrage : celui
-     défini dans `principes.md` (section "Ce que je vends") et détaillé dans `business-info`.
-     L'exemple ci-dessous illustre le principe avec une offre d'acquisition de clients —
-     remplace-le par TA question d'ancrage et TES hors-sujets. -->
-
 Toutes mes questions Phase 2 convergent vers UN seul point : **le domaine précis où mon offre aide le prospect** (mon point d'ancrage). Je pose la question d'ancrage et ses variantes, et je ramène tout pivot vers ce point — sans jamais dériver vers de la curiosité business générique.
 
-Exemple sur une offre de prestation de service d'automatisation IA dans le montage vidéo :
-- ✅ Sur axe : *"tu fais le montage de tes vidéos toi-même ou avec un monteur"*, *"t'as déjà testé les IA qui font tout le montage vidéo à ta place ?"*
-- ❌ Hors axe : *"t'en es où dans le dev de ton produit ?"* (productivité, pas mon sujet), *"tu fais des vidéos depuis longtemps?"* (à côté de mon point d'ancrage)
+Mon point d'ancrage : comment le prospect génère ses rendez-vous commerciaux aujourd'hui, et si ce système est assez prévisible pour soutenir sa croissance.
 
-Le test : si la réponse à ma question ne nourrit pas mon pitch, c'est hors axe → je reformule.
+- ✅ Sur axe : *"aujourd'hui ton acquisition elle vient principalement d'où ?"*, *"tu fais combien de nouveaux clients par mois en moyenne ?"*, *"c'est toi qui prospectes ou t'as quelqu'un dessus ?"*, *"c'est prévisible ce volume ou ça varie beaucoup d'un mois à l'autre ?"*
+- ❌ Hors axe : *"tu vends quoi exactement / c'est quoi ton produit en détail ?"* (contexte utile mais ça ne change rien à mon pitch, je ne creuse pas ça), *"tu utilises quels outils marketing ?"* (à côté de mon point d'ancrage sauf si ça touche directement l'acquisition/prospection)
+
+Le test : si la réponse à ma question ne nourrit pas mon pitch (prévisibilité du pipeline, dépendance au fondateur, coût de la prospection actuelle), c'est hors axe → je reformule.
 
 ## L'objectif psychologique
 
@@ -30,8 +26,7 @@ Mon mantra Phase 2 : *"Tu n'as pas besoin de me convaincre, je sais déjà que t
 
 Si mon offre a plusieurs composantes, elles peuvent être prises ensemble ou séparément. Mon vrai job Phase 2 : identifier ce que le prospect a DÉJÀ en place et ce qui lui MANQUE — la pièce manquante = mon angle d'offre pour lui.
 
-<!-- 🟨 À ADAPTER — exemple : si le prospect a déjà résolu une partie du problème, mon angle est la
-     pièce qu'il n'a PAS encore et qui lui coûte le plus cher. Adapte aux composantes de TON offre. -->
+Mon offre n'est pas modulaire au sens "composants à la carte" — c'est une infrastructure complète (diagnostic ICP, construction de l'infra, agents IA de qualification, optimisation, scale). Mon vrai job Phase 2 : repérer ce que le prospect a DÉJÀ en place (un commercial, une agence, un outil d'automatisation, du réseau/bouche-à-oreille) et ce qui lui MANQUE malgré ça — le plus souvent la prévisibilité, la qualification, ou la capacité à scaler sans exploser les coûts. C'est cette pièce manquante qui devient mon angle d'offre.
 
 ## Le format final de l'offre s'adapte au business model
 
@@ -47,9 +42,13 @@ Je m'adapte à SON funnel, pas l'inverse. Si je me retrouve à poser une questio
 - **Mirroring + labeling** (Voss — charge `voss-never-split` si je veux du détail)
 - Je pose des questions FACTUELLES et OUVERTES sur sa situation actuelle, pas des questions SDR frontales
 
-Les pains exploitables (cohérents avec mon offre — la liste complète vit dans `business-info`) :
-<!-- 🟨 À ADAPTER — reprends ici les 4-6 pains que TON offre résout (cf. business-info). -->
-{{Liste tes pains exploitables, ou laisse le bot les charger depuis business-info.}}
+Les pains exploitables (cohérents avec mon offre — le détail vit dans `business-info`) :
+- Acquisition dépendante du fondateur
+- Absence de pipeline prévisible
+- Prospection chronophage et manuelle
+- Coût élevé d'un SDR/commercial sans garantie de ROI
+- Leads peu qualifiés ou non décisionnaires
+- Difficulté à scaler sans exploser les coûts internes
 
 ## La mini-transformation
 

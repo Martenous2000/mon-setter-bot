@@ -7,33 +7,34 @@ description: Ta bibliothèque de cassages d'objections et fausses croyances. À 
 
 > **Mode d'emploi** : tu identifies la croyance spécifique du prospect (pas la phrase, la CROYANCE sous-jacente), tu trouves le pattern correspondant ici, et tu reformules le cassage dans ton style. Ne copie jamais littéralement.
 
-<!-- 🟨 À REMPLIR — c'est l'arme la plus importante du bot. Liste TOUTES les objections réelles que
-     tu entends, et pour CHACUNE ta meilleure réponse (ton "cassage"). Plus tu en mets, meilleur il est.
-     Ci-dessous : 6 objections UNIVERSELLES pré-écrites en squelette — adapte-les à ton offre, puis
-     ajoute les tiennes (les plus puissantes sont toujours spécifiques à ton marché). -->
-
 ## "C'est trop cher / je n'ai pas le budget"
-{{Ton cassage. Recommandé : ne jamais donner le prix en DM, recadrer sur la valeur / le ROI / le coût de l'inaction, renvoyer le chiffrage au call.}}
+Je ne donne jamais le prix en DM. Je recadre sur le coût de l'inaction : chaque mois sans pipeline prévisible, c'est du CA qui reste sur la table pendant que la dépendance au fondateur ou à un SDR continue de coûter. Et surtout, je rappelle qu'on est remboursé intégralement si le système n'amène pas 40 rendez-vous qualifiés ICP — donc le vrai risque financier, il est de mon côté, pas du sien. Le chiffrage précis se fait en call une fois qu'on a regardé son cas.
 
 ## "Je préfère le faire moi-même"
-{{Ton cassage. Ex d'angle : le temps que ça prend vs ce que ça te rapporterait ailleurs ; l'expertise/le système que tu apportes et qu'il n'a pas.}}
+Je labellise : "c'est exactement ce que je pensais avant de voir des fondateurs cramer leur temps là-dessus." Le vrai coût n'est pas l'argent, c'est le temps du fondateur passé à prospecter au lieu de vendre, livrer ou piloter la boîte — et l'infra (agents IA, tracking, scoring, multicanal) prend du temps à construire correctement, du temps qu'il n'a probablement pas envie d'investir en apprentissage plutôt qu'en résultat.
 
 ## "J'ai besoin de preuves / d'exemples / de témoignages"
-{{Ton cassage. Ex : "c'est légitime, je rentre dans le détail en call, c'est là qu'on peut regarder un cas concret ensemble. Pas en DM."}}
+Complètement légitime. Je ne rentre pas dans le détail des cas clients en DM, mais c'est exactement le genre de chose qu'on regarde en call. Et la garantie elle-même est une preuve : je n'aligne mon modèle sur le remboursement intégral que parce que je suis confiant sur le mécanisme.
 
 ## "Ce n'est pas le bon moment / je verrai plus tard"
-{{Ton cassage. Ex d'angle : le coût d'attendre, le fait que le bon moment ne vient jamais seul, un premier pas sans engagement.}}
+Le système met du temps à être construit et à monter en cadence (diagnostic, infra, agents IA, optimisation) — plus tôt il est lancé, plus tôt il tourne à plein régime. "Plus tard" ne change pas le problème de fond (acquisition imprévisible), ça décale juste le moment où il arrête d'en dépendre. Premier pas : un audit pour voir si c'est pertinent pour lui, sans engagement lourd.
 
 ## "J'ai déjà essayé un truc similaire et ça n'a pas marché"
-{{Ton cassage. Ex : labelliser ("tu as testé X en gros"), puis montrer en quoi ton approche diffère vraiment.}}
+Je labellise d'abord ce qu'il a testé ("tu as dû tester une agence de leads ou un outil d'automatisation, en gros ?"), puis je montre la différence : la plupart des solutions du marché sont soit une agence qui exécute des tâches (messages, campagnes), soit un outil qu'on lui laisse sans stratégie. Ici c'est une infrastructure complète pilotée par des agents IA de qualification, avec un audit ICP en amont et une garantie de résultat — pas un service ponctuel de plus.
 
 ## "Comment je sais que je peux te faire confiance ?"
-{{Ton cassage. Ex : preuves sociales mesurées (cf. bio-detail), garantie si tu en as, transparence, proposer le call à faible engagement.}}
+La garantie de remboursement intégral si pas 40 rendez-vous qualifiés ICP aligne ma responsabilité sur son résultat, ce n'est pas juste un argument marketing. Et avant tout engagement, il y a un audit qui valide si son marché et son ICP sont pertinents pour le système — on ne déploie pas à l'aveugle.
 
-<!-- ⬇️ AJOUTE ICI TES OBJECTIONS SPÉCIFIQUES (les plus fréquentes dans TON marché) ⬇️ -->
+<!-- ⬇️ Objections spécifiques au marché B2B / dirigeants ⬇️ -->
 
-## "{{Objection spécifique à ton marché 1}}"
-{{Ton cassage.}}
+## "J'ai déjà un commercial / une équipe sales en interne"
+Je ne suis pas là pour remplacer son commercial, je suis là pour lui donner un pipeline de rendez-vous déjà qualifiés à travailler au lieu de prospecter à froid. La question à lui renvoyer : est-ce que son commercial passe son temps à vendre, ou à chercher des gens à qui vendre ? L'infra fait le deuxième job pour que le commercial se concentre sur le premier — un ROI de commercial change complètement quand il n'a plus qu'à closer.
 
-## "{{Objection spécifique à ton marché 2}}"
-{{Ton cassage.}}
+## "Je préfère un humain qu'une IA pour prospecter"
+Je recadre : l'IA ne remplace pas la relation humaine, elle évite le temps perdu sur les échanges qui ne mènent nulle part (volume brut, non-qualifiés) pour que l'humain (lui, ou son équipe) n'intervienne que quand c'est chaud et qualifié. Le système est une machine de qualification, pas un robot qui spam — c'est justement ce qui le distingue d'une agence de cold outreach classique.
+
+## "Je suis sur un marché de niche, ça marche pas pour moi"
+Le système ne se déploie que sur des marchés B2B avec un pouvoir d'achat réel et un cycle de vente clair — c'est justement ce que l'audit initial valide avant tout engagement. Si son marché coche ces cases (panier moyen suffisant, décideurs identifiables), la niche n'est pas un obstacle, c'est même souvent plus facile à qualifier qu'un marché large et générique.
+
+## "Je veux d'abord voir des résultats avant de payer un setup"
+C'est exactement ce que la garantie couvre : remboursement intégral si pas 40 rendez-vous qualifiés ICP dans l'agenda. Le setup, c'est la construction de l'infrastructure elle-même (audit, ICP, CRM, agents IA) — on ne peut pas livrer un système sur-mesure sans le construire d'abord, mais le risque de "ça ne marche pas" est couvert par la garantie, pas porté par lui seul.

@@ -13,15 +13,11 @@ L'asset est un **teaser**, pas la solution complète — je casse des croyances,
 
 ## L'asset doit matcher le pain — pas un asset par défaut
 
-<!-- 🟨 À ADAPTER — liste ici les assets de valeur que TU peux offrir gratuitement en DM, chacun
-     associé au pain qu'il adresse. Un asset = quelque chose de concret, rapide à livrer, qui prouve
-     ta compétence sans tout donner. Exemples génériques ci-dessous, remplace par les tiens. -->
-
 | Pain identifié en Phase 2 | Asset à proposer |
 |---|---|
-| {{Pain 1 — ex: "ne sait pas par où commencer"}} | {{Asset 1 — ex: un mini-audit, un diagnostic en 3 points}} |
-| {{Pain 2}} | {{Asset 2 — ex: un exemple concret, une démo, un template}} |
-| {{Pain 3}} | Le bot lui-même = asset live ("tu te rends compte que c'est mon chatbot qui te parle là ?") |
+| Pipeline pas prévisible / pas de visibilité sur son potentiel | Un mini-diagnostic rapide : j'estime avec lui son potentiel de CA additionnel avec 40 rendez-vous qualifiés/mois en plus (à partir de son panier moyen et son taux de closing approximatif) |
+| Prospection chronophage / coût élevé d'un SDR sans garantie | Un exemple concret du mécanisme : comment les agents IA qualifient un prospect avant qu'il n'arrive dans l'agenda (budget/besoin/timing), pour montrer que c'est pas du volume brut |
+| Leads peu qualifiés / doute sur le concept "IA qui prospecte" | Le bot lui-même = asset live ("tu te rends compte que c'est justement ce genre de système qui est en train de te qualifier, là, tout de suite ?") |
 
 Si je propose un asset qui ne correspond pas à son pain, ça sonne hors-sol et je perds la mini-transformation construite en Phase 2.
 
