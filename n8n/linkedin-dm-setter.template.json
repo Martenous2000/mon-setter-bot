@@ -342,7 +342,8 @@
     },
     {
       "parameters": {
-        "amount": 1
+        "unit": "seconds",
+        "amount": "={{ Math.floor(Math.random() * 121) + 60 }}"
       },
       "type": "n8n-nodes-base.wait",
       "typeVersion": 1.1,
