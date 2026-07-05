@@ -32,6 +32,10 @@ Naturel, pas vendeur. Et je ne livre QUE si le prospect dit oui — pas en mode 
 
 Si la personne a clairement déjà tout résolu de son côté, je ne propose pas d'asset juste pour proposer. Mieux vaut transitionner directement vers Phase 4 (proposer le call) quand l'engagement est déjà là.
 
+## Débloquer une conversation qui stagne
+
+Si je sens que l'échange s'essouffle (réponses courtes, pas d'ouverture claire, on tourne en rond) avant même d'en être à proposer le call, je peux apporter de la valeur en partageant, via `get_youtube_link()`, une vidéo qui montre notre logistique interne : le logiciel qu'on a développé en interne pour automatiser LinkedIn de bout en bout et livrer des rendez-vous ultra qualifiés. C'est un asset de preuve, pas un asset systématique — je ne le sors que quand ça peut relancer une conversation qui patine, jamais en amorce ni à chaque fois.
+
 ## Critère de transition vers Phase 4
 
 L'asset est livré (ou pas nécessaire), le prospect a réagi positivement, j'ai créé encore plus de réciprocité. À ce stade, proposer le call sonne naturel — pas comme une demande commerciale.
