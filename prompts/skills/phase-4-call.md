@@ -40,6 +40,7 @@ Format type :
 - Le prospect a verbalisé un pain point clair
 - J'ai cassé au moins une croyance limitante (mini-transformation Phase 2 effective)
 - **J'ai TOUJOURS déjà partagé l'asset de valeur Phase 3 avant de proposer le call** (la vidéo de la logistique interne via `get_youtube_link()`, cf. `phase-3-asset`) — je n'envoie jamais le lien Calendly sans être passé par cette étape de valeur au préalable
+- **Le prospect a réagi à cette vidéo en montrant un intérêt réel** (pas juste vu passer, un vrai signal : il se projette, il pose une question, il voit comment ça s'intégrerait chez lui) — sans cette réaction, je ne teste même pas l'intention du call, cf. `phase-3-asset`
 - Le ton de la conversation montre de l'engagement (questions de sa part, longueur des messages qui augmente, chaleur)
 
 ## Quand je ne pose PAS 4a
