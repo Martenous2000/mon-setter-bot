@@ -1,0 +1,522 @@
+{
+  "name": "LinkedIn - Relances automatiques",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "hoursInterval": 1
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -1600,
+        0
+      ],
+      "name": "Schedule Trigger",
+      "id": "0776e710-e6d9-4665-83ac-7e83ab5aac09"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "cfg-dsn",
+              "name": "Unipile DSN",
+              "type": "string",
+              "value": "https://apiXXX.unipile.com:XXXXX"
+            },
+            {
+              "id": "cfg-key",
+              "name": "Unipile API Key",
+              "type": "string",
+              "value": "YOUR_UNIPILE_API_KEY"
+            },
+            {
+              "id": "cfg-acc",
+              "name": "Unipile Account ID",
+              "type": "string",
+              "value": "YOUR_UNIPILE_ACCOUNT_ID"
+            },
+            {
+              "id": "cfg-me",
+              "name": "My Provider ID",
+              "type": "string",
+              "value": "YOUR_LINKEDIN_PROVIDER_ID"
+            },
+            {
+              "id": "cfg-dry",
+              "name": "dry_run",
+              "type": "boolean",
+              "value": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1360,
+        0
+      ],
+      "name": "Config",
+      "id": "caccd047-5d21-4b11-9f63-00c1414ca957"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Reset run counters at the start of every execution\nconst staticData = $getWorkflowStaticData('global');\nstaticData.thisRunSent = 0;\nstaticData.thisRunPreview = 0;\n\nconst DSN = $('Config').first().json['Unipile DSN'];\nconst APIKEY = $('Config').first().json['Unipile API Key'];\nconst ACCOUNT_ID = $('Config').first().json['Unipile Account ID'];\n\nconst now = Date.now();\nconst MIN_AGE_MS = 24 * 60 * 60 * 1000;   // must be at least 24h since last activity\nconst MAX_AGE_MS = 30 * 24 * 60 * 60 * 1000; // ignore anything older than 30 days\n\nlet cursor = null;\nlet candidates = [];\nlet pages = 0;\nconst MAX_PAGES = 15;\n\ndo {\n  let url = DSN + '/api/v1/chats?account_id=' + ACCOUNT_ID + '&limit=100';\n  if (cursor) url += '&cursor=' + encodeURIComponent(cursor);\n  const res = await this.helpers.httpRequest({\n    method: 'GET',\n    url,\n    headers: { 'X-API-KEY': APIKEY, accept: 'application/json' },\n    json: true,\n  });\n  const items = res.items || [];\n  let stop = false;\n  for (const chat of items) {\n    if (chat.type !== 0) continue; // skip group chats\n    const ts = new Date(chat.timestamp).getTime();\n    const age = now - ts;\n    if (age > MAX_AGE_MS) { stop = true; break; } // sorted desc -> everything after is even older\n    if (age >= MIN_AGE_MS) candidates.push({ chatId: chat.id });\n  }\n  cursor = res.cursor;\n  pages++;\n  if (stop) break;\n} while (cursor && pages < MAX_PAGES);\n\nreturn candidates.map(c => ({ json: c }));"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1120,
+        0
+      ],
+      "name": "Fetch Candidate Chats",
+      "id": "a7c7e8a9-6edd-4334-8ced-f8e88501d650"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -880,
+        0
+      ],
+      "name": "SplitInBatches",
+      "id": "7f0c4ff1-c2f5-4f80-bc89-fc81fbd44257"
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "={{ $('Config').item.json['Unipile DSN'] }}/api/v1/chats/{{ $('SplitInBatches').item.json.chatId }}/messages?limit=1",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-API-KEY",
+              "value": "={{ $('Config').item.json['Unipile API Key'] }}"
+            },
+            {
+              "name": "accept",
+              "value": "application/json"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -640,
+        -120
+      ],
+      "name": "Get Last Message",
+      "id": "cb60c564-19f1-4ad7-b894-b36a4d41c66a"
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "={{ $('Config').item.json['Unipile DSN'] }}/api/v1/chats/{{ $('SplitInBatches').item.json.chatId }}/attendees",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-API-KEY",
+              "value": "={{ $('Config').item.json['Unipile API Key'] }}"
+            },
+            {
+              "name": "accept",
+              "value": "application/json"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -400,
+        -120
+      ],
+      "name": "Get Attendee",
+      "id": "2ca4df58-75fd-428e-8467-bea9f82c150c"
+    },
+    {
+      "parameters": {
+        "jsCode": "const chatId = $('SplitInBatches').item.json.chatId;\nconst msgRes = $('Get Last Message').item.json;\nconst attRes = $('Get Attendee').item.json;\n\nconst lastMsg = (msgRes.items || [])[0];\nconst attendee = (attRes.items || [])[0];\nconst firstName = attendee ? (attendee.name || '').trim().split(/\\s+/)[0] : '';\n\nconst staticData = $getWorkflowStaticData('global');\nstaticData.relances = staticData.relances || {};\n\nconst notEligible = { eligible: false, chatId };\n\n// If they replied since our last message (or chat is empty), nothing to relaunch -> reset tracking\nif (!lastMsg || lastMsg.is_sender !== 1) {\n  delete staticData.relances[chatId];\n  return [{ json: notEligible }];\n}\n\nif (!firstName) {\n  return [{ json: notEligible }];\n}\n\nconst rec = staticData.relances[chatId] || { stage: 0 };\nconst now = Date.now();\nconst DAY = 24 * 60 * 60 * 1000;\n\nif (rec.stage === 0) {\n  const seenTimes = Object.values(lastMsg.seen_by || {}).map(t => new Date(t).getTime());\n  if (lastMsg.seen !== 1 || seenTimes.length === 0) return [{ json: notEligible }];\n  const seenAt = Math.min(...seenTimes);\n  if (now - seenAt < DAY) return [{ json: notEligible }];\n  return [{ json: { eligible: true, chatId, message: firstName + ' ?', targetStage: 1 } }];\n}\n\nif (rec.stage === 1) {\n  if (now - (rec.relance1SentAt || 0) < 3 * DAY) return [{ json: notEligible }];\n  return [{ json: { eligible: true, chatId, message: \"J'espère que tu n'es pas trop sous l'eau \\uD83D\\uDE4F\", targetStage: 2 } }];\n}\n\nreturn [{ json: notEligible }]; // stage >= 2 : on ne relance pas une 3e fois"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -160,
+        -120
+      ],
+      "name": "Decide Relance",
+      "id": "1cda0bca-d7a9-4bb2-b99d-6a30d9ee0178"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "is-eligible",
+              "leftValue": "={{ $json.eligible }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        80,
+        -120
+      ],
+      "name": "IF Eligible",
+      "id": "78cc9300-0237-4ac5-838e-98ae42c84a2d"
+    },
+    {
+      "parameters": {
+        "unit": "seconds",
+        "amount": "={{ Math.floor(Math.random() * 31) + 30 }}"
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        320,
+        -220
+      ],
+      "name": "Wait Jitter",
+      "id": "ba51056b-9c73-4068-9e77-e514af313d56",
+      "webhookId": "c4fde5ac-ac92-445f-9099-84ba3e7358f7"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "is-dry-run",
+              "leftValue": "={{ $('Config').item.json.dry_run }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        560,
+        -220
+      ],
+      "name": "IF Dry Run",
+      "id": "0ca4a78d-3e0d-43dd-8dd2-964151983c2b"
+    },
+    {
+      "parameters": {
+        "jsCode": "const staticData = $getWorkflowStaticData('global');\nstaticData.dryRunPreview = staticData.dryRunPreview || [];\nstaticData.dryRunPreview.unshift({\n  chatId: $json.chatId,\n  message: $json.message,\n  targetStage: $json.targetStage,\n  at: new Date().toISOString(),\n});\nstaticData.dryRunPreview = staticData.dryRunPreview.slice(0, 50);\nstaticData.thisRunPreview = (staticData.thisRunPreview || 0) + 1;\nreturn [{ json: { previewed: true, chatId: $json.chatId } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        800,
+        -320
+      ],
+      "name": "Record Preview",
+      "id": "be9749a5-f629-4895-9a2c-b1a8b5458670"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Config').item.json['Unipile DSN'] }}/api/v1/chats/{{ $json.chatId }}/messages",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-API-KEY",
+              "value": "={{ $('Config').item.json['Unipile API Key'] }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "text",
+              "value": "={{ $json.message }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        800,
+        -120
+      ],
+      "name": "Send Relance Message",
+      "id": "b6622a4e-ac18-4dd0-b4d1-0ebe1324d510"
+    },
+    {
+      "parameters": {
+        "jsCode": "const staticData = $getWorkflowStaticData('global');\nstaticData.relances = staticData.relances || {};\nconst chatId = $('Decide Relance').item.json.chatId;\nconst targetStage = $('Decide Relance').item.json.targetStage;\nconst now = Date.now();\nconst rec = staticData.relances[chatId] || {};\nrec.stage = targetStage;\nif (targetStage === 1) rec.relance1SentAt = now;\nif (targetStage === 2) rec.relance2SentAt = now;\nstaticData.relances[chatId] = rec;\nstaticData.thisRunSent = (staticData.thisRunSent || 0) + 1;\nreturn [{ json: { updated: true, chatId, targetStage } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1040,
+        -120
+      ],
+      "name": "Update Relance State",
+      "id": "c99ee5e3-25aa-4dff-8949-066d5e80d4e3"
+    },
+    {
+      "parameters": {
+        "jsCode": "const staticData = $getWorkflowStaticData('global');\nconst sent = staticData.thisRunSent || 0;\nconst previewed = staticData.thisRunPreview || 0;\nif (sent === 0 && previewed === 0) return [];\nconst dryRun = $('Config').first().json.dry_run;\nconst lines = [];\nlines.push('\\uD83D\\uDD01 Relances LinkedIn - passage terminé');\nif (dryRun) {\n  lines.push(previewed + ' relance(s) auraient été envoyées (mode dry_run actif, rien de réellement envoyé).');\n} else {\n  lines.push(sent + ' relance(s) réellement envoyée(s).');\n}\nreturn [{ json: { text: lines.join('\\n') } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -880,
+        220
+      ],
+      "name": "Run Summary",
+      "id": "f79bd2e1-cd16-42d0-8503-4c9880396add"
+    },
+    {
+      "parameters": {
+        "chatId": "7687757068",
+        "text": "={{ $json.text }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -640,
+        220
+      ],
+      "name": "Telegram Summary",
+      "id": "89356429-a5d9-4f01-80cc-5b8255d462b9",
+      "credentials": {
+        "telegramApi": {
+          "id": "YOUR_TELEGRAM_CREDENTIAL_ID",
+          "name": "YOUR_TELEGRAM_CREDENTIAL_NAME"
+        }
+      },
+      "webhookId": "b6f44e8a-16d6-43c4-8c00-45c91c912ba2"
+    }
+  ],
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Config": {
+      "main": [
+        [
+          {
+            "node": "Fetch Candidate Chats",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Candidate Chats": {
+      "main": [
+        [
+          {
+            "node": "SplitInBatches",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SplitInBatches": {
+      "main": [
+        [
+          {
+            "node": "Run Summary",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get Last Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Last Message": {
+      "main": [
+        [
+          {
+            "node": "Get Attendee",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Attendee": {
+      "main": [
+        [
+          {
+            "node": "Decide Relance",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Decide Relance": {
+      "main": [
+        [
+          {
+            "node": "IF Eligible",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF Eligible": {
+      "main": [
+        [
+          {
+            "node": "Wait Jitter",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "SplitInBatches",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait Jitter": {
+      "main": [
+        [
+          {
+            "node": "IF Dry Run",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF Dry Run": {
+      "main": [
+        [
+          {
+            "node": "Record Preview",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send Relance Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Record Preview": {
+      "main": [
+        [
+          {
+            "node": "SplitInBatches",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Relance Message": {
+      "main": [
+        [
+          {
+            "node": "Update Relance State",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Relance State": {
+      "main": [
+        [
+          {
+            "node": "SplitInBatches",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Run Summary": {
+      "main": [
+        [
+          {
+            "node": "Telegram Summary",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "errorWorkflow": "YOUR_ERROR_WORKFLOW_ID"
+  }
+}
