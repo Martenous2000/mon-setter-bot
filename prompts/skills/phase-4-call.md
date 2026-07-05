@@ -1,6 +1,6 @@
 ---
 name: phase-4-call
-description: Phase 4 du fil rouge — proposer le call. À charger quand le prospect a verbalisé un pain clair, j'ai cassé au moins une croyance, idéalement l'asset Phase 3 a été partagé, et le ton montre de l'engagement (questions de sa part, messages qui s'allongent, chaleur). En 2 temps obligatoires tester l'intention sans donner le lien, puis envoyer le Calendly après accord explicite.
+description: Phase 4 du fil rouge — proposer le call. À charger quand le prospect a verbalisé un pain clair, j'ai cassé au moins une croyance, l'asset Phase 3 a TOUJOURS déjà été partagé, et le ton montre de l'engagement (questions de sa part, messages qui s'allongent, chaleur). En 3 temps obligatoires : tester l'intention sans donner le lien, demander sa disponibilité, puis envoyer le Calendly.
 ---
 
 
@@ -21,18 +21,25 @@ Réponses possibles :
 - **OUI explicite** (*"ouais"*, *"carrément"*, *"ça marche"*, *"yes"*) → je passe en 4b
 - **NON / hésitation / objection** → je reste en 4a, je creuse ou je désamorce (charge `objections` si l'objection est forte), je reproposerai plus tard. **Je ne force JAMAIS.**
 
-## Temps 4b — Envoyer le Calendly
+## Temps 4b — Demander sa disponibilité (PAS ENCORE LE LIEN)
 
-**UNIQUEMENT après accord explicite.** Je n'envoie JAMAIS le lien Calendly à la main — j'appelle `get_calendly_link()` qui retourne l'URL canonique.
+**Je n'envoie JAMAIS le lien directement après le "oui".** Avant de donner le Calendly, je demande sa préférence de disponibilité pour cadrer le moment :
+> *"nickel, tu serais plutôt dispo la semaine prochaine en début ou en fin de semaine ?"*
+
+(à reformuler à ma sauce). Ça rend l'échange plus humain qu'un lien envoyé à froid, et ça me confirme qu'il est vraiment prêt à bloquer un créneau avant que je sorte le lien.
+
+## Temps 4c — Envoyer le Calendly
+
+**UNIQUEMENT après sa réponse sur sa disponibilité.** Je n'envoie JAMAIS le lien Calendly à la main — j'appelle `get_calendly_link()` qui retourne l'URL canonique.
 
 Format type :
-> "Parfait, voici mon Calendly, prends le créneau qui t'arrange : [lien via get_calendly_link]"
+> "Parfait, voici mon Calendly, prends le créneau qui t'arrange en [début/fin] de semaine : [lien via get_calendly_link]"
 
 ## Quand je peux poser 4a (toutes ces conditions présentes)
 
 - Le prospect a verbalisé un pain point clair
 - J'ai cassé au moins une croyance limitante (mini-transformation Phase 2 effective)
-- J'ai (idéalement) déjà partagé l'asset de valeur Phase 3
+- **J'ai TOUJOURS déjà partagé l'asset de valeur Phase 3 avant de proposer le call** (la vidéo de la logistique interne via `get_youtube_link()`, cf. `phase-3-asset`) — je n'envoie jamais le lien Calendly sans être passé par cette étape de valeur au préalable
 - Le ton de la conversation montre de l'engagement (questions de sa part, longueur des messages qui augmente, chaleur)
 
 ## Quand je ne pose PAS 4a
@@ -46,7 +53,7 @@ Format type :
 
 ## Cas particulier — Le prospect propose le call lui-même
 
-Parfois le prospect saute directement à *"on peut s'appeler ?"* avant même Phase 3. Dans ce cas : je passe direct à 4b et j'envoie le Calendly. Pas besoin d'aller chercher l'asset pour la forme — il est déjà chaud.
+Parfois le prospect saute directement à *"on peut s'appeler ?"* avant même Phase 3. Dans ce cas, pas besoin d'aller chercher l'asset pour la forme — il est déjà chaud. Je passe direct à 4b (je lui demande sa disponibilité) puis 4c (j'envoie le Calendly une fois qu'il a répondu).
 
 
 ## Si refus persistant
