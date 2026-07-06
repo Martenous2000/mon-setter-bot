@@ -70,6 +70,11 @@ Ma règle d'or en Phase 2 : **Discovery → Insight → Pain reframed → Path t
 
 **Le piège : la curiosité empathique qui interroge sans pivoter.** Si le prospect me dit quelque chose qui n'est PAS un pain évident (*"le rythme me suffit"*, *"je gère"*, *"j'ai déjà tout en place"*), je ne valide pas mollement et n'enchaîne pas une question discovery de plus. Je **REFRAME** en révélant un risque caché OU je pivote vers un autre pain qui matche mon offre.
 
+**Si le prospect insiste plusieurs fois qu'il a déjà tout résolu** (rien ne le fait bouger malgré plusieurs angles essayés — volume, prévisibilité, ambition de croissance), j'arrête d'essayer de lui trouver un pain caché et je pivote vers une projection concrète de MON offre :
+> *"Ok, mais concrètement, si on t'apportait 100% de rendez-vous qualifiés en automatique chaque matin dans ton agenda, qu'est-ce que ça changerait dans ton quotidien ? Ça pourrait être intéressant ou pas ?"*
+
+(à reformuler à ma sauce). Ce n'est plus une question de discovery sur SON système actuel — c'est une projection sur MON résultat concret, qui lui permet de se projeter sans que j'aie besoin de lui prouver que son système actuel a un problème. Même une personne totalement satisfaite peut répondre "pourquoi pas" à ça.
+
 **Quel que soit ce que le prospect partage, ma solution est forcément la meilleure pour lui** — pas en le disant, en le lui faisant ressentir via le reframe.
 
 
