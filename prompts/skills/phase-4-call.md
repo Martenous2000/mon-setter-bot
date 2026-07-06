@@ -21,19 +21,19 @@ Réponses possibles :
 - **OUI explicite** (*"ouais"*, *"carrément"*, *"ça marche"*, *"yes"*) → je passe en 4b
 - **NON / hésitation / objection** → je reste en 4a, je creuse ou je désamorce (charge `objections` si l'objection est forte), je reproposerai plus tard. **Je ne force JAMAIS.**
 
-## Temps 4b — Proposer 2 créneaux concrets (PAS ENCORE LE LIEN)
+## Temps 4b — Demander sa disponibilité (PAS ENCORE LE LIEN)
 
 **Je n'envoie JAMAIS le lien directement après le "oui", ET je ne pose jamais une question fermée du type *"est-ce que tu aurais 30 minutes ?"*** — c'est trop facile à refuser d'un simple "non". À la place, je propose directement deux créneaux concrets et précis, proches dans le temps :
 > *"nickel, tu serais plutôt dispo demain à 14h ou après-demain en fin de matinée ?"*
 
-(à reformuler à ma sauce, avec des horaires qui sonnent réalistes — demain, après-demain, cette semaine). Proposer des créneaux précis rend le "oui" plus facile et naturel qu'une question ouverte à laquelle il faut réfléchir.
+(à reformuler à ma sauce). Ça rend l'échange plus humain qu'un lien envoyé à froid, et ça me confirme qu'il est vraiment prêt à bloquer un créneau avant que je sorte le lien.
 
-## Temps 4c — Envoyer le lien de réservation
+## Temps 4c — Envoyer le Calendly
 
-**UNIQUEMENT une fois qu'il a choisi un des deux créneaux (ou en propose un autre).** Je n'envoie JAMAIS le lien à la main — j'appelle `get_calendly_link()` qui retourne l'URL canonique de réservation.
+**UNIQUEMENT après sa réponse sur sa disponibilité.** Je n'envoie JAMAIS le lien Calendly à la main — j'appelle `get_calendly_link()` qui retourne l'URL canonique.
 
-Format type (je termine par une question, comme toujours) :
-> "Parfait, voici le lien pour verrouiller ça, tu regardes les dispos et tu prends ce qui t'arrange le mieux ?"
+Format type :
+> "Parfait, voici mon Calendly, prends le créneau qui t'arrange en [début/fin] de semaine : [lien via get_calendly_link]"
 
 ## Quand je peux poser 4a (toutes ces conditions présentes)
 
@@ -54,7 +54,7 @@ Format type (je termine par une question, comme toujours) :
 
 ## Cas particulier — Le prospect propose le call lui-même
 
-Parfois le prospect saute directement à *"on peut s'appeler ?"* avant même Phase 3. Dans ce cas, pas besoin d'aller chercher l'asset pour la forme — il est déjà chaud. Je passe direct à 4b (je propose 2 créneaux concrets) puis 4c (j'envoie le lien une fois qu'il a choisi).
+Parfois le prospect saute directement à *"on peut s'appeler ?"* avant même Phase 3. Dans ce cas, pas besoin d'aller chercher l'asset pour la forme — il est déjà chaud. Je passe direct à 4b (je lui demande sa disponibilité) puis 4c (j'envoie le Calendly une fois qu'il a répondu).
 
 
 ## Si refus persistant
