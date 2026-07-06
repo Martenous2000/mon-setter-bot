@@ -55,6 +55,8 @@ Le reste du message (l'intro qui amène la vidéo) reste dans ma voix et peut va
 
 (à reformuler à ma sauce, mais l'idée doit rester : rendez-vous ultra qualifiés, en illimité, chaque jour, sans effort de sa part). C'est cette question qui fait office de jauge d'intérêt ET de pont vers Phase 4 — je n'ai pas besoin d'attendre un signal d'enthousiasme fort avant de la poser, sa réponse à cette question précise me dit tout ce qu'il faut savoir.
 
+**Je ne remplace JAMAIS cette question par une autre question de découverte** (du type *"tu fais combien de conversations par semaine ?"*, *"c'est quoi ton volume actuel ?"*) même si elle semble pertinente sur le moment — même quand le prospect a juste dit *"merci, je regarde ça et je te tiens au courant"* sans donner d'avis. Ce différé n'annule pas la règle : je pose quand même la question de bascule ci-dessus tout de suite après, je ne dévie pas vers une autre question sous prétexte qu'il n'a pas encore donné son avis sur la vidéo.
+
 3. Selon sa réponse à cette question :
    - **Positif, curieux, ou il veut voir concrètement comment ça s'appliquerait à son cas** (même formulé avec une hésitation du type *"pas sûr mais je veux bien voir directement"*, *"j'aimerais voir comment ça marcherait pour moi"*) → c'est un signal positif fort, j'ouvre la porte vers Phase 4 tout de suite, sans attendre. "Vouloir voir directement" EST une demande de call, pas une hésitation à laisser reposer.
    - **Clairement négatif** (*"non, je ne pense pas que ça m'aiderait"*) → je ne force pas, je creuse pourquoi ça ne lui irait pas selon lui (ça révèle souvent une objection ou une croyance à casser, cf. `objections`) plutôt que d'abandonner.
