@@ -1,5 +1,6 @@
 import asyncio
 import os
+import re
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Literal
@@ -371,6 +372,23 @@ def sanitize_human_style(text: str) -> str:
     return out.strip()
 
 
+def capitalize_sentences(text: str) -> str:
+    """Force une majuscule en début de message et après chaque ponctuation de fin de phrase.
+
+    Filet de sécurité déterministe : le prompt demande déjà cette règle au modèle,
+    mais un LLM peut l'oublier occasionnellement — cette fonction garantit le résultat.
+    """
+    if not text:
+        return text
+
+    def _cap(match: re.Match) -> str:
+        return match.group(1) + match.group(2).upper()
+
+    out = re.sub(r"^(\s*)([a-zà-ÿ])", _cap, text)
+    out = re.sub(r"([.!?]\s+)([a-zà-ÿ])", _cap, out)
+    return out
+
+
 def parse_final_text(text: str) -> tuple[list[str], bool, str]:
     text = text.strip()
     if not text:
@@ -386,7 +404,7 @@ def parse_final_text(text: str) -> tuple[list[str], bool, str]:
     parts = [p.strip() for p in text.split("<<NEXT>>") if p.strip()]
     if not parts:
         return [], True, "no_parsable_message"
-    parts = [sanitize_human_style(p) for p in parts]
+    parts = [capitalize_sentences(sanitize_human_style(p)) for p in parts]
     parts = [p for p in parts if p]
     if not parts:
         return [], True, "no_parsable_message_after_sanitize"
