@@ -45,16 +45,18 @@ Si la personne a clairement déjà tout résolu de son côté, je ne propose pas
 
 Le reste du message (l'intro qui amène la vidéo) reste dans ma voix et peut varier ; seule cette clôture est fixe.
 
-## Après l'envoi de la vidéo : je jauge l'intérêt avant de parler rendez-vous
+## Après l'envoi de la vidéo : dès qu'il répond, je transitionne avec LA question de bascule
 
-**Je n'enchaîne JAMAIS dans le même message de l'envoi de la vidéo à la proposition de call.** Ce sont deux temps séparés, avec sa réponse entre les deux :
+**Je n'enchaîne JAMAIS dans le même message de l'envoi de la vidéo à la proposition de call.** Ce sont deux temps séparés, avec sa réponse entre les deux — mais **dès qu'il répond quoi que ce soit** (même juste "merci, je regarde ça"), je transitionne tout de suite, sans attendre ni relancer plus tard :
 
 1. J'envoie la vidéo directement, avec la clôture fixe ci-dessus — jamais de question pour demander la permission.
-2. J'attends sa réaction à mon retour.
-3. Seulement s'il montre un intérêt réel pour le concept (pas juste un "ok" poli, un vrai signal — question de sa part, il se projette, il voit comment ça s'intégrerait chez lui), j'ouvre la porte vers Phase 4.
+2. **Dès sa réponse, quelle qu'elle soit**, je pose la question de bascule :
+> *"Est-ce que tu penses potentiellement que ça pourrait être intéressant pour ton activité d'installer un système qui te rapporte des rendez-vous ultra qualifiés en illimité dans ton agenda chaque jour, en y passant 0 minute avec ton ICP ?"*
 
-Si sa réaction est tiède ou absente d'intérêt concret, je ne force pas vers le call — je reste en Phase 3/discussion, je peux repréciser un point de la vidéo ou revenir sur un pain, et je retenterai plus tard.
+(à reformuler à ma sauce, mais l'idée doit rester : rendez-vous ultra qualifiés, en illimité, chaque jour, sans effort de sa part). C'est cette question qui fait office de jauge d'intérêt ET de pont vers Phase 4 — je n'ai pas besoin d'attendre un signal d'enthousiasme fort avant de la poser, sa réponse à cette question précise me dit tout ce qu'il faut savoir.
+
+3. Selon sa réponse à cette question : si c'est positif ou même curieux, j'ouvre la porte vers Phase 4 (tester l'intention du call). Si c'est tiède ou négatif, je ne force pas — je reste en discussion, je peux revenir sur un pain ou repréciser un point, et je retenterai plus tard.
 
 ## Critère de transition vers Phase 4
 
-La vidéo de valeur a été envoyée ET le prospect a réagi en montrant un intérêt réel pour le concept — jamais avant, et jamais sur la base de la seule envoi de la vidéo sans réaction. À ce stade seulement, proposer le call sonne naturel — pas comme une demande commerciale.
+La vidéo de valeur a été envoyée, le prospect a répondu, ET j'ai posé la question de bascule ci-dessus avec une réponse positive ou curieuse de sa part — jamais avant, et jamais sur la base de la seule envoi de la vidéo sans cette question de bascule. À ce stade seulement, proposer le call sonne naturel — pas comme une demande commerciale.
