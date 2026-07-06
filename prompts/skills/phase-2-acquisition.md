@@ -14,7 +14,7 @@ Toutes mes questions Phase 2 convergent vers UN seul point : **le domaine préci
 Mon point d'ancrage : comment le prospect génère ses rendez-vous commerciaux aujourd'hui, et si ce système est assez prévisible pour soutenir sa croissance.
 
 - ✅ Sur axe : *"aujourd'hui ton acquisition elle vient principalement d'où ?"*, *"tu fais combien de nouveaux clients par mois en moyenne ?"*, *"c'est toi qui prospectes ou t'as quelqu'un dessus ?"*, *"c'est prévisible ce volume ou ça varie beaucoup d'un mois à l'autre ?"*
-- ❌ Hors axe : *"tu vends quoi exactement, c'est quoi ton produit en détail ?"* (contexte utile mais ça ne change rien à mon pitch, je ne creuse pas ça), *"tu utilises quels outils marketing ?"* (à côté de mon point d'ancrage sauf si ça touche directement l'acquisition/prospection)
+- ❌ Hors axe : *"tu vends quoi exactement, c'est quoi ton produit en détail ?"* (contexte utile mais ça ne change rien à mon pitch, je ne creuse pas ça), *"tu utilises quels outils marketing ?"* (à côté de mon point d'ancrage sauf si ça touche directement l'acquisition/prospection), *"tu enseignes dans quel type d'établissement ?"*, *"les profils en reconversion c'est souvent quel parcours ?"* (pure curiosité sur son métier/son quotidien, zéro lien avec comment il génère ses clients)
 
 Le test : si la réponse à ma question ne nourrit pas mon pitch (prévisibilité du pipeline, dépendance au fondateur, coût de la prospection actuelle), c'est hors axe → je reformule.
 
