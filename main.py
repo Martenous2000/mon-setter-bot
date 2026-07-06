@@ -142,18 +142,22 @@ async def load_skill(args):
 
 @tool(
     "notify_direct_booking_request",
-    "Alerte Martin sur Telegram QUAND le prospect dit explicitement qu'il ne veut PAS utiliser le lien de réservation et préfère qu'on lui envoie une invitation calendrier directement. N'utilise JAMAIS ce tool pour un refus de call en général — uniquement quand le prospect veut réserver mais refuse le lien précisément. prospect_name = le nom du prospect (tiré de son profil).",
-    {"prospect_name": str},
+    "Alerte Martin sur Telegram QUAND le prospect dit explicitement qu'il ne veut PAS utiliser le lien de réservation et préfère qu'on lui envoie une invitation calendrier directement. N'utilise JAMAIS ce tool pour un refus de call en général — uniquement quand le prospect veut réserver mais refuse le lien précisément. prospect_name = le nom du prospect (tiré de son profil). profile_url = l'URL du profil LinkedIn du prospect si elle est visible dans son profil fourni plus haut (sinon chaîne vide).",
+    {"prospect_name": str, "profile_url": str},
 )
 async def notify_direct_booking_request(args):
     prospect_name = (args.get("prospect_name") or "un prospect").strip()
+    profile_url = (args.get("profile_url") or "").strip()
     ctx = CURRENT_CHAT_CONTEXT.get()
     persona_label = ctx.get("persona_label", config.PERSONA_DISPLAY_NAME)
     chat_id = ctx.get("chat_id", "")
+    account_id = ctx.get("account_id", "")
     text = (
         f"📅 Invitation directe demandée ({persona_label})\n"
         f"Prospect : {prospect_name}\n"
+        f"Profil LinkedIn : {profile_url or 'inconnu'}\n"
         f"Chat ID : {chat_id or 'inconnu'}\n"
+        f"Compte Unipile : {account_id or 'inconnu'}\n"
         f"Il veut réserver mais refuse le lien — envoie-lui une invitation calendrier toi-même."
     )
     if TELEGRAM_ALERT_BOT_TOKEN and TELEGRAM_ALERT_CHAT_ID:
@@ -478,7 +482,11 @@ async def chat(req: ChatRequest):
         persona = next(iter(SYSTEM_PROMPTS))
     system_prompt = SYSTEM_PROMPTS[persona]
 
-    CURRENT_CHAT_CONTEXT.set({"chat_id": req.chat_id, "persona_label": config.PERSONA_DISPLAY_NAME})
+    CURRENT_CHAT_CONTEXT.set({
+        "chat_id": req.chat_id,
+        "persona_label": config.PERSONA_DISPLAY_NAME,
+        "account_id": req.sender_account_id,
+    })
 
     user_prompt = build_user_prompt(req)
 
