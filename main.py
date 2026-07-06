@@ -141,24 +141,35 @@ async def load_skill(args):
 
 
 @tool(
-    "notify_direct_booking_request",
-    "Alerte Martin sur Telegram QUAND le prospect dit explicitement qu'il ne veut PAS utiliser le lien de réservation et préfère qu'on lui envoie une invitation calendrier directement. N'utilise JAMAIS ce tool pour un refus de call en général — uniquement quand le prospect veut réserver mais refuse le lien précisément. prospect_name = le nom du prospect (tiré de son profil). profile_url = l'URL du profil LinkedIn du prospect si elle est visible dans son profil fourni plus haut (sinon chaîne vide).",
-    {"prospect_name": str, "profile_url": str},
+    "notify_booking_issue",
+    (
+        "Alerte Martin sur Telegram QUAND la prise de rendez-vous via le lien de réservation ne peut pas se faire normalement. "
+        "Deux cas d'usage : (1) le prospect dit explicitement qu'il ne veut PAS utiliser le lien et préfère une invitation "
+        "calendrier directe, (2) le prospect signale un problème avec le lien lui-même (lien cassé, page qui ne charge pas, "
+        "aucun créneau disponible, erreur au moment de valider). N'utilise JAMAIS ce tool pour un simple refus de call en "
+        "général — uniquement quand il VEUT réserver mais que le lien standard ne fonctionne pas pour lui, quelle qu'en soit la raison. "
+        "prospect_name = le nom du prospect (tiré de son profil). profile_url = l'URL du profil LinkedIn du prospect si elle "
+        "est visible dans son profil fourni plus haut (sinon chaîne vide). reason = brève description de ce qui bloque, dans tes mots "
+        "(ex: \"refuse le lien, veut une invitation directe\", \"dit que le lien est cassé\", \"aucun créneau dispo selon lui\")."
+    ),
+    {"prospect_name": str, "profile_url": str, "reason": str},
 )
-async def notify_direct_booking_request(args):
+async def notify_booking_issue(args):
     prospect_name = (args.get("prospect_name") or "un prospect").strip()
     profile_url = (args.get("profile_url") or "").strip()
+    reason = (args.get("reason") or "raison non précisée").strip()
     ctx = CURRENT_CHAT_CONTEXT.get()
     persona_label = ctx.get("persona_label", config.PERSONA_DISPLAY_NAME)
     chat_id = ctx.get("chat_id", "")
     account_id = ctx.get("account_id", "")
     text = (
-        f"📅 Invitation directe demandée ({persona_label})\n"
+        f"🚨 Problème de réservation LinkedIn ({persona_label})\n"
         f"Prospect : {prospect_name}\n"
         f"Profil LinkedIn : {profile_url or 'inconnu'}\n"
         f"Chat ID : {chat_id or 'inconnu'}\n"
         f"Compte Unipile : {account_id or 'inconnu'}\n"
-        f"Il veut réserver mais refuse le lien — envoie-lui une invitation calendrier toi-même."
+        f"Raison : {reason}\n"
+        f"Il veut réserver mais le lien standard ne fonctionne pas pour lui — occupe-toi de le recontacter directement."
     )
     if TELEGRAM_ALERT_BOT_TOKEN and TELEGRAM_ALERT_CHAT_ID:
         try:
@@ -188,7 +199,7 @@ SETTER_MCP_SERVER = create_sdk_mcp_server(
         get_youtube_link,
         get_website_link,
         load_skill,
-        notify_direct_booking_request,
+        notify_booking_issue,
         request_handover,
     ],
 )
@@ -198,7 +209,7 @@ ALLOWED_TOOLS = [
     "mcp__setter_tools__get_youtube_link",
     "mcp__setter_tools__get_website_link",
     "mcp__setter_tools__load_skill",
-    "mcp__setter_tools__notify_direct_booking_request",
+    "mcp__setter_tools__notify_booking_issue",
     "mcp__setter_tools__request_handover",
 ]
 
