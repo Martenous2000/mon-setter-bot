@@ -1,6 +1,9 @@
 import asyncio
+import contextvars
+import json
 import os
 import re
+import urllib.request
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Literal
@@ -28,6 +31,12 @@ CANONICAL_CALENDLY = config.CALENDLY_URL
 CANONICAL_YOUTUBE = config.YOUTUBE_URL
 CANONICAL_WEBSITE = config.WEBSITE_URL
 HANDOVER_SIGNAL = config.HANDOVER_SIGNAL
+TELEGRAM_ALERT_BOT_TOKEN = config.TELEGRAM_ALERT_BOT_TOKEN
+TELEGRAM_ALERT_CHAT_ID = config.TELEGRAM_ALERT_CHAT_ID
+
+# Contexte de la conversation en cours (chat_id, compte) — lu par les tools qui en ont besoin,
+# posé au début de chaque requête /chat. Un ContextVar isole correctement les requêtes concurrentes.
+CURRENT_CHAT_CONTEXT: contextvars.ContextVar[dict] = contextvars.ContextVar("chat_context", default={})
 
 MODEL = config.MODEL
 MAX_THINKING_TOKENS = config.MAX_THINKING_TOKENS
@@ -132,6 +141,33 @@ async def load_skill(args):
 
 
 @tool(
+    "notify_direct_booking_request",
+    "Alerte Martin sur Telegram QUAND le prospect dit explicitement qu'il ne veut PAS utiliser le lien de réservation et préfère qu'on lui envoie une invitation calendrier directement. N'utilise JAMAIS ce tool pour un refus de call en général — uniquement quand le prospect veut réserver mais refuse le lien précisément. prospect_name = le nom du prospect (tiré de son profil).",
+    {"prospect_name": str},
+)
+async def notify_direct_booking_request(args):
+    prospect_name = (args.get("prospect_name") or "un prospect").strip()
+    ctx = CURRENT_CHAT_CONTEXT.get()
+    persona_label = ctx.get("persona_label", config.PERSONA_DISPLAY_NAME)
+    chat_id = ctx.get("chat_id", "")
+    text = (
+        f"📅 Invitation directe demandée ({persona_label})\n"
+        f"Prospect : {prospect_name}\n"
+        f"Chat ID : {chat_id or 'inconnu'}\n"
+        f"Il veut réserver mais refuse le lien — envoie-lui une invitation calendrier toi-même."
+    )
+    if TELEGRAM_ALERT_BOT_TOKEN and TELEGRAM_ALERT_CHAT_ID:
+        try:
+            url = f"https://api.telegram.org/bot{TELEGRAM_ALERT_BOT_TOKEN}/sendMessage"
+            payload = json.dumps({"chat_id": TELEGRAM_ALERT_CHAT_ID, "text": text}).encode("utf-8")
+            req_obj = urllib.request.Request(url, data=payload, headers={"Content-Type": "application/json"})
+            await asyncio.to_thread(urllib.request.urlopen, req_obj, timeout=10)
+        except Exception:
+            pass
+    return {"content": [{"type": "text", "text": "Alerte envoyée à Martin, il va s'en occuper directement."}]}
+
+
+@tool(
     "request_handover",
     "Demande un handover humain (tu prends le relais). UTILISE UNIQUEMENT si : (1) le prospect demande explicitement à parler à un humain, (2) frustration ou colère significative, (3) sujet sensible (santé, deuil, crise perso), (4) tu n'as pas l'info nécessaire pour répondre correctement, (5) incohérence repérée que tu ne peux pas résoudre. Reason = en quelques mots, pourquoi.",
     {"reason": str},
@@ -148,6 +184,7 @@ SETTER_MCP_SERVER = create_sdk_mcp_server(
         get_youtube_link,
         get_website_link,
         load_skill,
+        notify_direct_booking_request,
         request_handover,
     ],
 )
@@ -157,6 +194,7 @@ ALLOWED_TOOLS = [
     "mcp__setter_tools__get_youtube_link",
     "mcp__setter_tools__get_website_link",
     "mcp__setter_tools__load_skill",
+    "mcp__setter_tools__notify_direct_booking_request",
     "mcp__setter_tools__request_handover",
 ]
 
@@ -439,6 +477,8 @@ async def chat(req: ChatRequest):
     if persona not in SYSTEM_PROMPTS and SYSTEM_PROMPTS:
         persona = next(iter(SYSTEM_PROMPTS))
     system_prompt = SYSTEM_PROMPTS[persona]
+
+    CURRENT_CHAT_CONTEXT.set({"chat_id": req.chat_id, "persona_label": config.PERSONA_DISPLAY_NAME})
 
     user_prompt = build_user_prompt(req)
 
