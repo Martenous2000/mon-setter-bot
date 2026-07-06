@@ -22,6 +22,7 @@ from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, Field
 
+import calendar_utils
 import config
 
 load_dotenv()
@@ -78,6 +79,33 @@ SYSTEM_PROMPTS: dict[str, str] = {
 async def get_calendly_link(args):
     url = CANONICAL_CALENDLY or "(aucun lien Calendly configuré — ne propose pas de réservation par lien)"
     return {"content": [{"type": "text", "text": url}]}
+
+
+_JOURS_FR = ["lundi", "mardi", "mercredi", "jeudi", "vendredi", "samedi", "dimanche"]
+
+
+@tool(
+    "get_available_slots",
+    (
+        "Retourne 2 créneaux de rendez-vous réellement libres dans l'agenda, en respectant les horaires de "
+        "disponibilité et en excluant tout ce qui est déjà bloqué. UTILISE ce tool dès que tu t'apprêtes à "
+        "proposer un ou plusieurs créneaux horaires précis au prospect (Temps 4b de phase-4-call) — ne propose "
+        "JAMAIS un horaire au hasard ou inventé, appelle toujours ce tool d'abord."
+    ),
+    {},
+)
+async def get_available_slots(args):
+    try:
+        slots = await asyncio.to_thread(calendar_utils.get_next_available_slots, 2)
+    except Exception:
+        return {
+            "content": [{"type": "text", "text": "Agenda indisponible pour le moment — propose de vive voix sans créneau précis, ou passe par notify_booking_issue si le prospect insiste."}],
+            "is_error": True,
+        }
+    if not slots:
+        return {"content": [{"type": "text", "text": "Aucun créneau libre trouvé dans les 10 prochains jours."}], "is_error": True}
+    formatted = [f"{_JOURS_FR[s.weekday()]} à {s.strftime('%Hh%M')}" for s in slots]
+    return {"content": [{"type": "text", "text": " ou ".join(formatted)}]}
 
 
 @tool(
@@ -196,6 +224,7 @@ SETTER_MCP_SERVER = create_sdk_mcp_server(
     version="1.0.0",
     tools=[
         get_calendly_link,
+        get_available_slots,
         get_youtube_link,
         get_website_link,
         load_skill,
@@ -206,6 +235,7 @@ SETTER_MCP_SERVER = create_sdk_mcp_server(
 
 ALLOWED_TOOLS = [
     "mcp__setter_tools__get_calendly_link",
+    "mcp__setter_tools__get_available_slots",
     "mcp__setter_tools__get_youtube_link",
     "mcp__setter_tools__get_website_link",
     "mcp__setter_tools__load_skill",
