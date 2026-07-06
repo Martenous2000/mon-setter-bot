@@ -21,6 +21,10 @@ CALENDLY_URL = os.getenv("CALENDLY_URL", "")
 YOUTUBE_URL = os.getenv("YOUTUBE_URL", "")
 WEBSITE_URL = os.getenv("WEBSITE_URL", "")
 
+# --- Alerte Telegram (invitation directe demandée par un prospect) ---
+TELEGRAM_ALERT_BOT_TOKEN = os.getenv("TELEGRAM_ALERT_BOT_TOKEN", "")
+TELEGRAM_ALERT_CHAT_ID = os.getenv("TELEGRAM_ALERT_CHAT_ID", "")
+
 # --- Modèle & limites (réglages avancés, valeurs par défaut OK) ---
 MODEL = os.getenv("CLAUDE_MODEL", "claude-sonnet-4-6")
 MAX_THINKING_TOKENS = int(os.getenv("MAX_THINKING_TOKENS", "8000"))
