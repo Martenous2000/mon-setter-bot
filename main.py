@@ -434,7 +434,7 @@ def sanitize_human_style(text: str) -> str:
         return text
     replacements = {
         "—": ", ",
-        "–": "-",
+        "–": ", ",
         "…": "...",
         "«": '"',
         "»": '"',
@@ -448,6 +448,9 @@ def sanitize_human_style(text: str) -> str:
     out = text
     for k, v in replacements.items():
         out = out.replace(k, v)
+    # Tiret simple utilisé comme séparateur de clause (" - ") -> virgule.
+    # Ne touche pas aux mots composés légitimes ("bouche-à-oreille") car ceux-ci n'ont pas d'espaces autour du tiret.
+    out = re.sub(r"\s+-\s+", ", ", out)
     while "  " in out:
         out = out.replace("  ", " ")
     out = out.replace(" :", ":").replace(" ;", ";")
