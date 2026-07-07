@@ -429,17 +429,19 @@ def looks_like_meta_leak(text: str) -> bool:
 
 
 def sanitize_human_style(text: str) -> str:
-    """Strip AI tells (typographic punctuation, smart quotes) before sending to prospect."""
+    """Strip AI tells (typographic punctuation, smart quotes, dashes) before sending to prospect."""
     if not text:
         return text
     replacements = {
         "—": ", ",
-        "–": "-",
+        "–": ", ",
         "…": "...",
-        "«": '"',
-        "»": '"',
-        "“": '"',
-        "”": '"',
+        # Guillemets de toutes formes : jamais utilisés, on les retire plutot que de les normaliser.
+        "«": "",
+        "»": "",
+        "“": "",
+        "”": "",
+        '"': "",
         "‘": "'",
         "’": "'",
         " ": " ",
@@ -448,10 +450,14 @@ def sanitize_human_style(text: str) -> str:
     out = text
     for k, v in replacements.items():
         out = out.replace(k, v)
+    # Tiret simple utilisé comme séparateur de clause (" - ") -> virgule.
+    # Ne touche pas aux mots composés légitimes ("bouche-à-oreille") car ceux-ci n'ont pas d'espaces autour du tiret.
+    out = re.sub(r"\s+-\s+", ", ", out)
     while "  " in out:
         out = out.replace("  ", " ")
     out = out.replace(" :", ":").replace(" ;", ";")
     out = out.replace(" ,", ",").replace(",,", ",")
+    out = re.sub(r"\s+([.,!?])", r"\1", out)
     return out.strip()
 
 
