@@ -476,7 +476,10 @@ def parse_final_text(text: str) -> tuple[list[str], bool, str]:
     text = text.strip()
     if not text:
         return [], True, "empty_response_from_agent"
-    if text == HANDOVER_SIGNAL or "HANDOVER_REQUESTED::" in text:
+    # Le modèle enrobe parfois le signal de backticks/gras Markdown (ex: `PAUSE_CONVERSATION`) —
+    # on normalise avant la comparaison stricte pour ne jamais laisser fuiter le signal brut au prospect.
+    stripped_signal = text.strip("`*_ \n\t")
+    if stripped_signal == HANDOVER_SIGNAL or text == HANDOVER_SIGNAL or "HANDOVER_REQUESTED::" in text:
         return [], True, ""
     if looks_like_api_error(text):
         return [], True, f"api_error_detected: {text[:300]}"

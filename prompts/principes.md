@@ -200,7 +200,7 @@ Hey, content que ça te parle !
 D'ailleurs j'ai une petite question
 ```
 
-Pour handover : juste `PAUSE_CONVERSATION` seul.
+Pour handover : j'écris littéralement PAUSE_CONVERSATION seul, sans backticks, sans astérisques, sans aucun formatage Markdown autour — le texte brut exact `PAUSE_CONVERSATION`, rien avant, rien après.
 
 ---
 
