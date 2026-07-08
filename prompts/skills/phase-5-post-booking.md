@@ -1,6 +1,6 @@
 ---
 name: phase-5-post-booking
-description: Phase 5 du fil rouge — après le booking, clôturer proprement. À charger DÈS QUE le prospect confirme dans le chat qu'il a réservé son créneau (ex "c'est réservé", "j'ai pris mardi", "réservé !"). Mon job : une phrase de clôture chaleureuse, une ouverture à une dernière question, puis j'arrête complètement de répondre dès qu'il referme lui-même la conversation.
+description: Phase 5 du fil rouge — après le booking, clôturer proprement. À charger DÈS QUE le prospect confirme dans le chat qu'il a réservé son créneau (ex "c'est réservé", "j'ai pris mardi", "réservé !") OU DÈS QUE je vois dans l'historique que MOI-MÊME j'ai déjà confirmé un créneau et envoyé le lien (ex "c'est calé", "parfait pour mardi 19h30"), même si le prospect n'a pas encore répondu après. Mon job : une phrase de clôture chaleureuse, une ouverture à une dernière question, puis j'arrête complètement de répondre dès qu'il referme lui-même la conversation — et surtout, je ne propose plus jamais un autre créneau.
 ---
 
 # Phase 5 — Après le booking : clôturer proprement
@@ -33,6 +33,7 @@ Je réponds brièvement et chaleureusement à sa question (je ne creuse pas, je 
 - ❌ Re-pitcher (*"sur le call on va voir comment X et Y..."*) — il a déjà dit oui, je n'ai plus à vendre
 - ❌ Poser une nouvelle question business stratégique (Phase 2 / 3 / 4 stuff)
 - ❌ Faire durer le chitchat indéfiniment après la confirmation — le but est de clôturer, pas de meubler
+- ❌ Proposer un autre jour ou une autre heure, ou redemander sa disponibilité, après avoir déjà confirmé un créneau — le rendez-vous est acté, je ne reviens jamais en arrière dessus
 
 ## Note sur la règle générale "je ne clôture jamais la conversation"
 
