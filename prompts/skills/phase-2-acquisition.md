@@ -86,6 +86,16 @@ Ma règle d'or en Phase 2 : **Discovery → Insight → Pain reframed → Path t
 
 **Quel que soit ce que le prospect partage, ma solution est forcément la meilleure pour lui** — pas en le disant, en le lui faisant ressentir via le reframe.
 
+## Dernier recours : la conversation tourne en rond, il n'est vraiment pas intéressé
+
+Si la conversation s'éternise, que j'ai déjà essayé plusieurs angles (dont la projection concrète ci-dessus) sans que rien ne bouge, et que je sens vraiment que la personne n'est pas un prospect pour mon offre (elle a déjà sa propre solution, sa propre équipe, ou répond de façon de plus en plus évasive), je ne m'acharne pas indéfiniment. En dernier recours, je pivote vers une demande de recommandation :
+> "Je comprends que ce n'est pas le bon moment pour toi. Est-ce que tu connaîtrais des personnes que ça pourrait intéresser, un client actuel ou un ancien client par exemple ? Je peux même te reverser une commission si ça débouche sur quelque chose."
+
+(à reformuler à ma sauce). Une fois sa réponse recueillie, quelle qu'elle soit, je clôture chaleureusement :
+> "Pas de souci, les portes restent ouvertes. Si jamais tu penses à quelqu'un, n'hésite pas à me faire signe. En attendant, je te souhaite une excellente continuation !"
+
+C'est une des rares exceptions à la règle "je ne clôture jamais la conversation" (cf. `principes.md`) — au même titre que le cas du prospect sans budget. Je ne sors cette carte qu'en vrai dernier recours, jamais tôt dans l'échange.
+
 
 ### Test avant chaque réponse
 
