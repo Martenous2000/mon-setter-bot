@@ -519,6 +519,7 @@ async def root():
         "tools": [t.split("__")[-1] for t in ALLOWED_TOOLS],
         "max_thinking_tokens": MAX_THINKING_TOKENS,
         "max_turns": MAX_TURNS,
+        "relance_prompts_chars": {"quand-relancer": len(QUAND_RELANCER), "relancer": len(RELANCER)},
     }
 
 
@@ -639,4 +640,254 @@ async def chat(req: ChatRequest):
         cost_usd=cost_usd,
         duration_ms=duration_ms,
         num_turns=num_turns,
+    )
+
+# ============================================================================
+# RELANCE — endpoint dédié, ne touche jamais au chemin /chat ci-dessus.
+# ============================================================================
+
+RELANCE_DIR = PROMPTS_DIR / "relance"
+QUAND_RELANCER = (RELANCE_DIR / "quand-relancer.md").read_text(encoding="utf-8")
+RELANCER = (RELANCE_DIR / "relancer.md").read_text(encoding="utf-8")
+BUSINESS_INFO = (SKILLS_DIR / "business-info.md").read_text(encoding="utf-8")
+
+from anthropic import AsyncAnthropic
+
+_anthropic_client: AsyncAnthropic | None = None
+
+
+def get_anthropic_client() -> AsyncAnthropic:
+    global _anthropic_client
+    if _anthropic_client is None:
+        _anthropic_client = AsyncAnthropic()
+    return _anthropic_client
+
+
+class RelanceHistoryMessage(BaseModel):
+    role: Literal["prospect", "me"]
+    text: str
+    timestamp: str  # ISO 8601 — daté, contrairement au transcript du setter
+
+
+class RelanceFacts(BaseModel):
+    relances_deja_envoyees: int = 0
+    a_lu_sans_repondre: Literal["oui", "inconnu"] = "inconnu"
+    silence_heures: float = 0.0
+    video_valeur_envoyee: Literal["oui", "inconnu"] = "inconnu"
+    rendez_vous_deja_facilite: Literal["oui", "inconnu"] = "inconnu"
+
+
+class RelanceRequest(BaseModel):
+    history: list[RelanceHistoryMessage] = Field(default_factory=list)
+    lead_profile: str = ""
+    agent_persona: str = DEFAULT_PERSONA
+    chat_id: str = ""
+    sender_account_id: str = ""
+    facts: RelanceFacts
+
+
+class RelanceDecisionResult(BaseModel):
+    resume: str
+    dernier_pas: str
+    reponse_du_prospect: Literal[
+        "aucune", "accuse_poli", "report", "objection",
+        "declin_poli", "accord_sans_suite", "demande_d_arret", "rendez_vous_pris",
+    ]
+    porte: Literal["ouverte", "close"]
+    decision: Literal["relancer", "laisser"]
+    angle_neuf: str = ""
+    preuve: str = ""
+
+
+class RelanceResponse(BaseModel):
+    decision: str
+    porte: str
+    messages: list[str]
+    etat: RelanceDecisionResult | None = None
+    raw_write: str = ""
+    cost_usd: float | None = None
+    duration_ms: int | None = None
+    anomaly: str = ""  # non vide = silence forcé, jamais un envoi
+
+
+DECISION_TOOL = {
+    "name": "rendre_decision",
+    "description": "Rend l'état complet et la décision de relance pour ce fil.",
+    "input_schema": {
+        "type": "object",
+        "properties": {
+            "resume": {"type": "string", "description": "Deux phrases sur où en est ce fil et pourquoi il s'est éteint."},
+            "dernier_pas": {"type": "string", "description": "Ce que j'ai proposé en dernier."},
+            "reponse_du_prospect": {
+                "type": "string",
+                "enum": ["aucune", "accuse_poli", "report", "objection", "declin_poli", "accord_sans_suite", "demande_d_arret", "rendez_vous_pris"],
+            },
+            "porte": {"type": "string", "enum": ["ouverte", "close"]},
+            "decision": {"type": "string", "enum": ["relancer", "laisser"]},
+            "angle_neuf": {"type": "string", "description": "Ce que ce message apporterait qu'il n'avait pas encore. Vide si décision = laisser."},
+            "preuve": {"type": "string", "description": "La citation exacte qui porte la décision."},
+        },
+        "required": ["resume", "dernier_pas", "reponse_du_prospect", "porte", "decision"],
+    },
+}
+
+
+def build_dated_transcript(history: list[RelanceHistoryMessage], persona_label: str) -> str:
+    lines = []
+    for m in history:
+        speaker = persona_label if m.role == "me" else "Prospect"
+        lines.append(f"[{m.timestamp}] {speaker}: {m.text}")
+    return "\n".join(lines) if lines else "(conversation vide)"
+
+
+async def decide_relance(req: RelanceRequest) -> tuple[RelanceDecisionResult | None, str]:
+    """Appel 1 — décider. Aucun jugement métier côté code : tout vient du modèle via tool structuré.
+    Retourne (résultat, erreur). Toute anomalie -> résultat=None, jamais une décision devinée."""
+    persona_label = config.PERSONA_DISPLAY_NAME
+    transcript = build_dated_transcript(req.history, persona_label)
+    facts = req.facts
+
+    user_content = f"""Historique daté du fil (chronologique) :
+{transcript}
+
+Faits mesurés par le code (n8n), à lire tels quels :
+- relances_déjà_envoyées : {facts.relances_deja_envoyees}
+- a_lu_sans_répondre : {facts.a_lu_sans_repondre}
+- silence_heures : {facts.silence_heures:.1f}
+- video_valeur_envoyée : {facts.video_valeur_envoyee}
+- rendez_vous_déjà_facilité : {facts.rendez_vous_deja_facilite}
+
+Profil du prospect :
+{req.lead_profile or "(pas de profil disponible)"}
+
+Rends ta décision via le tool rendre_decision."""
+
+    try:
+        client = get_anthropic_client()
+        resp = await client.messages.create(
+            model=MODEL,
+            max_tokens=1024,
+            system=QUAND_RELANCER,
+            tools=[DECISION_TOOL],
+            tool_choice={"type": "tool", "name": "rendre_decision"},
+            messages=[{"role": "user", "content": user_content}],
+        )
+        for block in resp.content:
+            if block.type == "tool_use" and block.name == "rendre_decision":
+                result = RelanceDecisionResult(**block.input)
+                return result, ""
+        return None, "no_tool_use_in_response"
+    except Exception as e:
+        return None, f"{type(e).__name__}: {str(e)[:300]}"
+
+
+def build_relance_system_prompt(persona: str) -> str:
+    """Persona + principes (comme le setter) + relancer.md + la fiche d'offre TOUJOURS injectée en dur.
+    On ne demande jamais au modèle d'aller charger la fiche lui-même — elle est déjà sous ses yeux."""
+    persona_block = PERSONA_CACHE.get(persona) or next(iter(PERSONA_CACHE.values()), "")
+    return (
+        f"{persona_block}\n\n---\n\n{PRINCIPES}\n\n---\n\n{RELANCER}"
+        f"\n\n---\n\n# Fiche de mon offre (business-info, toujours à jour, fait foi)\n\n{BUSINESS_INFO}"
+    )
+
+
+async def write_relance(req: RelanceRequest, etat: RelanceDecisionResult) -> tuple[list[str], str, float | None, int | None]:
+    """Appel 2 — rédiger. Réutilise ClaudeSDKClient comme le setter pour garder l'accès aux tools
+    (get_calendly_link, get_youtube_link) — jamais d'URL inventée à la main."""
+    persona = req.agent_persona if req.agent_persona in SYSTEM_PROMPTS else DEFAULT_PERSONA
+    system_prompt = build_relance_system_prompt(persona)
+
+    user_prompt = f"""État de la décision (déjà tranchée, tu ne rejuges pas) :
+- résumé : {etat.resume}
+- dernier pas : {etat.dernier_pas}
+- réponse du prospect : {etat.reponse_du_prospect}
+- angle neuf à porter : {etat.angle_neuf}
+
+Profil du prospect :
+{req.lead_profile or "(pas de profil disponible)"}
+
+═══════════════════════════════════════════════════════════════════
+PRODUIS MAINTENANT le ou les messages de relance à envoyer.
+═══════════════════════════════════════════════════════════════════
+
+⚠️ FORMAT DE SORTIE ABSOLU (identique au setter) :
+Ta sortie texte = EXACTEMENT ce que le prospect va recevoir mot pour mot.
+ZÉRO préambule, ZÉRO analyse, ZÉRO méta-commentaire.
+UNIQUEMENT les messages exacts, séparés par `<<NEXT>>` si plusieurs bulles."""
+
+    options = ClaudeAgentOptions(
+        model=MODEL,
+        system_prompt=system_prompt,
+        mcp_servers={"setter_tools": SETTER_MCP_SERVER},
+        allowed_tools=[
+            "mcp__setter_tools__get_calendly_link",
+            "mcp__setter_tools__get_youtube_link",
+            "mcp__setter_tools__get_website_link",
+        ],
+        max_turns=MAX_TURNS,
+        max_thinking_tokens=MAX_THINKING_TOKENS,
+        permission_mode="bypassPermissions",
+    )
+
+    CURRENT_CHAT_CONTEXT.set({
+        "chat_id": req.chat_id,
+        "persona_label": config.PERSONA_DISPLAY_NAME,
+        "account_id": req.sender_account_id,
+    })
+
+    raw_chunks: list[str] = []
+    cost_usd: float | None = None
+    duration_ms: int | None = None
+    async with ClaudeSDKClient(options=options) as client:
+        await client.query(user_prompt)
+        async for msg in client.receive_response():
+            if isinstance(msg, AssistantMessage):
+                for block in msg.content:
+                    if isinstance(block, TextBlock):
+                        raw_chunks.append(block.text)
+            elif isinstance(msg, ResultMessage):
+                cost_usd = getattr(msg, "total_cost_usd", None)
+                duration_ms = getattr(msg, "duration_ms", None)
+
+    raw = "\n".join(raw_chunks).strip()
+    messages, is_error, _ = parse_final_text(raw)
+    if is_error:
+        return [], raw, cost_usd, duration_ms
+    return messages, raw, cost_usd, duration_ms
+
+
+@app.post("/relance", response_model=RelanceResponse)
+async def relance(req: RelanceRequest):
+    if not os.getenv("ANTHROPIC_API_KEY"):
+        raise HTTPException(status_code=500, detail="ANTHROPIC_API_KEY non configurée")
+
+    # Appel 1 — décider. Aucun jugement métier hors du modèle.
+    etat, error = await decide_relance(req)
+    if etat is None:
+        # Repli sûr : toute anomalie produit le silence, jamais un envoi.
+        return RelanceResponse(decision="laisser", porte="inconnue", messages=[], anomaly=f"decision_call_failed: {error}")
+
+    if etat.decision == "laisser" or etat.porte == "close":
+        # Court-circuit immédiat : rien n'est rédigé.
+        return RelanceResponse(decision=etat.decision, porte=etat.porte, messages=[], etat=etat)
+
+    # Appel 2 — rédiger.
+    try:
+        messages, raw, cost_usd, duration_ms = await write_relance(req, etat)
+    except Exception as e:
+        return RelanceResponse(
+            decision="laisser", porte=etat.porte, messages=[], etat=etat,
+            anomaly=f"write_call_failed: {type(e).__name__}: {str(e)[:300]}",
+        )
+
+    if not messages:
+        # Le rédacteur n'a rien produit d'exploitable -> silence, pas d'envoi.
+        return RelanceResponse(
+            decision="laisser", porte=etat.porte, messages=[], etat=etat, raw_write=raw,
+            anomaly="write_call_produced_no_usable_message",
+        )
+
+    return RelanceResponse(
+        decision=etat.decision, porte=etat.porte, messages=messages, etat=etat,
+        raw_write=raw, cost_usd=cost_usd, duration_ms=duration_ms,
     )
