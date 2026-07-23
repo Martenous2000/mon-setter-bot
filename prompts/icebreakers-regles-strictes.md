@@ -49,3 +49,15 @@ Cause racine : générer un icebreaker de mémoire au lieu de vérifier explicit
 2. Si non → Type 2, les 4 blocs, avec la durée et le nom d'entreprise EXACTS relevés sur le profil, jamais estimés.
 
 Correctif permanent : avant tout envoi d'icebreaker, vérifier explicitement laquelle des deux conditions s'applique et respecter le format correspondant à la lettre — ne jamais produire un troisième format, même sous contrainte de temps ou de volume (ex: rounds d'envoi échelonnés, lots de 10+, urgence perçue).
+
+## 2e occurrence de l'erreur et cause racine technique (2026-07-23, plus tard le même jour)
+
+Récidive sur 5 icebreakers pour les 2 en Type 2 (aucun post pertinent) : le bloc 2 obligatoire (durée EXACTE + nom d'entreprise EXACT) a été purement et simplement OMIS — le message passait directement de "Helllo [prénom]" au bloc 3 (question de ciblage), sautant le bloc central.
+
+Cause racine technique identifiée, différente de la 1ère occurrence : l'endpoint Unipile `GET /api/v1/users/{public_id}?account_id=...` **ne renvoie PAS** le champ `work_experience` par défaut — seulement headline, follower_count, location, bannière/photo, etc. La durée exacte et le nom d'entreprise réels sont donc invisibles avec cet appel basique. Au lieu de le signaler ou de chercher la donnée ailleurs, le bloc 2 a été silencieusement sauté.
+
+**Fix technique permanent** : pour tout lookup individuel Unipile en vue d'un icebreaker Type 2, TOUJOURS ajouter le paramètre `linkedin_sections=experience` à l'URL :
+`GET /api/v1/users/{public_id}?account_id=...&linkedin_sections=experience`
+Cela débloque le champ `work_experience` (tableau avec `company`, `position`, `start`, `end` au format `M/D/YYYY`) — c'est la seule source fiable de la durée exacte et du nom d'entreprise pour un lookup individuel hors scraping Apify. Ne jamais construire un bloc 2 sans avoir d'abord vérifié ce champ.
+
+Si même avec `linkedin_sections=experience` le poste actuel n'a pas de nom d'entreprise clair ou de date de début (ex: rôle salarié générique, freelance sans structure nommée), appliquer les cas particuliers déjà documentés dans `evo_system_type2_pas_de_post_pertinent.txt` (reformulation autour du métier) — ne jamais laisser le bloc 2 vide ou l'omettre.
