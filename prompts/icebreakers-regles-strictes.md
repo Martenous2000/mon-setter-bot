@@ -2,6 +2,12 @@
 
 Document de garde-fou. À consulter obligatoirement avant d'écrire ou d'envoyer un icebreaker, quel que soit le contexte (compte, urgence, absence de données complètes). Il n'existe QUE ces deux formats — aucun hybride, aucune improvisation.
 
+## Règle 0 — un icebreaker est réservé au tout premier message, jamais si une conversation existe déjà
+
+Avant même de choisir entre Type 1 et Type 2, vérifier qu'AUCUNE conversation n'existe déjà avec ce prospect sur le compte LinkedIn concerné. Un icebreaker (Type 1 ou Type 2) ne s'envoie que si c'est le tout premier message échangé avec cette personne. Dès qu'un message — peu importe lequel, peu importe qui l'a envoyé — existe déjà dans l'historique, ce n'est plus un icebreaker : passer en mode reprise/relance de conversation, jamais renvoyer un Type 1 ou Type 2.
+
+Méthode de vérification fiable (obligatoire) : paginer intégralement `/chats?account_id=X&limit=100` en suivant le `cursor` jusqu'à `null`, puis matcher sur le champ `attendee_provider_id` des résultats retournés. Les filtres query params `attendee_id`/`attendee_provider_id` passés directement à `/chats` sont PEU FIABLES et silencieusement ignorés par l'API (retournent toujours le même lot des ~100 chats les plus récents, indépendamment du filtre) — ne jamais s'y fier seul, toujours repasser par la pagination complète + matching local.
+
 ## Type 1 — un post récent pertinent existe
 
 Fichier source : `evo_system_type1_post_pertinent.txt`
