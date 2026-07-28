@@ -136,7 +136,12 @@ async def get_website_link(args):
         ""
         "PHASES DU FIL ROUGE (charge la skill de la phase courante quand tu veux le détail tactique) :\n"
         "- `phase-1-defiance` — chitchat, casser la méfiance, signaux d'ouverture\n"
-        "- `phase-2-acquisition` — faire émerger le pain + mini-transformation + offre modulaire\n"
+        "- `phase-2-acquisition` — Phase 2 PAR DÉFAUT (persona agences-IA/agents commerciaux) — "
+        "faire émerger le pain + mini-transformation + offre modulaire. "
+        "⚠️ NE CHARGE JAMAIS CE SKILL si ton persona actif est `nathan-elora` — charge `phase-2-nathan-elora` à la place.\n"
+        "- `phase-2-nathan-elora` — Phase 2 SPÉCIFIQUE au persona `nathan-elora` (offre site vitrine) — "
+        "remplace intégralement phase-2-acquisition pour ce persona, jamais les deux ensemble. "
+        "Utilise CE skill si et seulement si ton persona actif est `nathan-elora`.\n"
         "- `phase-3-asset` — asset de valeur matché au pain + réciprocité\n"
         "- `phase-4-call` — proposer le call en 2 temps (4a tester l'intention, 4b envoyer le lien)\n"
         "- `phase-5-post-booking` — protéger le call, less is more, aucun ask\n\n"
@@ -146,8 +151,9 @@ async def get_website_link(args):
         "À charger DÈS QUE le prospect formule une objection ou une croyance qui s'oppose à ton offre.\n"
         "- `bio-detail` — ton parcours complet et tes preuves sociales. "
         "À charger quand le prospect demande qui tu es, ton parcours, ta crédibilité.\n"
-        "- `business-info` — ton offre détaillée, ton mécanisme, et les réponses canoniques "
-        "aux questions pièges sur ton offre.\n\n"
+        "- `business-info` — ton offre détaillée par défaut (persona agences-IA). "
+        "⚠️ Si ton persona actif est `nathan-elora`, charge `business-info-nathan-elora` à la place, jamais `business-info`.\n"
+        "- `business-info-nathan-elora` — ton offre détaillée SPÉCIFIQUE au persona `nathan-elora` (site vitrine pleine propriété).\n\n"
         ""
         "10 LIVRES DE PERSUASION (références génériques) :\n"
         "cialdini-influence, cialdini-presuasion, voss-never-split, carnegie-win-friends, "
@@ -891,3 +897,4 @@ async def relance(req: RelanceRequest):
         decision=etat.decision, porte=etat.porte, messages=messages, etat=etat,
         raw_write=raw, cost_usd=cost_usd, duration_ms=duration_ms,
     )
+
