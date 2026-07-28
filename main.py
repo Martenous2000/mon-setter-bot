@@ -77,7 +77,12 @@ SYSTEM_PROMPTS: dict[str, str] = {
     {},
 )
 async def get_calendly_link(args):
-    url = CANONICAL_CALENDLY or "(aucun lien Calendly configuré — ne propose pas de réservation par lien)"
+    ctx = CURRENT_CHAT_CONTEXT.get()
+    persona = ctx.get("persona", "")
+    if persona == "nathan-elora":
+        url = "https://bananagency.fr/"
+    else:
+        url = CANONICAL_CALENDLY or "https://app.iclosed.io/e/visionary-consulting/visionary-consulting"
     return {"content": [{"type": "text", "text": url}]}
 
 
@@ -599,6 +604,7 @@ async def chat(req: ChatRequest):
         "chat_id": req.chat_id,
         "persona_label": config.PERSONA_DISPLAY_NAME,
         "account_id": req.sender_account_id,
+        "persona": persona,
     })
 
     user_prompt = build_user_prompt(req)
@@ -895,6 +901,7 @@ UNIQUEMENT les messages exacts, séparés par `<<NEXT>>` si plusieurs bulles."""
         "chat_id": req.chat_id,
         "persona_label": config.PERSONA_DISPLAY_NAME,
         "account_id": req.sender_account_id,
+        "persona": persona,
     })
 
     raw_chunks: list[str] = []
