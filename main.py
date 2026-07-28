@@ -478,6 +478,19 @@ def capitalize_sentences(text: str) -> str:
     return out
 
 
+def enforce_space_after_punctuation(text: str) -> str:
+    """Force un espace apres ! et ? quand colles directement au mot suivant.
+
+    Filet de securite deterministe : le prompt demande deja cette regle au modele,
+    mais un LLM peut l'oublier occasionnellement — cette fonction garantit le resultat.
+    """
+    if not text:
+        return text
+    # "!" ou "?" suivi immediatement d'une lettre/chiffre (pas d'espace, pas de fin de texte) -> insere un espace
+    out = re.sub(r"([!?])([A-Za-zÀ-ÿ0-9])", r"\1 \2", text)
+    return out
+
+
 def parse_final_text(text: str) -> tuple[list[str], bool, str]:
     text = text.strip()
     if not text:
@@ -496,7 +509,7 @@ def parse_final_text(text: str) -> tuple[list[str], bool, str]:
     parts = [p.strip() for p in text.split("<<NEXT>>") if p.strip()]
     if not parts:
         return [], True, "no_parsable_message"
-    parts = [capitalize_sentences(sanitize_human_style(p)) for p in parts]
+    parts = [capitalize_sentences(enforce_space_after_punctuation(sanitize_human_style(p))) for p in parts]
     parts = [p for p in parts if p]
     if not parts:
         return [], True, "no_parsable_message_after_sanitize"
