@@ -219,6 +219,54 @@ async def request_handover(args):
     return {"content": [{"type": "text", "text": f"HANDOVER_REQUESTED::{args.get('reason', 'unspecified')}"}]}
 
 
+@tool(
+    "notify_stuck_conversation",
+    (
+        "Alerte Martin sur Telegram QUAND un prospect insiste réellement (relance 2 fois ou plus, dans ses propres mots, "
+        "sur la même question ouverte ou la même demande concrète) et que tu n'as toujours pas de quoi lui répondre "
+        "correctement — ni via tes skills, ni via tes tools habituels (Calendly, créneaux, site, vidéo). "
+        "Exemple typique : il redemande une date précise ('bon du coup on se voit quand ?'), ou insiste sur un point "
+        "concret auquel tu n'as pas de réponse ferme, et ce n'est PAS un simple silence de sa part — c'est une vraie "
+        "insistance perçue. N'utilise PAS ce tool pour une première question ouverte normale (tu as le temps de répondre "
+        "naturellement) — uniquement quand tu sens toi-même que ça devient vraiment insistant et que tu bloques. "
+        "Continue la conversation normalement après l'alerte (une phrase qui accuse réception, jamais un blanc) — ce n'est "
+        "pas un handover complet, juste une alerte envoyée en parallèle. "
+        "prospect_name = nom du prospect. profile_url = URL profil LinkedIn si visible (sinon vide). "
+        "question = la question/demande précise sur laquelle il insiste, dans ses mots. "
+        "why_stuck = en quelques mots, pourquoi tu n'as pas la réponse."
+    ),
+    {"prospect_name": str, "profile_url": str, "question": str, "why_stuck": str},
+)
+async def notify_stuck_conversation(args):
+    prospect_name = (args.get("prospect_name") or "un prospect").strip()
+    profile_url = (args.get("profile_url") or "").strip()
+    question = (args.get("question") or "non précisée").strip()
+    why_stuck = (args.get("why_stuck") or "non précisé").strip()
+    ctx = CURRENT_CHAT_CONTEXT.get()
+    persona_label = ctx.get("persona_label", config.PERSONA_DISPLAY_NAME)
+    chat_id = ctx.get("chat_id", "")
+    account_id = ctx.get("account_id", "")
+    text = (
+        f"🚨 Prospect insistant ({persona_label})\n"
+        f"Prospect : {prospect_name}\n"
+        f"Profil LinkedIn : {profile_url or 'inconnu'}\n"
+        f"Chat ID : {chat_id or 'inconnu'}\n"
+        f"Compte Unipile : {account_id or 'inconnu'}\n"
+        f"Insiste sur : {question}\n"
+        f"Pourquoi je bloque : {why_stuck}\n"
+        f"Il relance plusieurs fois sans réponse satisfaisante — regarde directement la conversation."
+    )
+    if TELEGRAM_ALERT_BOT_TOKEN and TELEGRAM_ALERT_CHAT_ID:
+        try:
+            url = f"https://api.telegram.org/bot{TELEGRAM_ALERT_BOT_TOKEN}/sendMessage"
+            payload = json.dumps({"chat_id": TELEGRAM_ALERT_CHAT_ID, "text": text}).encode("utf-8")
+            req_obj = urllib.request.Request(url, data=payload, headers={"Content-Type": "application/json"})
+            await asyncio.to_thread(urllib.request.urlopen, req_obj, timeout=10)
+        except Exception:
+            pass
+    return {"content": [{"type": "text", "text": "Alerte envoyée à Martin, il va regarder ça directement — continue la conversation normalement en attendant."}]}
+
+
 SETTER_MCP_SERVER = create_sdk_mcp_server(
     name="setter_tools",
     version="1.0.0",
@@ -229,6 +277,7 @@ SETTER_MCP_SERVER = create_sdk_mcp_server(
         get_website_link,
         load_skill,
         notify_booking_issue,
+        notify_stuck_conversation,
         request_handover,
     ],
 )
@@ -240,6 +289,7 @@ ALLOWED_TOOLS = [
     "mcp__setter_tools__get_website_link",
     "mcp__setter_tools__load_skill",
     "mcp__setter_tools__notify_booking_issue",
+    "mcp__setter_tools__notify_stuck_conversation",
     "mcp__setter_tools__request_handover",
 ]
 
@@ -478,19 +528,6 @@ def capitalize_sentences(text: str) -> str:
     return out
 
 
-def enforce_space_after_punctuation(text: str) -> str:
-    """Force un espace apres ! et ? quand colles directement au mot suivant.
-
-    Filet de securite deterministe : le prompt demande deja cette regle au modele,
-    mais un LLM peut l'oublier occasionnellement — cette fonction garantit le resultat.
-    """
-    if not text:
-        return text
-    # "!" ou "?" suivi immediatement d'une lettre/chiffre (pas d'espace, pas de fin de texte) -> insere un espace
-    out = re.sub(r"([!?])([A-Za-zÀ-ÿ0-9])", r"\1 \2", text)
-    return out
-
-
 def parse_final_text(text: str) -> tuple[list[str], bool, str]:
     text = text.strip()
     if not text:
@@ -509,7 +546,7 @@ def parse_final_text(text: str) -> tuple[list[str], bool, str]:
     parts = [p.strip() for p in text.split("<<NEXT>>") if p.strip()]
     if not parts:
         return [], True, "no_parsable_message"
-    parts = [capitalize_sentences(enforce_space_after_punctuation(sanitize_human_style(p))) for p in parts]
+    parts = [capitalize_sentences(sanitize_human_style(p)) for p in parts]
     parts = [p for p in parts if p]
     if not parts:
         return [], True, "no_parsable_message_after_sanitize"
