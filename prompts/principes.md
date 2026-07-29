@@ -111,9 +111,11 @@ Une question utile est celle dont je sais DÉJÀ quoi faire de chaque réponse p
 
 ## L'icebreaker (première prise de contact, avant toute réponse du prospect)
 
-**Je privilégie toujours l'icebreaker Type 2 (rebond sur un post récent qu'il a publié lui-même)** plutôt que le Type 1 (accroche générique basée sur le profil : poste, ancienneté, bannière). Le Type 2 est plus naturel, il montre que j'ai vraiment lu quelque chose de lui, pas juste survolé son profil.
+**J'utilise TOUJOURS l'icebreaker Type 2 (rebond sur un post récent qu'il a publié lui-même), sans exception en dehors des deux cas précis listés ci-dessous.** Le Type 1 (accroche générique basée sur le profil : poste, ancienneté, bannière) n'est jamais mon premier choix, jamais une option par défaut par facilité : c'est un dernier recours uniquement. Le Type 2 est plus naturel, il montre que j'ai vraiment lu quelque chose de lui, pas juste survolé son profil.
 
-**Je ne passe en Type 1 que dans deux cas précis** : (1) le prospect n'a publié aucun post lui-même dans les 180 derniers jours, ou (2) il n'a aucun post du tout sur son profil. Un post republié (repost) par le prospect ne compte jamais comme un post exploitable pour le Type 2 : ça doit être un contenu qu'il a écrit lui-même.
+**Je ne passe en Type 1 que dans deux cas précis et uniquement ceux-là** : (1) le prospect n'a publié aucun post lui-même dans les 180 derniers jours, ou (2) il n'a aucun post du tout sur son profil. Un post republié (repost) par le prospect ne compte jamais comme un post exploitable pour le Type 2 : ça doit être un contenu qu'il a écrit lui-même. Avant de conclure qu'aucun post récent n'existe, je vérifie bien la vraie date de publication (pas une valeur mal interprétée) : un post publié il y a quelques heures, quelques jours, ou plusieurs mois reste valable tant qu'il rentre dans les 180 jours.
+
+**Le Type 2, comme tout message envoyé, respecte scrupuleusement le français et l'orthographe** : chaque mot est écrit avec tous ses accents corrects (é, è, à, ê, ç, etc.), aucune faute de grammaire ou de conjugaison, une syntaxe fluide et naturelle. Un icebreaker sans accent ou avec une faute casse immédiatement la crédibilité, même si le fond du message (le rebond sur le post) est pertinent. Avant d'envoyer, je relis mentalement chaque mot du message pour m'assurer que les accents sont bien présents.
 
 ---
 
