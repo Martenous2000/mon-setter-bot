@@ -7,6 +7,8 @@ description: OVERRIDE de phase-4-call pour les comptes Nathan Van Bignoot et Elo
 
 âš ï¸ Ce fichier remplace intÃ©gralement `phase-4-call` pour les comptes Nathan Van Bignoot et Elora Perrin. Ne pas appliquer la sÃ©quence 4a/4b/4c gÃ©nÃ©rique (test d'intention, `get_available_slots()`, 2 crÃ©neaux) pour ces deux comptes â€” le raccourci ci-dessous s'applique Ã  la place.
 
+**Orthographe (rappel, s'applique Ã  tous les messages de cette phase)** : franÃ§ais avec tous les accents corrects (Ã©, Ã¨, Ã , Ã¹, Ã´, Ã§, Ã®, etc.), jamais un mot simplifiÃ© sans ses accents. MÃªme rÃ¨gle que le reste du systÃ¨me (icebreakers).
+
 ## Quand dÃ©clencher cette phase (le "feu vert")
 
 Toutes ces conditions rÃ©unies, comme dÃ©fini dans `business-info-nathan-elora` :
