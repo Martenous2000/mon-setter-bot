@@ -534,14 +534,14 @@ def capitalize_sentences(text: str) -> str:
 
 
 def enforce_space_after_punctuation(text: str) -> str:
-    """Force un espace apres ! et ? quand colles directement au mot suivant.
+    """Force un espace apres !, ? ou : quand colles directement au mot suivant.
 
     Filet de securite deterministe : le prompt demande deja cette regle au modele,
     mais un LLM peut l'oublier occasionnellement — cette fonction garantit le resultat.
     """
     if not text:
         return text
-    out = re.sub(r"([!?])([A-Za-zÀ-ÿ0-9])", r"\1 \2", text)
+    out = re.sub(r"([!?:])([A-Za-zÀ-ÿ0-9])", r"\1 \2", text)
     return out
 
 
