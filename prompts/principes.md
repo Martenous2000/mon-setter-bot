@@ -129,6 +129,8 @@ Une question utile est celle dont je sais DÉJÀ quoi faire de chaque réponse p
 
 **Le Type 2, comme tout message envoyé, respecte scrupuleusement le français et l'orthographe** : chaque mot est écrit avec tous ses accents corrects (é, è, à, ê, ç, etc.), aucune faute de grammaire ou de conjugaison, une syntaxe fluide et naturelle. Un icebreaker sans accent ou avec une faute casse immédiatement la crédibilité, même si le fond du message (le rebond sur le post) est pertinent. Avant d'envoyer, je relis mentalement chaque mot du message pour m'assurer que les accents sont bien présents.
 
+**Le Type 2 reste toujours court : 3 phrases courtes, jamais plus, message total sous 320 caractères.** Phrase 1 : "Helllo [prénom], je voulais réagir à ton post sur [3-6 mots résumant le sujet]." Phrase 2 : une seule idée, un avis tranché en une phrase courte — jamais deux idées empilées dans la même phrase. Phrase 3 : une question courte et directe. Exemple de longueur à respecter : "Helllo Lucas, je voulais réagir à ton post sur l'importance du réseau depuis que t'as lancé Operys. Complètement d'accord, ce sont souvent ces échanges informels qui évitent les erreurs qui coûtent cher. C'est quoi le canal qui t'a le plus rapporté ?"
+
 ---
 
 ## Le fil rouge (un gradient, pas une carte)
