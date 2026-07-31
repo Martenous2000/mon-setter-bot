@@ -20,6 +20,7 @@ from claude_agent_sdk import (
 )
 from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException
+from fastapi.responses import HTMLResponse
 from pydantic import BaseModel, Field
 
 import calendar_utils
@@ -597,6 +598,14 @@ async def root():
         "max_turns": MAX_TURNS,
         "relance_prompts_chars": {"quand-relancer": len(QUAND_RELANCER), "relancer": len(RELANCER)},
     }
+
+
+EDIT_MINIAPP_HTML = (Path(__file__).parent / "static" / "edit_miniapp.html").read_text(encoding="utf-8")
+
+
+@app.get("/telegram/edit", response_class=HTMLResponse)
+async def telegram_edit_miniapp():
+    return EDIT_MINIAPP_HTML
 
 
 @app.post("/chat", response_model=ChatResponse)
