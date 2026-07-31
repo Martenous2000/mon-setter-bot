@@ -666,7 +666,7 @@
         "url": "={{ $('Set Keys').item.json['Railway Brain URL'] }}/chat",
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={{ JSON.stringify({ history: (($('Normalize Webhook').item.json.history || []).map(m => ({ role: m.isMe ? 'me' : 'prospect', text: m.text || '' }))), last_message: ($('Normalize Webhook').item.json.lastMessage || ''), lead_profile: ($('Set Details').item.json.LeadDetails || ''), agent_persona: 'me', chat_id: ($('Normalize Webhook').item.json.chatId || ''), sender_account_id: ($('Set Keys').item.json['Unipile Account ID'] || '') }) }}",
+        "jsonBody": "={{ JSON.stringify({ history: (($('Normalize Webhook').item.json.history || []).map(m => ({ role: m.isMe ? 'me' : 'prospect', text: m.text || '' }))), last_message: ($('Normalize Webhook').item.json.lastMessage || ''), lead_profile: ($('Set Details').item.json.LeadDetails || ''), agent_persona: 'me', chat_id: ($('Normalize Webhook').item.json.chatId || ''), sender_account_id: ($('Set Keys').item.json['Unipile Account ID'] || ''), attendee_provider_id: ($('Normalize Webhook').item.json.senderProviderId || '') }) }}",
         "options": {
           "response": {
             "response": {
