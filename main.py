@@ -81,7 +81,7 @@ async def get_calendly_link(args):
     ctx = CURRENT_CHAT_CONTEXT.get()
     persona = ctx.get("persona", "")
     if persona == "nathan-elora":
-        url = "https://bananagency.fr/"
+        url = "https://calendly.com/nathan-vanbignoot-bananagency/30mi"
     else:
         url = CANONICAL_CALENDLY or "https://app.iclosed.io/e/visionary-consulting/visionary-consulting"
     return {"content": [{"type": "text", "text": url}]}
