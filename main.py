@@ -520,9 +520,10 @@ def sanitize_human_style(text: str) -> str:
     out = re.sub(r"\s+-\s+", ", ", out)
     while "  " in out:
         out = out.replace("  ", " ")
-    out = out.replace(" :", ":").replace(" ;", ";")
+    out = out.replace(" ;", ";")
     out = out.replace(" ,", ",").replace(",,", ",")
-    out = re.sub(r"\s+([.,!?])", r"\1", out)
+    # Typographie française : "?" et "!" gardent toujours une espace avant, jamais collés au mot précédent.
+    out = re.sub(r"\s*([!?])", r" \1", out)
     return out.strip()
 
 
