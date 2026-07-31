@@ -282,6 +282,125 @@ async def notify_stuck_conversation(args):
     return {"content": [{"type": "text", "text": "Alerte envoyée à Martin, il va regarder ça directement — continue la conversation normalement en attendant."}]}
 
 
+# ============================================================================
+# FILTRES DURS PRÉ-LLM — vérifications déterministes exécutées AVANT tout appel
+# au modèle. Si un filtre matche, on ne répond RIEN (silence, pas de log de
+# conversation active). Ne jamais déplacer ces règles dans un prompt texte :
+# elles doivent être garanties par le code, pas par le comportement du LLM.
+# ============================================================================
+
+# --- Règle 1 : blacklist de contacts personnels sur le compte Nathan ---------
+# Compte Unipile "nathan-elora" utilisé par Nathan Van Bignoot pour ses propres
+# contacts perso (pas des prospects) — ne jamais répondre à ces provider_id,
+# sur ce compte précis, tant que Martin ne lève pas le blocage explicitement.
+NATHAN_ACCOUNT_ID = "kM4SHffNTGW7DNoIjQLayw"
+NATHAN_BLACKLIST_PROVIDER_IDS: set[str] = {
+    "ACoAAGdttmoBgMCYXKg3JShckpqSDoc0qdFJj-M",  # Lucas Zerbin
+    "ACoAADNTOSQBgD3E6UyITIC-QQxptGS9CJTK_aE",  # Rachid Laichaoui
+    "ACoAACh1CHYBcnZ7gOlbzBjW8P5eO_HRVg8T-6c",  # Corentin Cailleau
+    "ACoAAAWQ7e8B4K473uhEn3aU2RV5aRBFbweIo10",  # Fabian Gamma
+    "ACoAABOgrtQBYBnLRwv8H_nCOBj-MJhIJPmt6H4",  # Valérie Passeport
+    "ACoAAEzQHl0BX_t0wxhSq88WOJ1HRc9yTKDNcGY",  # Mehdi Ben El Ghali
+    # Mélanie Gross : provider_id non résolu avec certitude, volontairement absent
+    # (ne jamais bloquer un ID deviné — signaler et attendre confirmation).
+    "ACoAAETzZj4Bv89dU5OC0j-md-HiXvpN-5oYvGM",  # Nicolas Donat
+    "ACoAADiHjUAB83Igs8CgBe9qYSXl0q8NPxk5J5w",  # Catherine Gouy (homonyme 1)
+    "ACoAAFe8sgcBy7qvaDBr_MIwhMAM-Haatfuhzh0",  # Catherine Gouy (homonyme 2)
+    "ACoAABX7yIQBk111VkvbIq-YzWZqchbkGxVglrU",  # Léa Kleindienst (homonyme 1)
+    "ACoAAFe0F8AB1dUHqSDKc8sUqa3-DzzpdV6cczw",  # Léa Kleindienst (homonyme 2)
+    "ACoAAGkYW3MBkjmL8bVW79dsZ0rjD6SMFDdmwws",  # Léa Kleindienst (homonyme 3)
+    "ACoAABnen88BAqKGwo5AI9DjVj-BakiQtxbwWxs",  # Alexandre Faia
+    "ACoAAAnrgkwBUJIzdkJUxUstt8iN60lggkgN1us",  # Mélanie Schoeny
+}
+
+
+def is_nathan_blacklisted(account_id: str, attendee_provider_id: str) -> bool:
+    if account_id != NATHAN_ACCOUNT_ID:
+        return False
+    return bool(attendee_provider_id) and attendee_provider_id in NATHAN_BLACKLIST_PROVIDER_IDS
+
+
+# --- Règle 2 : Elora ne répond qu'aux relations ajoutées après le 28/07/2026 -
+ELORA_ACCOUNT_ID = "6NPeF8cUS0qBfaRN8jyCjQ"
+ELORA_RELATION_CUTOFF = datetime(2026, 7, 28, tzinfo=timezone.utc)
+
+UNIPILE_DSN = os.getenv("UNIPILE_DSN", "").rstrip("/")
+UNIPILE_API_KEY = os.getenv("UNIPILE_API_KEY", "")
+
+
+def _parse_unipile_datetime(value: str | None) -> datetime | None:
+    if not value:
+        return None
+    try:
+        v = value.replace("Z", "+00:00")
+        dt = datetime.fromisoformat(v)
+        if dt.tzinfo is None:
+            dt = dt.replace(tzinfo=timezone.utc)
+        return dt
+    except Exception:
+        return None
+
+
+async def get_relation_created_at(account_id: str, attendee_provider_id: str) -> datetime | None:
+    """Récupère la date de mise en relation LinkedIn avec ce contact précis.
+
+    Utilise le endpoint Unipile "relations" filtré par account_id, en cherchant
+    le contact par son provider_id. Unipile ne propose pas de lookup direct
+    relation-par-member_id — on interroge donc l'endpoint relations avec un
+    filtre côté requête si disponible, avec repli sur une pagination bornée
+    (on s'arrête dès qu'on trouve le contact, jamais toute la liste).
+    """
+    if not UNIPILE_DSN or not UNIPILE_API_KEY:
+        return None
+
+    def _fetch() -> datetime | None:
+        cursor = None
+        for _ in range(50):  # borne dure : jamais plus de 50 pages (5000 relations)
+            url = f"{UNIPILE_DSN}/api/v1/users/relations?account_id={account_id}"
+            if cursor:
+                url += f"&cursor={cursor}"
+            req_obj = urllib.request.Request(
+                url,
+                headers={"X-API-KEY": UNIPILE_API_KEY, "accept": "application/json"},
+            )
+            try:
+                with urllib.request.urlopen(req_obj, timeout=15) as resp:
+                    data = json.loads(resp.read().decode("utf-8"))
+            except Exception:
+                return None
+            items = data.get("items", []) if isinstance(data, dict) else []
+            for item in items:
+                item_provider_id = str(
+                    item.get("member_id") or item.get("provider_id") or item.get("id") or ""
+                )
+                if item_provider_id == attendee_provider_id:
+                    return _parse_unipile_datetime(
+                        item.get("created_at") or item.get("connected_at")
+                    )
+            cursor = data.get("cursor") if isinstance(data, dict) else None
+            if not cursor:
+                return None
+        return None
+
+    return await asyncio.to_thread(_fetch)
+
+
+async def elora_relation_too_old(account_id: str, attendee_provider_id: str) -> bool:
+    """True si on doit rester silencieux : relation Elora antérieure au seuil.
+
+    Fail-safe : si la date est introuvable (API down, contact non trouvé,
+    clé Unipile absente), on NE bloque PAS — on laisse le bot répondre plutôt
+    que de risquer un faux silence sur un vrai prospect. Le blocage ne
+    s'applique que quand la date est connue avec certitude et antérieure au seuil.
+    """
+    if account_id != ELORA_ACCOUNT_ID or not attendee_provider_id:
+        return False
+    created_at = await get_relation_created_at(account_id, attendee_provider_id)
+    if created_at is None:
+        return False
+    return created_at < ELORA_RELATION_CUTOFF
+
+
 SETTER_MCP_SERVER = create_sdk_mcp_server(
     name="setter_tools",
     version="1.0.0",
@@ -324,6 +443,7 @@ class ChatRequest(BaseModel):
     agent_persona: str = DEFAULT_PERSONA
     chat_id: str = ""
     sender_account_id: str = ""
+    attendee_provider_id: str = ""
 
 
 class ChatResponse(BaseModel):
@@ -611,6 +731,12 @@ async def telegram_edit_miniapp():
 
 @app.post("/chat", response_model=ChatResponse)
 async def chat(req: ChatRequest):
+    # --- Filtres durs pré-LLM : silence total, return early, rien n'est loggé ---
+    if is_nathan_blacklisted(req.sender_account_id, req.attendee_provider_id):
+        return ChatResponse(messages=[], handover=False, raw="", tools_called=[])
+    if await elora_relation_too_old(req.sender_account_id, req.attendee_provider_id):
+        return ChatResponse(messages=[], handover=False, raw="", tools_called=[])
+
     if not os.getenv("ANTHROPIC_API_KEY"):
         raise HTTPException(status_code=500, detail="ANTHROPIC_API_KEY non configurée")
 
