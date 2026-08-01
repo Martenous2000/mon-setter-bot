@@ -612,6 +612,20 @@ async def telegram_edit_miniapp():
 
 UNIPILE_DSN = "https://api43.unipile.com:17313"
 UNIPILE_ACCOUNT_KEY = "4ZgMv56/.s4NNbHaZRflUeFz92sMBZhSsY5OdCvTnzufcKpLkhwo="
+TELEGRAM_VALIDATION_CHAT_ID = "8723535937"
+
+# Un bot Telegram dédié par compte (validation human-in-the-loop) — même mapping que les routers n8n.
+TELEGRAM_BOT_TOKEN_BY_ACCOUNT = {
+    "martin": "8731294695:AAGw6i-_AbGMTDiZEbuoUFmEthHP9SLEo2w",
+    "jeanpierre": "8849108958:AAFdLERIDkvU3aGGWl0VhcWnezQn4Od0xfs",
+    "jules": "8866841683:AAGGiA9EXeV4-IFJxjEPGRfiEFe2pbFMHmU",
+    "thomas": "8833621341:AAGCRIG7g6Kc2nrWY-CHj9p45sZMLVap0pE",
+    "theo": "8906115707:AAE6aPwnTK1PvqgkpmVZpFAX1PxAYjipF4g",
+    "elora": "8977591157:AAF7CIxfXxuIT39Bbxfqs7tG6sAeZSHqKNM",
+    "nathan": "8995926182:AAHxIFlLXytUTPIr4kO9fijNbhRvFffeFXo",
+    "keanu": "8731294695:AAGw6i-_AbGMTDiZEbuoUFmEthHP9SLEo2w",
+    "lorenzo": "8731294695:AAGw6i-_AbGMTDiZEbuoUFmEthHP9SLEo2w",
+}
 
 
 class EditSubmitRequest(BaseModel):
@@ -620,11 +634,30 @@ class EditSubmitRequest(BaseModel):
     finalText: str
 
 
+async def send_telegram_confirmation(account_key: str, ok: bool, error: str = "") -> None:
+    bot_token = TELEGRAM_BOT_TOKEN_BY_ACCOUNT.get(account_key)
+    if not bot_token:
+        return
+    text = (
+        f"✅ Réponse envoyée sur LinkedIn (compte : {account_key})."
+        if ok
+        else f"❌ Échec de l'envoi sur LinkedIn (compte : {account_key}) : {error}"
+    )
+    try:
+        url = f"https://api.telegram.org/bot{bot_token}/sendMessage"
+        payload = json.dumps({"chat_id": TELEGRAM_VALIDATION_CHAT_ID, "text": text}).encode("utf-8")
+        request_obj = urllib.request.Request(url, data=payload, headers={"Content-Type": "application/json"})
+        await asyncio.to_thread(urllib.request.urlopen, request_obj, timeout=10)
+    except Exception:
+        pass
+
+
 @app.post("/telegram/edit-submit")
 async def telegram_edit_submit(req: EditSubmitRequest):
     """Envoi direct sur LinkedIn depuis le Mini App Telegram (bouton Envoyer),
     en contournant Telegram.WebApp.sendData() qui a un support incomplet sur Desktop."""
     if not req.chatId or not req.finalText.strip():
+        await send_telegram_confirmation(req.accountKey, False, "chatId ou finalText manquant")
         return {"ok": False, "error": "chatId ou finalText manquant"}
     try:
         url = f"{UNIPILE_DSN}/api/v1/chats/{req.chatId}/messages"
@@ -636,9 +669,12 @@ async def telegram_edit_submit(req: EditSubmitRequest):
             method="POST",
         )
         await asyncio.to_thread(urllib.request.urlopen, request_obj, timeout=15)
+        await send_telegram_confirmation(req.accountKey, True)
         return {"ok": True}
     except Exception as e:
-        return {"ok": False, "error": str(e)[:300]}
+        err = str(e)[:300]
+        await send_telegram_confirmation(req.accountKey, False, err)
+        return {"ok": False, "error": err}
 
 
 @app.post("/chat", response_model=ChatResponse)
