@@ -43,10 +43,25 @@
 
   tg.MainButton.setText('Envoyer');
   tg.MainButton.show();
-  tg.MainButton.onClick(() => {
-    const payload = JSON.stringify({ accountKey, chatId, finalText: textarea.value });
-    tg.sendData(payload);
-    tg.close();
+  tg.MainButton.onClick(async () => {
+    tg.MainButton.showProgress();
+    try {
+      const resp = await fetch('/telegram/edit-submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ accountKey, chatId, finalText: textarea.value }),
+      });
+      const data = await resp.json();
+      if (data.ok) {
+        tg.close();
+      } else {
+        tg.MainButton.hideProgress();
+        alert('Erreur envoi : ' + (data.error || 'inconnue'));
+      }
+    } catch (e) {
+      tg.MainButton.hideProgress();
+      alert('Erreur reseau : ' + e.message);
+    }
   });
 </script>
 </body>
