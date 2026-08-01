@@ -610,6 +610,37 @@ async def telegram_edit_miniapp():
     return EDIT_MINIAPP_HTML
 
 
+UNIPILE_DSN = "https://api43.unipile.com:17313"
+UNIPILE_ACCOUNT_KEY = "4ZgMv56/.s4NNbHaZRflUeFz92sMBZhSsY5OdCvTnzufcKpLkhwo="
+
+
+class EditSubmitRequest(BaseModel):
+    accountKey: str
+    chatId: str
+    finalText: str
+
+
+@app.post("/telegram/edit-submit")
+async def telegram_edit_submit(req: EditSubmitRequest):
+    """Envoi direct sur LinkedIn depuis le Mini App Telegram (bouton Envoyer),
+    en contournant Telegram.WebApp.sendData() qui a un support incomplet sur Desktop."""
+    if not req.chatId or not req.finalText.strip():
+        return {"ok": False, "error": "chatId ou finalText manquant"}
+    try:
+        url = f"{UNIPILE_DSN}/api/v1/chats/{req.chatId}/messages"
+        payload = json.dumps({"text": req.finalText}).encode("utf-8")
+        request_obj = urllib.request.Request(
+            url,
+            data=payload,
+            headers={"X-API-KEY": UNIPILE_ACCOUNT_KEY, "Content-Type": "application/json"},
+            method="POST",
+        )
+        await asyncio.to_thread(urllib.request.urlopen, request_obj, timeout=15)
+        return {"ok": True}
+    except Exception as e:
+        return {"ok": False, "error": str(e)[:300]}
+
+
 @app.post("/chat", response_model=ChatResponse)
 async def chat(req: ChatRequest):
     if not os.getenv("ANTHROPIC_API_KEY"):
