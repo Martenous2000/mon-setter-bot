@@ -13,5 +13,9 @@ GITHUB_REPO = os.getenv("PILOT_GITHUB_REPO", "Martenous2000/mon-setter-bot")
 
 RAILWAY_TOKEN = os.getenv("PILOT_RAILWAY_TOKEN", "")
 RAILWAY_PROJECT_ID = os.getenv("PILOT_RAILWAY_PROJECT_ID", "")
+RAILWAY_MAIN_SERVICE_ID = os.getenv("PILOT_RAILWAY_MAIN_SERVICE_ID", "")
+
+UNIPILE_DSN = os.getenv("UNIPILE_DSN", "https://api43.unipile.com:17313")
+UNIPILE_API_KEY = os.getenv("PILOT_UNIPILE_API_KEY", "")
 
 MODEL = os.getenv("CLAUDE_MODEL", "claude-sonnet-4-6")
