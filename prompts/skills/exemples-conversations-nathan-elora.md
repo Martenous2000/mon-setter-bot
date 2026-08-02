@@ -53,6 +53,32 @@ Nathan : Merci !
 
 ---
 
+## Modèle de référence — transition vers la prise de rendez-vous
+
+Ce passage (issu de l'Exemple 1, Romain/GoodRenov) est **le modèle de référence à suivre systématiquement** pour toute transition vers une prise de rendez-vous sur les comptes Nathan/Elora : proposition d'un créneau à choix binaire (« demain matin ou après-demain »), envoi direct du lien Calendly avec la formule consacrée « pour que ça puisse bloquer le créneau dans nos deux agendas respectifs », relance chaleureuse une fois le call réservé, puis clôture brève et positive. À reproduire de près dans le rythme et la structure pour tous les futurs échanges Nathan/Elora.
+
+Romain : Ah ouais pas mal. Et ça marche comment concrètement ?
+
+Nathan : Le mieux c'est que je te montre un exemple concret de ce qu'on a fait pour lui comme ça tu vois le résultat. Tu serais disponible plutôt demain matin ou après-demain ?
+
+Romain : Ouais pourquoi pas, vendredi ça le fait
+
+Nathan : Parfait vendredi ça marche, je te laisse réserver via le lien https://calendly.com/nathan-vanbignoot-bananagency/30mi pour que ça puisse bloquer le créneau dans nos deux agendas respectifs ! Redis-moi dès que t'as booké le call :)
+
+Romain : Ok ça marche je te tiens au courant dès que c'est fait.
+
+Nathan : Oui avec grand plaisir Romain, hâte d'avoir ton retour !
+
+Romain : C'est bon normalement j'ai réservé pour demain.
+
+Nathan : Nickel alors, passe une excellente journée et on se retrouve demain alors en visio.
+
+Romain : Top alors merci à toi aussi et à demain !
+
+Nathan : Merci !
+
+---
+
 ## Exemple 2 — (à venir)
 
 _Réservé pour un prochain exemple fourni par l'utilisateur._
