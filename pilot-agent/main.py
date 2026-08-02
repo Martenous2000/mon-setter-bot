@@ -30,7 +30,7 @@ load_dotenv()
 
 app = FastAPI(title="Pilot Agent")
 
-PRINCIPLES = (Path(__file__).parent / "pilot_principles.md").read_text(encoding="utf-8")
+PRINCIPLES = (Path(__file__).parent / "principles.md").read_text(encoding="utf-8")
 
 # Etat de conversation en memoire — une action proposee attend confirmation avant execution.
 # Cle = chat_id Telegram, valeur = dict decrivant l'action en attente.
