@@ -24,7 +24,7 @@ from claude_agent_sdk import (
 from dotenv import load_dotenv
 from fastapi import FastAPI, Request
 
-import pilot_config as config
+import config
 
 load_dotenv()
 
