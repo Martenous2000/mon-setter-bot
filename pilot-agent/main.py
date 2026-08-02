@@ -268,13 +268,17 @@ async def run_agent(chat_id: str, user_text: str) -> None:
 
     raw_chunks: list[str] = []
 
-    async with ClaudeSDKClient(options=options) as client:
-        await client.query(user_text)
-        async for msg in client.receive_response():
-            if isinstance(msg, AssistantMessage):
-                for block in msg.content:
-                    if isinstance(block, TextBlock):
-                        raw_chunks.append(block.text)
+    try:
+        async with ClaudeSDKClient(options=options) as client:
+            await client.query(user_text)
+            async for msg in client.receive_response():
+                if isinstance(msg, AssistantMessage):
+                    for block in msg.content:
+                        if isinstance(block, TextBlock):
+                            raw_chunks.append(block.text)
+    except Exception as e:
+        await send_telegram_message(chat_id, f"❌ Erreur interne : {type(e).__name__}: {str(e)[:300]}")
+        return
 
     raw = "\n".join(raw_chunks).strip()
     if not raw:
@@ -293,7 +297,9 @@ async def telegram_pilot_webhook(request: Request):
         if chat_id != config.AUTHORIZED_CHAT_ID:
             return {"ok": True}
         if text:
-            await run_agent(chat_id, text)
+            # Reponse HTTP immediate a Telegram — l'agent tourne en tache de fond,
+            # car il peut prendre bien plus longtemps que le timeout webhook de Telegram.
+            asyncio.create_task(run_agent(chat_id, text))
         return {"ok": True}
 
     return {"ok": True}
