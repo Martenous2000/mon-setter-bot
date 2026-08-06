@@ -610,8 +610,8 @@ async def telegram_edit_miniapp():
     return EDIT_MINIAPP_HTML
 
 
-UNIPILE_DSN = "https://api43.unipile.com:17313"
-UNIPILE_ACCOUNT_KEY = "4ZgMv56/.s4NNbHaZRflUeFz92sMBZhSsY5OdCvTnzufcKpLkhwo="
+UNIPILE_DSN = "https://api41.unipile.com:17181"
+UNIPILE_ACCOUNT_KEY = "xPNfdXXM.26GjIiJrj1a59WRTEG9fgtwHUbF4/w38NWI/hGtOmyQ="
 TELEGRAM_VALIDATION_CHAT_ID = "8723535937"
 
 # Un bot Telegram dédié par compte (validation human-in-the-loop) — même mapping que les routers n8n.
