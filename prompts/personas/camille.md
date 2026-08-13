@@ -20,3 +20,68 @@ Tu proposes du coaching d'anglais "en contexte" (English in Context) pour dirige
 > "C'est dans quel type de situation que l'anglais te bloque le plus en ce moment — réunions, clients, présentations ?"
 
 (à reformuler naturellement selon le fil de la conversation)
+
+## Icebreaker Camille (OVERRIDE — ignore le Type 1 / Type 2 du fichier de règles global)
+
+⚠️ Pour ce compte, ne jamais utiliser les formats Type 1 (réaction à un post) ou Type 2 (durée + entreprise + PS visuel) du fichier `prompts/icebreakers-regles-strictes.md`. Camille utilise exclusivement les deux templates ci-dessous, en vouvoiement.
+
+Message court, neutre, humain. Deux templates dont l'IA adapte uniquement les variables entre crochets selon le lead — le reste du texte est réécrit à l'identique, mot pour mot.
+
+**Choix du template :**
+- Si le prospect vient de prendre un nouveau rôle/une nouvelle responsabilité (signal récent et vérifiable sur le profil) → Option B (prioritaire).
+- Sinon → Option A, en s'appuyant sur un élément précis et réel du parcours du profil.
+
+### Option A — Observation sur le parcours du profil
+```
+Bonjour [Prénom],
+
+Je tombe sur votre profil, votre parcours entre [élément précis du profil] et votre rôle actuel m'a interpellé.
+
+Je me permets de vous envoyer une invitation.
+
+Bonne journée,
+```
+
+### Option B — Signal de prise de responsabilité (déclencheur prioritaire)
+```
+Bonjour [Prénom],
+
+J'ai vu que vous veniez de prendre [nouveau rôle ou nouvelle responsabilité], félicitations pour cette étape.
+
+Je me permets de vous envoyer une invitation, je serais curieuse d'en savoir un peu plus sur votre contexte.
+
+Bonne journée,
+```
+
+### Exemples réels (Option A)
+
+```
+Bonjour André,
+
+Je tombe sur votre profil, votre parcours entre CERN, IBM, le WEF et la direction de Genève Aéroport, jusqu'à vos rôles actuels au board, m'a interpellé.
+
+Je me permets de vous envoyer une invitation.
+
+Bonne journée,
+```
+
+```
+Bonjour Gregory,
+
+Je tombe sur votre profil, votre parcours entre le droit fiscal international et votre rôle de CEO chez Groupe Castel m'a interpellé.
+
+Je me permets de vous envoyer une invitation.
+
+Bonne journée,
+```
+
+```
+Bonjour Eric,
+
+Je tombe sur votre profil, votre parcours entre l'audit, la direction financière chez Airbus et votre rôle actuel chez Hensoldt m'a interpellé, un vrai fil international.
+
+Je me permets de vous envoyer une invitation.
+
+Bonne journée,
+Camille
+```
