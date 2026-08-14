@@ -1,1 +1,382 @@
-{"updatedAt":"2026-07-31T15:27:39.802Z","createdAt":"2026-07-27T13:52:07.194Z","id":"SKFkjF6puzV8FgQC","name":"Prospection ICP - Scraping + Demandes de connexion (Nathan + Elora, BTP premium)","description":null,"active":true,"isArchived":false,"nodes":[{"id":"trigger-daily","name":"Déclencheur quotidien 8h","type":"n8n-nodes-base.scheduleTrigger","typeVersion":1.2,"position":[-2000,0],"parameters":{"rule":{"interval":[{"field":"cronExpression","expression":"2 8 * * *"}]}}},{"id":"setup-accounts","name":"Config 2 comptes (Nathan + Elora)","type":"n8n-nodes-base.code","typeVersion":2,"position":[-1780,0],"parameters":{"jsCode":"// Configuration des 2 comptes BTP premium avec leur account_id Unipile (serveur api43, a jour)\nconst accounts = [\n  { name: 'Nathan Van Bignoot', accountId: 'kM4SHffNTGW7DNoIjQLayw' },\n  { name: 'Elora Perrin', accountId: '6NPeF8cUS0qBfaRN8jyCjQ' }\n];\nreturn accounts.map(a => ({ json: a }));"}},{"id":"apify-scrape","name":"Scraper Apify (BTP premium via Google Maps)","type":"n8n-nodes-base.httpRequest","typeVersion":4.2,"position":[-1560,0],"parameters":{"method":"POST","sendHeaders":true,"headerParameters":{"parameters":[{"name":"Content-Type","value":"application/json"}]},"sendBody":true,"specifyBody":"json","jsonBody":"={{ JSON.stringify({ searchStringsArray: [\"installateur piscine France\", \"renovation energetique batiment France\", \"entreprise construction generale France\", \"installateur pompe a chaleur France\", \"paysagiste amenagement exterieur France\", \"entreprise couverture toiture France\", \"chauffagiste climatisation France\", \"menuiserie renovation France\"], locationQuery: \"France\", maxCrawledPlacesPerSearch: 25, language: \"fr\", skipClosedPlaces: true }) }}","url":"https://api.apify.com/v2/acts/compass~crawler-google-places/run-sync-get-dataset-items?token=apify_api_g6HEvtNX77aI6bbOoOKiQhvP6V5mbs323Y69","options":{"timeout":280000}},"notes":"CLE APIFY PROVISOIRE dans jsonBody/token - a remplacer des que l'utilisateur fournit la vraie cle dediee BTP premium. Actor: compass/crawler-google-places (Google Maps), pas de recherche LinkedIn directe car le persona BTP necessite de trouver l'entreprise puis le dirigeant.","onError":"continueRegularOutput"},{"id":"flatten-profiles","name":"Aplatir résultats + attacher compte cible","type":"n8n-nodes-base.code","typeVersion":2,"position":[-1340,0],"parameters":{"jsCode":"// Aplati les résultats Google Maps et attache le compte cible à chaque entreprise\nconst account = $('Config 2 comptes (Nathan + Elora)').item.json;\nconst items = $input.all();\nconst out = [];\nfor (const item of items) {\n  const places = Array.isArray(item.json) ? item.json : [item.json];\n  for (const p of places) {\n    if (!p || !p.title) continue;\n    out.push({ json: { ...p, targetAccountName: account.name, targetAccountId: account.accountId } });\n  }\n}\nreturn out;"}},{"id":"score-profiles","name":"Scorer ICP BTP premium (seuil >=60)","type":"n8n-nodes-base.code","typeVersion":2,"position":[-1120,0],"parameters":{"jsCode":"// Scoring ICP BTP premium sur 100 pts — critere principal = signal de CA 300-400k€+ (volume avis Google comme proxy)\n// Ne garde que score >= 60. Secteur: BTP/energie/sante non digitalise (piscines, renovation, construction generale, pompes a chaleur)\n// Note: ce scorer travaille sur les ENTREPRISES scrapees via Google Maps, pas directement sur des profils LinkedIn de dirigeants.\n// L'identification du dirigeant LinkedIn reste une etape manuelle/separee (recherche par nom d'entreprise) — ce node ne fait que qualifier l'entreprise.\n\nfunction scoreCompany(p) {\n  let score = 0;\n  const reviews = p.reviewsCount || 0;\n  const rating = p.totalScore || 0;\n  const hasWebsite = !!p.website;\n\n  // Signal CA (0-70 pts) — proxy = volume d'avis Google, calibre sur seuil 300-400k€\n  if (reviews >= 200) score += 70;\n  else if (reviews >= 100) score += 60;\n  else if (reviews >= 50) score += 50;\n  else if (reviews >= 20) score += 35;\n  else if (reviews >= 10) score += 20;\n  else score += 5;\n\n  // Qualite / serieux perçu (0-20 pts)\n  if (rating >= 4.5) score += 20;\n  else if (rating >= 4) score += 12;\n  else if (rating >= 3.5) score += 5;\n\n  // Presence d'un site web (0-10 pts) — necessaire pour la suite du process (pas de scraping d'obsolescence pour l'instant, critere assoupli)\n  if (hasWebsite) score += 10;\n\n  return Math.round(score);\n}\n\nconst items = $input.all();\nconst out = [];\nfor (const item of items) {\n  const p = item.json;\n  const score = scoreCompany(p);\n  if (score < 60) continue;\n  if (!p.website) continue; // critere obligatoire: un site doit exister sur le profil/l'entreprise\n\n  // CRITERE OBLIGATOIRE EXPLICITE : CA annuel estime >= 200k euros (proxy = volume d'avis Google).\n  // En dessous de ce seuil, l'entreprise est trop petite/recente pour l'offre (souvent une activite\n  // solo/tres jeune) -> exclusion, meme si le score pondere depasse 60.\n  const reviewsForCA = p.reviewsCount || 0;\n  const CA_MINIMUM_ANNUEL_ATTEINT = reviewsForCA >= 20;\n  if (!CA_MINIMUM_ANNUEL_ATTEINT) continue;\n  out.push({\n    json: {\n      companyName: p.title || '',\n      website: p.website || '',\n      address: p.address || '',\n      city: p.city || '',\n      category: p.categoryName || p.category || '',\n      reviewsCount: p.reviewsCount || 0,\n      rating: p.totalScore || 0,\n      score,\n      targetAccountName: p.targetAccountName,\n      targetAccountId: p.targetAccountId\n    }\n  });\n}\nreturn out;"}},{"parameters":{"jsCode":"const items = $input.all();\nconst byAccount = {};\nfor (const item of items) {\n  const acc = item.json.targetAccountId;\n  if (!byAccount[acc]) byAccount[acc] = [];\n  byAccount[acc].push(item.json);\n}\n\nconst parisNow = new Date(new Date().toLocaleString('en-US', { timeZone: 'Europe/Paris' }));\nconst endOfWindow = new Date(parisNow);\nendOfWindow.setHours(19, 0, 0, 0);\nconst msRemaining = Math.max(endOfWindow.getTime() - parisNow.getTime(), 0);\nconst runStartMs = Date.now();\n\nconst result = [];\nfor (const acc of Object.keys(byAccount)) {\n  const sorted = byAccount[acc].sort((a, b) => (b.score || 0) - (a.score || 0));\n  const picked = sorted.slice(0, 16);\n\n  // Etalement dynamique par compte (chaque compte a sa propre cadence sur 8h02-19h00 Paris),\n  // avec jitter +/-20% pour eviter un pattern parfaitement regulier.\n  const n = Math.max(picked.length, 1);\n  const baseIntervalMs = msRemaining / n;\n  let cursorMs = 0;\n  for (let idx = 0; idx < picked.length; idx++) {\n    const jitterFactor = 0.8 + Math.random() * 0.4;\n    cursorMs += baseIntervalMs * jitterFactor;\n    picked[idx]._waitSeconds = Math.min(Math.max(Math.round(cursorMs / 1000), 20), 39600);\n    picked[idx]._runStartMs = runStartMs;\n  }\n  result.push(...picked);\n}\nreturn result.map(j => ({ json: j }));\n"},"id":"dedup-ne-1785418996241","name":"Limiter 16/compte","type":"n8n-nodes-base.code","typeVersion":2,"position":[700,200]},{"parameters":{"batchSize":1,"options":{}},"id":"loop-ne-1785418996241","name":"Boucle 1 lead a la fois","type":"n8n-nodes-base.splitInBatches","typeVersion":3,"position":[900,200]},{"parameters":{"amount":"={{ Math.max(Math.round(($json._runStartMs + $json._waitSeconds*1000 - Date.now())/1000), 5) }}","unit":"seconds"},"id":"wait-ne-1785418996241","name":"Attente etalee jusqu a 19h","type":"n8n-nodes-base.wait","typeVersion":1.1,"position":[1100,150],"webhookId":"32c93f17-87ac-411a-98fc-29e5efd0904c"},{"parameters":{"jsCode":"const parisHour = parseInt(new Intl.DateTimeFormat('fr-FR', { timeZone: 'Europe/Paris', hour: 'numeric', hour12: false }).format(new Date()), 10);\nif (parisHour < 8 || parisHour >= 19) {\n  return [];\n}\nreturn [{ json: $input.item.json }];\n"},"id":"window-ne-1785418996241","name":"Vérifier fenêtre 8h-19h","type":"n8n-nodes-base.code","typeVersion":2,"position":[1300,150]},{"parameters":{"jsCode":"const lead = $input.item.json;\nconst key = \"<UNIPILE_API_KEY>\";\nconst base = \"https://api43.unipile.com:17313\";\ntry {\n  const resp = await this.helpers.httpRequest({\n    method: 'POST',\n    url: base + '/api/v1/linkedin/search',\n    qs: { account_id: lead.targetAccountId },\n    headers: { 'X-API-KEY': key, 'Content-Type': 'application/json' },\n    body: JSON.stringify({ api: 'classic', category: 'people', keywords: ((lead.companyName || '') + ' gerant dirigeant') }),\n    json: true,\n    timeout: 20000,\n  });\n  const items = resp.items || [];\n  if (!items.length) return [{ json: { ...lead, providerId: null, skip: true } }];\n  return [{ json: { ...lead, providerId: items[0].id, matchedName: items[0].name } }];\n} catch (e) {\n  return [{ json: { ...lead, providerId: null, skip: true } }];\n}"},"id":"search-ne-1785418996241","name":"Chercher le dirigeant (LinkedIn search)","type":"n8n-nodes-base.code","typeVersion":2,"position":[1500,150]},{"parameters":{"conditions":{"options":{"caseSensitive":true,"leftValue":"","typeValidation":"strict","version":2},"conditions":[{"id":"c1","leftValue":"={{ $json.skip }}","rightValue":true,"operator":{"type":"boolean","operation":"true","singleValue":true}}],"combinator":"and"},"options":{}},"id":"ifskip-ne-1785418996241","name":"IF Dirigeant trouve","type":"n8n-nodes-base.if","typeVersion":2.2,"position":[1700,150]},{"parameters":{"jsCode":"const key = \"<UNIPILE_API_KEY>\";\nconst base = \"https://api43.unipile.com:17313\";\nconst lead = $input.item.json;\nconst providerId = $json.providerId;\nconst accountId = $json.targetAccountId;\n\n// Codes typiques de quota/rate-limit LinkedIn releves par Unipile : 422 (cannot_resend_yet),\n// 429 (rate limit), 500 (erreur generique cote LinkedIn). On retente 2 fois avec backoff court\n// avant d'abandonner ce lead et de laisser le workflow continuer sur le suivant.\nconst RETRYABLE_STATUS = [422, 429, 500];\nconst MAX_ATTEMPTS = 3;\n\nlet lastError = null;\nlet sent = false;\n\nfor (let attempt = 1; attempt <= MAX_ATTEMPTS && !sent; attempt++) {\n  try {\n    await this.helpers.httpRequest({\n      method: 'POST',\n      url: base + '/api/v1/users/invite',\n      headers: { 'X-API-KEY': key, 'Content-Type': 'application/json' },\n      body: { provider_id: providerId, account_id: accountId },\n      json: true,\n    });\n    sent = true;\n  } catch (e) {\n    lastError = e;\n    const status = e.response?.statusCode || e.statusCode || e.status || 0;\n    const quotaLikely = RETRYABLE_STATUS.includes(status);\n    if (!quotaLikely || attempt === MAX_ATTEMPTS) break;\n    const backoffMs = attempt === 1 ? 15000 : 45000;\n    await new Promise(r => setTimeout(r, backoffMs));\n  }\n}\n\nreturn [{\n  json: {\n    ...lead,\n    _inviteSent: sent,\n    _inviteSkippedReason: sent ? null : ('quota_or_error_status_' + (lastError?.response?.statusCode || lastError?.statusCode || 'unknown')),\n  }\n}];"},"id":"send-ne-1785418996241","name":"Envoyer demande de connexion","type":"n8n-nodes-base.code","typeVersion":2,"position":[1900,100],"onError":"continueRegularOutput","alwaysOutputData":true}],"connections":{"Déclencheur quotidien 8h":{"main":[[{"node":"Config 2 comptes (Nathan + Elora)","type":"main","index":0}]]},"Config 2 comptes (Nathan + Elora)":{"main":[[{"node":"Scraper Apify (BTP premium via Google Maps)","type":"main","index":0}]]},"Scraper Apify (BTP premium via Google Maps)":{"main":[[{"node":"Aplatir résultats + attacher compte cible","type":"main","index":0}]]},"Aplatir résultats + attacher compte cible":{"main":[[{"node":"Scorer ICP BTP premium (seuil >=60)","type":"main","index":0}]]},"Scorer ICP BTP premium (seuil >=60)":{"main":[[{"node":"Limiter 16/compte","type":"main","index":0}]]},"Limiter 16/compte":{"main":[[{"node":"Boucle 1 lead a la fois","type":"main","index":0}]]},"Boucle 1 lead a la fois":{"main":[[],[{"node":"Attente etalee jusqu a 19h","type":"main","index":0}]]},"Chercher le dirigeant (LinkedIn search)":{"main":[[{"node":"IF Dirigeant trouve","type":"main","index":0}]]},"IF Dirigeant trouve":{"main":[[{"node":"Boucle 1 lead a la fois","type":"main","index":0}],[{"node":"Envoyer demande de connexion","type":"main","index":0}]]},"Envoyer demande de connexion":{"main":[[{"node":"Boucle 1 lead a la fois","type":"main","index":0}]]},"Attente etalee jusqu a 19h":{"main":[[{"node":"Vérifier fenêtre 8h-19h","type":"main","index":0}]]},"Vérifier fenêtre 8h-19h":{"main":[[{"node":"Chercher le dirigeant (LinkedIn search)","type":"main","index":0}]]}},"settings":{"executionOrder":"v1"},"staticData":{"node:Déclencheur quotidien 8h":{"recurrenceRules":[]}},"meta":null,"nodeGroups":[],"pinData":null,"versionId":"5a3f9856-1e77-4426-961f-6c12e118d70c","activeVersionId":"5a3f9856-1e77-4426-961f-6c12e118d70c","versionCounter":34,"triggerCount":1,"sourceWorkflowId":null,"shared":[{"updatedAt":"2026-07-27T13:52:07.197Z","createdAt":"2026-07-27T13:52:07.197Z","role":"workflow:owner","workflowId":"SKFkjF6puzV8FgQC","projectId":"H5AZlwnuZTfHJsuB","project":{"updatedAt":"2025-08-03T11:58:52.399Z","createdAt":"2025-08-03T11:56:55.924Z","id":"H5AZlwnuZTfHJsuB","name":"Martin Cuisinier <martenous2000@gmail.com>","type":"personal","icon":null,"description":null,"customTelemetryTags":[],"creatorId":"b5e20a11-dd40-42d2-97e5-d12f0e91399f"}}],"tags":[],"activeVersion":{"updatedAt":"2026-07-31T15:27:39.804Z","createdAt":"2026-07-31T15:27:39.804Z","versionId":"5a3f9856-1e77-4426-961f-6c12e118d70c","workflowId":"SKFkjF6puzV8FgQC","nodes":[{"id":"trigger-daily","name":"Déclencheur quotidien 8h","type":"n8n-nodes-base.scheduleTrigger","typeVersion":1.2,"position":[-2000,0],"parameters":{"rule":{"interval":[{"field":"cronExpression","expression":"2 8 * * *"}]}}},{"id":"setup-accounts","name":"Config 2 comptes (Nathan + Elora)","type":"n8n-nodes-base.code","typeVersion":2,"position":[-1780,0],"parameters":{"jsCode":"// Configuration des 2 comptes BTP premium avec leur account_id Unipile (serveur api43, a jour)\nconst accounts = [\n  { name: 'Nathan Van Bignoot', accountId: 'kM4SHffNTGW7DNoIjQLayw' },\n  { name: 'Elora Perrin', accountId: '6NPeF8cUS0qBfaRN8jyCjQ' }\n];\nreturn accounts.map(a => ({ json: a }));"}},{"id":"apify-scrape","name":"Scraper Apify (BTP premium via Google Maps)","type":"n8n-nodes-base.httpRequest","typeVersion":4.2,"position":[-1560,0],"parameters":{"method":"POST","sendHeaders":true,"headerParameters":{"parameters":[{"name":"Content-Type","value":"application/json"}]},"sendBody":true,"specifyBody":"json","jsonBody":"={{ JSON.stringify({ searchStringsArray: [\"installateur piscine France\", \"renovation energetique batiment France\", \"entreprise construction generale France\", \"installateur pompe a chaleur France\", \"paysagiste amenagement exterieur France\", \"entreprise couverture toiture France\", \"chauffagiste climatisation France\", \"menuiserie renovation France\"], locationQuery: \"France\", maxCrawledPlacesPerSearch: 25, language: \"fr\", skipClosedPlaces: true }) }}","url":"https://api.apify.com/v2/acts/compass~crawler-google-places/run-sync-get-dataset-items?token=apify_api_g6HEvtNX77aI6bbOoOKiQhvP6V5mbs323Y69","options":{"timeout":280000}},"notes":"CLE APIFY PROVISOIRE dans jsonBody/token - a remplacer des que l'utilisateur fournit la vraie cle dediee BTP premium. Actor: compass/crawler-google-places (Google Maps), pas de recherche LinkedIn directe car le persona BTP necessite de trouver l'entreprise puis le dirigeant.","onError":"continueRegularOutput"},{"id":"flatten-profiles","name":"Aplatir résultats + attacher compte cible","type":"n8n-nodes-base.code","typeVersion":2,"position":[-1340,0],"parameters":{"jsCode":"// Aplati les résultats Google Maps et attache le compte cible à chaque entreprise\nconst account = $('Config 2 comptes (Nathan + Elora)').item.json;\nconst items = $input.all();\nconst out = [];\nfor (const item of items) {\n  const places = Array.isArray(item.json) ? item.json : [item.json];\n  for (const p of places) {\n    if (!p || !p.title) continue;\n    out.push({ json: { ...p, targetAccountName: account.name, targetAccountId: account.accountId } });\n  }\n}\nreturn out;"}},{"id":"score-profiles","name":"Scorer ICP BTP premium (seuil >=60)","type":"n8n-nodes-base.code","typeVersion":2,"position":[-1120,0],"parameters":{"jsCode":"// Scoring ICP BTP premium sur 100 pts — critere principal = signal de CA 300-400k€+ (volume avis Google comme proxy)\n// Ne garde que score >= 60. Secteur: BTP/energie/sante non digitalise (piscines, renovation, construction generale, pompes a chaleur)\n// Note: ce scorer travaille sur les ENTREPRISES scrapees via Google Maps, pas directement sur des profils LinkedIn de dirigeants.\n// L'identification du dirigeant LinkedIn reste une etape manuelle/separee (recherche par nom d'entreprise) — ce node ne fait que qualifier l'entreprise.\n\nfunction scoreCompany(p) {\n  let score = 0;\n  const reviews = p.reviewsCount || 0;\n  const rating = p.totalScore || 0;\n  const hasWebsite = !!p.website;\n\n  // Signal CA (0-70 pts) — proxy = volume d'avis Google, calibre sur seuil 300-400k€\n  if (reviews >= 200) score += 70;\n  else if (reviews >= 100) score += 60;\n  else if (reviews >= 50) score += 50;\n  else if (reviews >= 20) score += 35;\n  else if (reviews >= 10) score += 20;\n  else score += 5;\n\n  // Qualite / serieux perçu (0-20 pts)\n  if (rating >= 4.5) score += 20;\n  else if (rating >= 4) score += 12;\n  else if (rating >= 3.5) score += 5;\n\n  // Presence d'un site web (0-10 pts) — necessaire pour la suite du process (pas de scraping d'obsolescence pour l'instant, critere assoupli)\n  if (hasWebsite) score += 10;\n\n  return Math.round(score);\n}\n\nconst items = $input.all();\nconst out = [];\nfor (const item of items) {\n  const p = item.json;\n  const score = scoreCompany(p);\n  if (score < 60) continue;\n  if (!p.website) continue; // critere obligatoire: un site doit exister sur le profil/l'entreprise\n\n  // CRITERE OBLIGATOIRE EXPLICITE : CA annuel estime >= 200k euros (proxy = volume d'avis Google).\n  // En dessous de ce seuil, l'entreprise est trop petite/recente pour l'offre (souvent une activite\n  // solo/tres jeune) -> exclusion, meme si le score pondere depasse 60.\n  const reviewsForCA = p.reviewsCount || 0;\n  const CA_MINIMUM_ANNUEL_ATTEINT = reviewsForCA >= 20;\n  if (!CA_MINIMUM_ANNUEL_ATTEINT) continue;\n  out.push({\n    json: {\n      companyName: p.title || '',\n      website: p.website || '',\n      address: p.address || '',\n      city: p.city || '',\n      category: p.categoryName || p.category || '',\n      reviewsCount: p.reviewsCount || 0,\n      rating: p.totalScore || 0,\n      score,\n      targetAccountName: p.targetAccountName,\n      targetAccountId: p.targetAccountId\n    }\n  });\n}\nreturn out;"}},{"parameters":{"jsCode":"const items = $input.all();\nconst byAccount = {};\nfor (const item of items) {\n  const acc = item.json.targetAccountId;\n  if (!byAccount[acc]) byAccount[acc] = [];\n  byAccount[acc].push(item.json);\n}\n\nconst parisNow = new Date(new Date().toLocaleString('en-US', { timeZone: 'Europe/Paris' }));\nconst endOfWindow = new Date(parisNow);\nendOfWindow.setHours(19, 0, 0, 0);\nconst msRemaining = Math.max(endOfWindow.getTime() - parisNow.getTime(), 0);\nconst runStartMs = Date.now();\n\nconst result = [];\nfor (const acc of Object.keys(byAccount)) {\n  const sorted = byAccount[acc].sort((a, b) => (b.score || 0) - (a.score || 0));\n  const picked = sorted.slice(0, 16);\n\n  // Etalement dynamique par compte (chaque compte a sa propre cadence sur 8h02-19h00 Paris),\n  // avec jitter +/-20% pour eviter un pattern parfaitement regulier.\n  const n = Math.max(picked.length, 1);\n  const baseIntervalMs = msRemaining / n;\n  let cursorMs = 0;\n  for (let idx = 0; idx < picked.length; idx++) {\n    const jitterFactor = 0.8 + Math.random() * 0.4;\n    cursorMs += baseIntervalMs * jitterFactor;\n    picked[idx]._waitSeconds = Math.min(Math.max(Math.round(cursorMs / 1000), 20), 39600);\n    picked[idx]._runStartMs = runStartMs;\n  }\n  result.push(...picked);\n}\nreturn result.map(j => ({ json: j }));\n"},"id":"dedup-ne-1785418996241","name":"Limiter 16/compte","type":"n8n-nodes-base.code","typeVersion":2,"position":[700,200]},{"parameters":{"batchSize":1,"options":{}},"id":"loop-ne-1785418996241","name":"Boucle 1 lead a la fois","type":"n8n-nodes-base.splitInBatches","typeVersion":3,"position":[900,200]},{"parameters":{"amount":"={{ Math.max(Math.round(($json._runStartMs + $json._waitSeconds*1000 - Date.now())/1000), 5) }}","unit":"seconds"},"id":"wait-ne-1785418996241","name":"Attente etalee jusqu a 19h","type":"n8n-nodes-base.wait","typeVersion":1.1,"position":[1100,150],"webhookId":"32c93f17-87ac-411a-98fc-29e5efd0904c"},{"parameters":{"jsCode":"const parisHour = parseInt(new Intl.DateTimeFormat('fr-FR', { timeZone: 'Europe/Paris', hour: 'numeric', hour12: false }).format(new Date()), 10);\nif (parisHour < 8 || parisHour >= 19) {\n  return [];\n}\nreturn [{ json: $input.item.json }];\n"},"id":"window-ne-1785418996241","name":"Vérifier fenêtre 8h-19h","type":"n8n-nodes-base.code","typeVersion":2,"position":[1300,150]},{"parameters":{"jsCode":"const lead = $input.item.json;\nconst key = \"<UNIPILE_API_KEY>\";\nconst base = \"https://api43.unipile.com:17313\";\ntry {\n  const resp = await this.helpers.httpRequest({\n    method: 'POST',\n    url: base + '/api/v1/linkedin/search',\n    qs: { account_id: lead.targetAccountId },\n    headers: { 'X-API-KEY': key, 'Content-Type': 'application/json' },\n    body: JSON.stringify({ api: 'classic', category: 'people', keywords: ((lead.companyName || '') + ' gerant dirigeant') }),\n    json: true,\n    timeout: 20000,\n  });\n  const items = resp.items || [];\n  if (!items.length) return [{ json: { ...lead, providerId: null, skip: true } }];\n  return [{ json: { ...lead, providerId: items[0].id, matchedName: items[0].name } }];\n} catch (e) {\n  return [{ json: { ...lead, providerId: null, skip: true } }];\n}"},"id":"search-ne-1785418996241","name":"Chercher le dirigeant (LinkedIn search)","type":"n8n-nodes-base.code","typeVersion":2,"position":[1500,150]},{"parameters":{"conditions":{"options":{"caseSensitive":true,"leftValue":"","typeValidation":"strict","version":2},"conditions":[{"id":"c1","leftValue":"={{ $json.skip }}","rightValue":true,"operator":{"type":"boolean","operation":"true","singleValue":true}}],"combinator":"and"},"options":{}},"id":"ifskip-ne-1785418996241","name":"IF Dirigeant trouve","type":"n8n-nodes-base.if","typeVersion":2.2,"position":[1700,150]},{"parameters":{"jsCode":"const key = \"<UNIPILE_API_KEY>\";\nconst base = \"https://api43.unipile.com:17313\";\nconst lead = $input.item.json;\nconst providerId = $json.providerId;\nconst accountId = $json.targetAccountId;\n\n// Codes typiques de quota/rate-limit LinkedIn releves par Unipile : 422 (cannot_resend_yet),\n// 429 (rate limit), 500 (erreur generique cote LinkedIn). On retente 2 fois avec backoff court\n// avant d'abandonner ce lead et de laisser le workflow continuer sur le suivant.\nconst RETRYABLE_STATUS = [422, 429, 500];\nconst MAX_ATTEMPTS = 3;\n\nlet lastError = null;\nlet sent = false;\n\nfor (let attempt = 1; attempt <= MAX_ATTEMPTS && !sent; attempt++) {\n  try {\n    await this.helpers.httpRequest({\n      method: 'POST',\n      url: base + '/api/v1/users/invite',\n      headers: { 'X-API-KEY': key, 'Content-Type': 'application/json' },\n      body: { provider_id: providerId, account_id: accountId },\n      json: true,\n    });\n    sent = true;\n  } catch (e) {\n    lastError = e;\n    const status = e.response?.statusCode || e.statusCode || e.status || 0;\n    const quotaLikely = RETRYABLE_STATUS.includes(status);\n    if (!quotaLikely || attempt === MAX_ATTEMPTS) break;\n    const backoffMs = attempt === 1 ? 15000 : 45000;\n    await new Promise(r => setTimeout(r, backoffMs));\n  }\n}\n\nreturn [{\n  json: {\n    ...lead,\n    _inviteSent: sent,\n    _inviteSkippedReason: sent ? null : ('quota_or_error_status_' + (lastError?.response?.statusCode || lastError?.statusCode || 'unknown')),\n  }\n}];"},"id":"send-ne-1785418996241","name":"Envoyer demande de connexion","type":"n8n-nodes-base.code","typeVersion":2,"position":[1900,100],"onError":"continueRegularOutput","alwaysOutputData":true}],"connections":{"Déclencheur quotidien 8h":{"main":[[{"node":"Config 2 comptes (Nathan + Elora)","type":"main","index":0}]]},"Config 2 comptes (Nathan + Elora)":{"main":[[{"node":"Scraper Apify (BTP premium via Google Maps)","type":"main","index":0}]]},"Scraper Apify (BTP premium via Google Maps)":{"main":[[{"node":"Aplatir résultats + attacher compte cible","type":"main","index":0}]]},"Aplatir résultats + attacher compte cible":{"main":[[{"node":"Scorer ICP BTP premium (seuil >=60)","type":"main","index":0}]]},"Scorer ICP BTP premium (seuil >=60)":{"main":[[{"node":"Limiter 16/compte","type":"main","index":0}]]},"Limiter 16/compte":{"main":[[{"node":"Boucle 1 lead a la fois","type":"main","index":0}]]},"Boucle 1 lead a la fois":{"main":[[],[{"node":"Attente etalee jusqu a 19h","type":"main","index":0}]]},"Chercher le dirigeant (LinkedIn search)":{"main":[[{"node":"IF Dirigeant trouve","type":"main","index":0}]]},"IF Dirigeant trouve":{"main":[[{"node":"Boucle 1 lead a la fois","type":"main","index":0}],[{"node":"Envoyer demande de connexion","type":"main","index":0}]]},"Envoyer demande de connexion":{"main":[[{"node":"Boucle 1 lead a la fois","type":"main","index":0}]]},"Attente etalee jusqu a 19h":{"main":[[{"node":"Vérifier fenêtre 8h-19h","type":"main","index":0}]]},"Vérifier fenêtre 8h-19h":{"main":[[{"node":"Chercher le dirigeant (LinkedIn search)","type":"main","index":0}]]}},"nodeGroups":[],"authors":"Martin Cuisinier","name":null,"description":null,"autosaved":false,"workflowPublishHistory":[{"createdAt":"2026-07-31T15:27:39.854Z","id":1727,"workflowId":"SKFkjF6puzV8FgQC","versionId":"5a3f9856-1e77-4426-961f-6c12e118d70c","event":"activated","userId":"b5e20a11-dd40-42d2-97e5-d12f0e91399f"},{"createdAt":"2026-07-31T15:27:39.835Z","id":1726,"workflowId":"SKFkjF6puzV8FgQC","versionId":"5a3f9856-1e77-4426-961f-6c12e118d70c","event":"deactivated","userId":"b5e20a11-dd40-42d2-97e5-d12f0e91399f"}]}}
+{
+  "name": "🔗 Prospection ICP - Scraping + Demandes de connexion (Nathan + Elora, BTP premium)",
+  "nodes": [
+    {
+      "id": "trigger-daily",
+      "name": "Déclencheur quotidien 8h",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -2000,
+        0
+      ],
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "2 8 * * *"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "setup-accounts",
+      "name": "Config 2 comptes (Nathan + Elora)",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1780,
+        0
+      ],
+      "parameters": {
+        "jsCode": "// Configuration des 2 comptes BTP premium avec leur account_id Unipile (serveur api43, a jour)\nconst accounts = [\n  { name: 'Nathan Van Bignoot', accountId: 'WFlKPbEYTliERdSYOqhInw' }\n  // Elora Perrin retiree temporairement: compte absent sur nouveau serveur api30 (migration 09/08/2026)\n];\nreturn accounts.map(a => ({ json: a }));"
+      }
+    },
+    {
+      "id": "apify-scrape",
+      "name": "Scraper Apify (BTP premium via Google Maps)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -1560,
+        0
+      ],
+      "parameters": {
+        "method": "POST",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ searchStringsArray: [\"installateur piscine France\", \"renovation energetique batiment France\", \"entreprise construction generale France\", \"installateur pompe a chaleur France\", \"paysagiste amenagement exterieur France\", \"entreprise couverture toiture France\", \"chauffagiste climatisation France\", \"menuiserie renovation France\"], locationQuery: \"France\", maxCrawledPlacesPerSearch: 25, language: \"fr\", skipClosedPlaces: true }) }}",
+        "url": "https://api.apify.com/v2/acts/compass~crawler-google-places/run-sync-get-dataset-items?token=apify_api_g6HEvtNX77aI6bbOoOKiQhvP6V5mbs323Y69",
+        "options": {
+          "timeout": 280000
+        }
+      },
+      "notes": "CLE APIFY PROVISOIRE dans jsonBody/token - a remplacer des que l'utilisateur fournit la vraie cle dediee BTP premium. Actor: compass/crawler-google-places (Google Maps), pas de recherche LinkedIn directe car le persona BTP necessite de trouver l'entreprise puis le dirigeant.",
+      "onError": "continueRegularOutput"
+    },
+    {
+      "id": "flatten-profiles",
+      "name": "Aplatir résultats + attacher compte cible",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1340,
+        0
+      ],
+      "parameters": {
+        "jsCode": "// Aplati les résultats Google Maps et attache le compte cible à chaque entreprise\nconst account = $('Config 2 comptes (Nathan + Elora)').item.json;\nconst items = $input.all();\nconst out = [];\nfor (const item of items) {\n  const places = Array.isArray(item.json) ? item.json : [item.json];\n  for (const p of places) {\n    if (!p || !p.title) continue;\n    out.push({ json: { ...p, targetAccountName: account.name, targetAccountId: account.accountId } });\n  }\n}\nreturn out;"
+      }
+    },
+    {
+      "id": "score-profiles",
+      "name": "Scorer ICP BTP premium (seuil >=60)",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1120,
+        0
+      ],
+      "parameters": {
+        "jsCode": "// Scoring ICP BTP premium sur 100 pts — critere principal = signal de CA 300-400k€+ (volume avis Google comme proxy)\n// Ne garde que score >= 60. Secteur: BTP/energie/sante non digitalise (piscines, renovation, construction generale, pompes a chaleur)\n// Note: ce scorer travaille sur les ENTREPRISES scrapees via Google Maps, pas directement sur des profils LinkedIn de dirigeants.\n// L'identification du dirigeant LinkedIn reste une etape manuelle/separee (recherche par nom d'entreprise) — ce node ne fait que qualifier l'entreprise.\n\nfunction scoreCompany(p) {\n  let score = 0;\n  const reviews = p.reviewsCount || 0;\n  const rating = p.totalScore || 0;\n  const hasWebsite = !!p.website;\n\n  // Signal CA (0-70 pts) — proxy = volume d'avis Google, calibre sur seuil 300-400k€\n  if (reviews >= 200) score += 70;\n  else if (reviews >= 100) score += 60;\n  else if (reviews >= 50) score += 50;\n  else if (reviews >= 20) score += 35;\n  else if (reviews >= 10) score += 20;\n  else score += 5;\n\n  // Qualite / serieux perçu (0-20 pts)\n  if (rating >= 4.5) score += 20;\n  else if (rating >= 4) score += 12;\n  else if (rating >= 3.5) score += 5;\n\n  // Presence d'un site web (0-10 pts) — necessaire pour la suite du process (pas de scraping d'obsolescence pour l'instant, critere assoupli)\n  if (hasWebsite) score += 10;\n\n  return Math.round(score);\n}\n\nconst items = $input.all();\nconst out = [];\nfor (const item of items) {\n  const p = item.json;\n  const score = scoreCompany(p);\n  if (score < 60) continue;\n  if (!p.website) continue; // critere obligatoire: un site doit exister sur le profil/l'entreprise\n\n  // CRITERE OBLIGATOIRE EXPLICITE : CA annuel estime >= 200k euros (proxy = volume d'avis Google).\n  // En dessous de ce seuil, l'entreprise est trop petite/recente pour l'offre (souvent une activite\n  // solo/tres jeune) -> exclusion, meme si le score pondere depasse 60.\n  const reviewsForCA = p.reviewsCount || 0;\n  const CA_MINIMUM_ANNUEL_ATTEINT = reviewsForCA >= 20;\n  if (!CA_MINIMUM_ANNUEL_ATTEINT) continue;\n  out.push({\n    json: {\n      companyName: p.title || '',\n      website: p.website || '',\n      address: p.address || '',\n      city: p.city || '',\n      category: p.categoryName || p.category || '',\n      reviewsCount: p.reviewsCount || 0,\n      rating: p.totalScore || 0,\n      score,\n      targetAccountName: p.targetAccountName,\n      targetAccountId: p.targetAccountId\n    }\n  });\n}\nreturn out;"
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\nconst byAccount = {};\nfor (const item of items) {\n  const acc = item.json.targetAccountId;\n  if (!byAccount[acc]) byAccount[acc] = [];\n  byAccount[acc].push(item.json);\n}\n\nconst parisNow = new Date(new Date().toLocaleString('en-US', { timeZone: 'Europe/Paris' }));\nconst endOfWindow = new Date(parisNow);\nendOfWindow.setHours(19, 0, 0, 0);\nconst msRemaining = Math.max(endOfWindow.getTime() - parisNow.getTime(), 0);\nconst runStartMs = Date.now();\n\nconst result = [];\nfor (const acc of Object.keys(byAccount)) {\n  const sorted = byAccount[acc].sort((a, b) => (b.score || 0) - (a.score || 0));\n  const picked = sorted.slice(0, 16);\n\n  // Etalement dynamique par compte (chaque compte a sa propre cadence sur 8h02-19h00 Paris),\n  // avec jitter +/-20% pour eviter un pattern parfaitement regulier.\n  const n = Math.max(picked.length, 1);\n  const baseIntervalMs = msRemaining / n;\n  let cursorMs = 0;\n  for (let idx = 0; idx < picked.length; idx++) {\n    const jitterFactor = 0.8 + Math.random() * 0.4;\n    cursorMs += baseIntervalMs * jitterFactor;\n    picked[idx]._waitSeconds = Math.min(Math.max(Math.round(cursorMs / 1000), 20), 39600);\n    picked[idx]._runStartMs = runStartMs;\n  }\n  result.push(...picked);\n}\nreturn result.map(j => ({ json: j }));\n"
+      },
+      "id": "dedup-ne-1785418996241",
+      "name": "Limiter 16/compte",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        700,
+        200
+      ]
+    },
+    {
+      "parameters": {
+        "batchSize": 1,
+        "options": {}
+      },
+      "id": "loop-ne-1785418996241",
+      "name": "Boucle 1 lead a la fois",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        900,
+        200
+      ]
+    },
+    {
+      "parameters": {
+        "amount": "={{ Math.max(Math.round(($json._runStartMs + $json._waitSeconds*1000 - Date.now())/1000), 5) }}",
+        "unit": "seconds"
+      },
+      "id": "wait-ne-1785418996241",
+      "name": "Attente etalee jusqu a 19h",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1100,
+        150
+      ],
+      "webhookId": "32c93f17-87ac-411a-98fc-29e5efd0904c"
+    },
+    {
+      "parameters": {
+        "jsCode": "const parisHour = parseInt(new Intl.DateTimeFormat('fr-FR', { timeZone: 'Europe/Paris', hour: 'numeric', hour12: false }).format(new Date()), 10);\nif (parisHour < 8 || parisHour >= 19) {\n  return [];\n}\nreturn [{ json: $input.item.json }];\n"
+      },
+      "id": "window-ne-1785418996241",
+      "name": "Vérifier fenêtre 8h-19h",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1300,
+        150
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const lead = $input.item.json;\n// Nathan est migre sur le nouveau workspace Unipile (api41), Elora reste sur l'ancien (api43).\nconst OLD_KEY = \"4ZgMv56/.s4NNbHaZRflUeFz92sMBZhSsY5OdCvTnzufcKpLkhwo=\";\nconst OLD_BASE = \"https://api43.unipile.com:17313\";\nconst NEW_KEY = \"dAD+/okr.dhaKPu5eBrawhgUFEh/kT3rywp8+CujTZWOT+260gX0=\";\nconst NEW_BASE = \"https://api30.unipile.com:16068\";\nconst NATHAN_NEW_ID = \"WFlKPbEYTliERdSYOqhInw\";\n\nconst isNathan = lead.targetAccountId === NATHAN_NEW_ID || lead.targetAccountName === 'Nathan Van Bignoot';\nconst key = isNathan ? NEW_KEY : OLD_KEY;\nconst base = isNathan ? NEW_BASE : OLD_BASE;\n\ntry {\n  const resp = await this.helpers.httpRequest({\n    method: 'POST',\n    url: base + '/api/v1/linkedin/search',\n    qs: { account_id: lead.targetAccountId },\n    headers: { 'X-API-KEY': key, 'Content-Type': 'application/json' },\n    body: JSON.stringify({ api: 'classic', category: 'people', keywords: ((lead.companyName || '') + ' gerant dirigeant') }),\n    json: true,\n    timeout: 20000,\n  });\n  const items = resp.items || [];\n  if (!items.length) return [{ json: { ...lead, providerId: null, skip: true } }];\n  return [{ json: { ...lead, providerId: items[0].id, matchedName: items[0].name } }];\n} catch (e) {\n  return [{ json: { ...lead, providerId: null, skip: true } }];\n}\n"
+      },
+      "id": "search-ne-1785418996241",
+      "name": "Chercher le dirigeant (LinkedIn search)",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1500,
+        150
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "c1",
+              "leftValue": "={{ $json.skip }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "ifskip-ne-1785418996241",
+      "name": "IF Dirigeant trouve",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1700,
+        150
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const lead = $input.item.json;\nconst OLD_KEY = \"4ZgMv56/.s4NNbHaZRflUeFz92sMBZhSsY5OdCvTnzufcKpLkhwo=\";\nconst OLD_BASE = \"https://api43.unipile.com:17313\";\nconst NEW_KEY = \"dAD+/okr.dhaKPu5eBrawhgUFEh/kT3rywp8+CujTZWOT+260gX0=\";\nconst NEW_BASE = \"https://api30.unipile.com:16068\";\nconst NATHAN_NEW_ID = \"WFlKPbEYTliERdSYOqhInw\";\n\nconst providerId = lead.providerId;\nconst accountId = lead.targetAccountId;\nconst isNathan = accountId === NATHAN_NEW_ID || lead.targetAccountName === 'Nathan Van Bignoot';\nconst key = isNathan ? NEW_KEY : OLD_KEY;\nconst base = isNathan ? NEW_BASE : OLD_BASE;\n\nconst RETRYABLE_STATUS = [422, 429, 500];\nconst MAX_ATTEMPTS = 3;\n\nlet lastError = null;\nlet sent = false;\n\nfor (let attempt = 1; attempt <= MAX_ATTEMPTS && !sent; attempt++) {\n  try {\n    await this.helpers.httpRequest({\n      method: 'POST',\n      url: base + '/api/v1/users/invite',\n      headers: { 'X-API-KEY': key, 'Content-Type': 'application/json' },\n      body: { provider_id: providerId, account_id: accountId },\n      json: true,\n    });\n    sent = true;\n  } catch (e) {\n    lastError = e;\n    const status = e.response?.statusCode || e.statusCode || e.status || 0;\n    const quotaLikely = RETRYABLE_STATUS.includes(status);\n    if (!quotaLikely || attempt === MAX_ATTEMPTS) break;\n    const backoffMs = attempt === 1 ? 15000 : 45000;\n    await new Promise(r => setTimeout(r, backoffMs));\n  }\n}\n\nreturn [{\n  json: {\n    ...lead,\n    _inviteSent: sent,\n    _inviteSkippedReason: sent ? null : ('quota_or_error_status_' + (lastError?.response?.statusCode || lastError?.statusCode || 'unknown')),\n  }\n}];\n"
+      },
+      "id": "send-ne-1785418996241",
+      "name": "Envoyer demande de connexion",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1900,
+        100
+      ],
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true
+    },
+    {
+      "id": "filter-open-to-work",
+      "name": "Exclure Open to Work",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1670,
+        0
+      ],
+      "parameters": {
+        "jsCode": "// Exclut tout profil signalant \"Open to Work\" — structure (badge Apify) ou texte (headline/summary/about).\nfunction isOpenToWork(p) {\n  if (p == null) return false;\n  if (p.openToWork === true || p.open_to_work === true || p.isOpenToWork === true) return true;\n  if (Array.isArray(p.badges) && p.badges.some(b => /open.?to.?work/i.test(String(b)))) return true;\n\n  const fields = [p.headline, p.summary, p.about, p.title];\n  const text = fields.filter(Boolean).join(' ').toLowerCase();\n  const patterns = [\n    /open\\s*to\\s*work/i,\n    /#opentowork/i,\n    /ouvert(e)?\\s+aux\\s+opportunit/i,\n    /\\u00e0\\s+l['\\u2019]\\u00e9coute\\s+du\\s+march/i,\n    /en\\s+recherche\\s+d['\\u2019]emploi/i,\n    /disponible\\s+imm\\u00e9diatement/i,\n    /recherche\\s+active(?:ment)?\\s+un\\s+poste/i,\n  ];\n  return patterns.some(re => re.test(text));\n}\n\nconst items = $input.all();\nreturn items.filter(item => !isOpenToWork(item.json));"
+      }
+    }
+  ],
+  "connections": {
+    "Déclencheur quotidien 8h": {
+      "main": [
+        [
+          {
+            "node": "Config 2 comptes (Nathan + Elora)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Config 2 comptes (Nathan + Elora)": {
+      "main": [
+        [
+          {
+            "node": "Scraper Apify (BTP premium via Google Maps)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Scraper Apify (BTP premium via Google Maps)": {
+      "main": [
+        [
+          {
+            "node": "Aplatir résultats + attacher compte cible",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aplatir résultats + attacher compte cible": {
+      "main": [
+        [
+          {
+            "node": "Exclure Open to Work",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Scorer ICP BTP premium (seuil >=60)": {
+      "main": [
+        [
+          {
+            "node": "Limiter 16/compte",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Limiter 16/compte": {
+      "main": [
+        [
+          {
+            "node": "Boucle 1 lead a la fois",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Boucle 1 lead a la fois": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Attente etalee jusqu a 19h",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Chercher le dirigeant (LinkedIn search)": {
+      "main": [
+        [
+          {
+            "node": "IF Dirigeant trouve",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF Dirigeant trouve": {
+      "main": [
+        [
+          {
+            "node": "Boucle 1 lead a la fois",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Envoyer demande de connexion",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Envoyer demande de connexion": {
+      "main": [
+        [
+          {
+            "node": "Boucle 1 lead a la fois",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Attente etalee jusqu a 19h": {
+      "main": [
+        [
+          {
+            "node": "Vérifier fenêtre 8h-19h",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Vérifier fenêtre 8h-19h": {
+      "main": [
+        [
+          {
+            "node": "Chercher le dirigeant (LinkedIn search)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Exclure Open to Work": {
+      "main": [
+        [
+          {
+            "node": "Scorer ICP BTP premium (seuil >=60)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "errorWorkflow": "xqvf2o0KvOMAScEk"
+  }
+}
