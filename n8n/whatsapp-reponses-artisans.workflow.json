@@ -1,0 +1,203 @@
+{
+  "name": "WhatsApp - Réception réponses artisans rénovation",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "whatsapp-artisans-webhook",
+        "options": {}
+      },
+      "id": "webhook-main",
+      "name": "Webhook WhatsApp",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [-1600, 0]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            { "id": "f-chatId", "name": "chatId", "value": "={{ $json.chat_id }}", "type": "string" },
+            { "id": "f-lastMessage", "name": "lastMessage", "value": "={{ $json.message }}", "type": "string" },
+            { "id": "f-senderProviderId", "name": "senderProviderId", "value": "={{ $json.sender?.attendee_provider_id || $json.sender }}", "type": "string" },
+            { "id": "f-isSender", "name": "isSender", "value": "={{ $json.is_sender }}", "type": "boolean" },
+            { "id": "f-accountId", "name": "accountId", "value": "={{ $json.account_id }}", "type": "string" },
+            { "id": "f-messageType", "name": "messageType", "value": "={{ $json.message_type }}", "type": "string" }
+          ]
+        },
+        "options": {}
+      },
+      "id": "normalize",
+      "name": "Normalize Webhook",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [-1380, 0]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": { "caseSensitive": true, "leftValue": "", "typeValidation": "loose" },
+          "conditions": [
+            { "id": "c1", "leftValue": "={{ $json.isSender }}", "rightValue": true, "operator": { "type": "boolean", "operation": "equals" } }
+          ],
+          "combinator": "or"
+        }
+      },
+      "id": "not-my-message",
+      "name": "Not My Message?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [-1160, 0],
+      "notes": "TRUE = message envoyé par nous (pas une réponse du prospect) -> on arrête le flow ici."
+    },
+    {
+      "parameters": {
+        "amount": 8,
+        "unit": "seconds"
+      },
+      "id": "wait-debounce",
+      "name": "Wait Debounce (messages rafales)",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [-940, 100]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "=https://api30.unipile.com:16068/api/v1/chats/{{ $('Normalize Webhook').item.json.chatId }}/messages?limit=20",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [{ "name": "X-API-KEY", "value": "={{ $env.UNIPILE_API_KEY }}" }]
+        },
+        "options": { "response": { "response": { "responseFormat": "json" } } }
+      },
+      "id": "fetch-history",
+      "name": "Fetch History",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [-720, 100]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Convertit l'historique brut Unipile en format simple {isMe, text}, tri chronologique croissant.\nconst raw = $json.items || $json.data || [];\nconst history = raw.map(m => ({ isMe: !!m.is_sender, text: m.text || m.body || '' })).reverse();\nreturn [{ json: { history } }];"
+      },
+      "id": "normalize-history",
+      "name": "Normalize History",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [-500, 100]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.RAILWAY_BRAIN_URL }}/chat",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ history: $('Normalize History').item.json.history, last_message: $('Normalize Webhook').item.json.lastMessage, lead_profile: '', agent_persona: 'martin-whatsapp-artisans', chat_id: $('Normalize Webhook').item.json.chatId, sender_account_id: $('Normalize Webhook').item.json.accountId, attendee_provider_id: $('Normalize Webhook').item.json.senderProviderId }) }}",
+        "options": { "response": { "response": { "responseFormat": "json" } }, "timeout": 120000 }
+      },
+      "id": "call-railway",
+      "name": "Call Railway Brain",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [-280, 100],
+      "notes": "Champ 'channel: whatsapp' ajouté pour que le brain puisse adapter le ton si besoin (messages WhatsApp = pas de <<NEXT>>, un seul message continu est plus naturel que sur LinkedIn)."
+    },
+    {
+      "parameters": {
+        "jsCode": "const r = $input.first().json;\nif (r.handover === true) {\n  return [{ json: { output: 'PAUSE_CONVERSATION', handover_reason: r.handover_reason || '' } }];\n}\nconst messages = (r.messages || []).map(m => String(m).trim()).filter(Boolean);\n// Sur WhatsApp, contrairement à LinkedIn, on envoie chaque message comme bulle séparée\n// plutôt que de tout concaténer -- plus naturel sur ce canal.\nreturn [{ json: { messages, handover: false } }];"
+      },
+      "id": "format-response",
+      "name": "Format Railway Response",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [-60, 100]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": { "caseSensitive": true, "leftValue": "", "typeValidation": "loose" },
+          "conditions": [
+            { "id": "c1", "leftValue": "={{ $json.handover }}", "rightValue": true, "operator": { "type": "boolean", "operation": "equals" } }
+          ],
+          "combinator": "or"
+        }
+      },
+      "id": "if-pause",
+      "name": "If pause_conversation",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [160, 100]
+    },
+    {
+      "parameters": {
+        "chatId": "8723535937",
+        "text": "=🤝 Handover demandé sur WhatsApp — chat {{ $('Normalize Webhook').item.json.chatId }}. Raison : {{ $json.handover_reason }}",
+        "additionalFields": {}
+      },
+      "id": "human-handover",
+      "name": "Human Handover",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [380, 0]
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "messages",
+        "options": {}
+      },
+      "id": "split-messages",
+      "name": "Split messages",
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [380, 200]
+    },
+    {
+      "parameters": {
+        "amount": 3,
+        "unit": "seconds"
+      },
+      "id": "wait-between",
+      "name": "Attente entre bulles",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [600, 200]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://api30.unipile.com:16068/api/v1/chats/{{ $('Normalize Webhook').item.json.chatId }}/messages",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [{ "name": "X-API-KEY", "value": "={{ $env.UNIPILE_API_KEY }}" }]
+        },
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [{ "name": "text", "value": "={{ $json.messages }}" }]
+        },
+        "options": {}
+      },
+      "id": "send-message",
+      "name": "Send message (Unipile)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [820, 200]
+    }
+  ],
+  "connections": {
+    "Webhook WhatsApp": { "main": [[{ "node": "Normalize Webhook", "type": "main", "index": 0 }]] },
+    "Normalize Webhook": { "main": [[{ "node": "Not My Message?", "type": "main", "index": 0 }]] },
+    "Not My Message?": { "main": [[], [{ "node": "Wait Debounce (messages rafales)", "type": "main", "index": 0 }]] },
+    "Wait Debounce (messages rafales)": { "main": [[{ "node": "Fetch History", "type": "main", "index": 0 }]] },
+    "Fetch History": { "main": [[{ "node": "Normalize History", "type": "main", "index": 0 }]] },
+    "Normalize History": { "main": [[{ "node": "Call Railway Brain", "type": "main", "index": 0 }]] },
+    "Call Railway Brain": { "main": [[{ "node": "Format Railway Response", "type": "main", "index": 0 }]] },
+    "Format Railway Response": { "main": [[{ "node": "If pause_conversation", "type": "main", "index": 0 }]] },
+    "If pause_conversation": { "main": [[{ "node": "Human Handover", "type": "main", "index": 0 }], [{ "node": "Split messages", "type": "main", "index": 0 }]] },
+    "Split messages": { "main": [[{ "node": "Attente entre bulles", "type": "main", "index": 0 }]] },
+    "Attente entre bulles": { "main": [[{ "node": "Send message (Unipile)", "type": "main", "index": 0 }]] }
+  },
+  "active": false,
+  "settings": { "executionOrder": "v1" }
+}
