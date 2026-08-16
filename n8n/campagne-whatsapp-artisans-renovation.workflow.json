@@ -80,20 +80,120 @@
         "authentication": "genericCredentialType",
         "genericAuthType": "httpHeaderAuth"
       },
-      "id": "apify-enrich-phone",
-      "name": "Enrichir numéro (Apify actor à choisir)",
+      "id": "kaspr-enrich-phone",
+      "name": "Étape 1 - Enrichir via Kaspr",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [-1520, 0],
+      "url": "https://api.kaspr.io/v1/profile/enrich",
+      "method": "POST",
+      "sendHeaders": true,
+      "headerParameters": {
+        "parameters": [
+          { "name": "Content-Type", "value": "application/json" }
+        ]
+      },
+      "sendBody": true,
+      "specifyBody": "json",
+      "jsonBody": "={{ JSON.stringify({ linkedinUrl: $json.linkedinUrl }) }}",
       "credentials": {
-        "httpHeaderAuth": { "id": "LKiWoCX7cSFsMpdg", "name": "Apify Key (payant 2026-07-28)" }
+        "httpHeaderAuth": { "id": "TODO_KASPR_CREDENTIAL_ID", "name": "Kaspr API Key" }
       },
       "onError": "continueRegularOutput",
-      "notes": "PLACEHOLDER: remplacer YOUR_ENRICHMENT_ACTOR par l'actor Apify d'enrichissement choisi (ex: recherche de contact pro). Doit retourner un champ 'phone' ou équivalent."
+      "notes": "Credential httpHeaderAuth à créer dans n8n (header 'X-API-Key' ou équivalent selon la doc Kaspr au moment du branchement) une fois la clé Kaspr fournie. Endpoint exact à confirmer sur https://developers.kaspr.io au moment de l'implémentation réelle -- la structure ci-dessus est le pattern standard Kaspr (enrichissement par URL LinkedIn), à ajuster si leur doc diffère."
     },
     {
       "parameters": {
-        "jsCode": "// Fusionne le résultat d'enrichissement avec le profil, exclut les leads sans numéro exploitable\nconst lead = $('Scorer ICP artisans (seuil >=55)').item.json;\nconst enrich = $input.item.json;\nconst phoneRaw = enrich.phone || enrich.phoneNumber || (enrich.phones && enrich.phones[0]) || null;\nif (!phoneRaw) {\n  return [];\n}\n// Normalisation basique E.164 France (à adapter selon le format réel retourné par l'actor choisi)\nlet phone = String(phoneRaw).replace(/[^\\d+]/g, '');\nif (phone.startsWith('0')) phone = '+33' + phone.slice(1);\nif (!phone.startsWith('+')) phone = '+' + phone;\n\nreturn [{ json: { ...lead, phone } }];"
+        "jsCode": "// Étape 1 (suite) : vérifie si Kaspr a retourné un mobile exploitable.\n// Si oui -> on a le numéro, on saute l'étape 2 (site web).\n// Si non -> on marque le lead pour tenter le fallback site web de l'entreprise.\nconst lead = $('Scorer ICP artisans (seuil >=55)').item.json;\nconst kaspr = $input.item.json;\nconst phoneRaw = kaspr.phone || kaspr.mobile || (kaspr.phones && kaspr.phones[0]) || null;\n\nif (phoneRaw) {\n  let phone = String(phoneRaw).replace(/[^\\d+]/g, '');\n  if (phone.startsWith('0')) phone = '+33' + phone.slice(1);\n  if (!phone.startsWith('+')) phone = '+' + phone;\n  return [{ json: { ...lead, phone, phoneSource: 'kaspr' } }];\n}\n\n// Pas de numéro Kaspr : on garde le lead pour la cascade fallback, sans phone.\nreturn [{ json: { ...lead, phone: null, phoneSource: null } }];"
+      },
+      "id": "check-kaspr-result",
+      "name": "Vérifier résultat Kaspr",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [-1400, 0]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": { "caseSensitive": true, "leftValue": "", "typeValidation": "loose" },
+          "conditions": [
+            { "id": "c1", "leftValue": "={{ $json.phone }}", "rightValue": "", "operator": { "type": "string", "operation": "notEquals" } }
+          ],
+          "combinator": "and"
+        }
+      },
+      "id": "if-has-phone",
+      "name": "A un numéro ?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [-1280, 0]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "=https://www.google.com/search?q={{ encodeURIComponent($json.company + ' ' + ($json.headline.match(/rénovation|artisan|bâtiment/i) ? '' : 'rénovation') + ' site officiel') }}",
+        "options": { "timeout": 15000 }
+      },
+      "id": "search-company-website",
+      "name": "Étape 2 - Chercher site web entreprise",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [-1280, 220],
+      "onError": "continueRegularOutput",
+      "notes": "Approche simple par recherche. Alternative plus robuste et plus stable dans le temps : utiliser un actor Apify dédié type 'Google Search Results Scraper' plutôt qu'un scraping direct de la SERP Google (fragile, peut casser si Google change son HTML ou bloque l'IP)."
+    },
+    {
+      "parameters": {
+        "jsCode": "// Extrait la première URL de résultat qui ressemble à un site d'entreprise (pas un annuaire/réseau social).\nconst html = $json.data || $json.body || '';\nconst lead = $('Vérifier résultat Kaspr').item.json;\n\nconst excludedDomains = /linkedin\\.com|facebook\\.com|pagesjaunes\\.fr|societe\\.com|instagram\\.com|google\\.com/;\nconst urlMatches = [...html.matchAll(/https?:\\/\\/[^\"&\\s]+/g)].map(m => m[0]);\nconst candidate = urlMatches.find(u => !excludedDomains.test(u));\n\nif (!candidate) {\n  return [{ json: { ...lead, companyWebsite: null } }];\n}\nreturn [{ json: { ...lead, companyWebsite: candidate } }];"
+      },
+      "id": "extract-website-url",
+      "name": "Extraire URL site web",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [-1060, 220]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": { "caseSensitive": true, "leftValue": "", "typeValidation": "loose" },
+          "conditions": [
+            { "id": "c1", "leftValue": "={{ $json.companyWebsite }}", "rightValue": "", "operator": { "type": "string", "operation": "notEquals" } }
+          ],
+          "combinator": "and"
+        }
+      },
+      "id": "if-has-website",
+      "name": "A un site web ?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [-840, 220]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "={{ $json.companyWebsite }}",
+        "options": { "timeout": 15000, "redirect": { "redirect": { "followRedirects": true } } }
+      },
+      "id": "fetch-website-html",
+      "name": "Récupérer HTML du site",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [-620, 300],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Extrait un numéro de téléphone français depuis le HTML brut de la page d'accueil.\n// Cherche en priorité les formats explicites (tel:, 0X XX XX XX XX, +33...).\nconst lead = $('Extraire URL site web').item.json;\nconst html = $json.data || $json.body || '';\n\n// Priorité 1 : lien tel: (le plus fiable, généralement affiché exprès par l'entreprise)\nconst telLinkMatch = html.match(/tel:([+\\d\\s().-]{8,20})/i);\n// Priorité 2 : numéro français en texte brut (06/07 mobile en priorité, sinon fixe)\nconst mobileMatch = html.match(/0[67][\\s.-]?\\d{2}[\\s.-]?\\d{2}[\\s.-]?\\d{2}[\\s.-]?\\d{2}/);\nconst anyPhoneMatch = html.match(/0[1-9][\\s.-]?\\d{2}[\\s.-]?\\d{2}[\\s.-]?\\d{2}[\\s.-]?\\d{2}/);\n\nconst raw = (telLinkMatch && telLinkMatch[1]) || (mobileMatch && mobileMatch[0]) || (anyPhoneMatch && anyPhoneMatch[0]) || null;\n\nif (!raw) {\n  return [{ json: { ...lead, phone: null, phoneSource: null } }];\n}\n\nlet phone = raw.replace(/[^\\d+]/g, '');\nif (phone.startsWith('0')) phone = '+33' + phone.slice(1);\nif (!phone.startsWith('+')) phone = '+' + phone;\n\nreturn [{ json: { ...lead, phone, phoneSource: 'site_web' } }];"
+      },
+      "id": "extract-phone-from-website",
+      "name": "Extraire téléphone du site",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [-400, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Point de fusion final : filtre définitivement tout lead sans numéro trouvé (ni Kaspr, ni site web).\nconst lead = $json;\nif (!lead.phone) {\n  return [];\n}\nreturn [{ json: lead }];"
       },
       "id": "merge-phone",
       "name": "Fusionner + filtrer sans téléphone",
@@ -180,8 +280,15 @@
     "Déclencheur quotidien 8h (jours ouvrés)": { "main": [[{ "node": "Scraper Apify (artisans rénovation)", "type": "main", "index": 0 }]] },
     "Scraper Apify (artisans rénovation)": { "main": [[{ "node": "Aplatir profils", "type": "main", "index": 0 }]] },
     "Aplatir profils": { "main": [[{ "node": "Scorer ICP artisans (seuil >=55)", "type": "main", "index": 0 }]] },
-    "Scorer ICP artisans (seuil >=55)": { "main": [[{ "node": "Enrichir numéro (Apify actor à choisir)", "type": "main", "index": 0 }]] },
-    "Enrichir numéro (Apify actor à choisir)": { "main": [[{ "node": "Fusionner + filtrer sans téléphone", "type": "main", "index": 0 }]] },
+    "Scorer ICP artisans (seuil >=55)": { "main": [[{ "node": "Étape 1 - Enrichir via Kaspr", "type": "main", "index": 0 }]] },
+    "Étape 1 - Enrichir via Kaspr": { "main": [[{ "node": "Vérifier résultat Kaspr", "type": "main", "index": 0 }]] },
+    "Vérifier résultat Kaspr": { "main": [[{ "node": "A un numéro ?", "type": "main", "index": 0 }]] },
+    "A un numéro ?": { "main": [[{ "node": "Fusionner + filtrer sans téléphone", "type": "main", "index": 0 }], [{ "node": "Étape 2 - Chercher site web entreprise", "type": "main", "index": 0 }]] },
+    "Étape 2 - Chercher site web entreprise": { "main": [[{ "node": "Extraire URL site web", "type": "main", "index": 0 }]] },
+    "Extraire URL site web": { "main": [[{ "node": "A un site web ?", "type": "main", "index": 0 }]] },
+    "A un site web ?": { "main": [[{ "node": "Récupérer HTML du site", "type": "main", "index": 0 }], [{ "node": "Fusionner + filtrer sans téléphone", "type": "main", "index": 0 }]] },
+    "Récupérer HTML du site": { "main": [[{ "node": "Extraire téléphone du site", "type": "main", "index": 0 }]] },
+    "Extraire téléphone du site": { "main": [[{ "node": "Fusionner + filtrer sans téléphone", "type": "main", "index": 0 }]] },
     "Fusionner + filtrer sans téléphone": { "main": [[{ "node": "Dedup + throttle (cap progressif)", "type": "main", "index": 0 }]] },
     "Dedup + throttle (cap progressif)": { "main": [[{ "node": "Boucle 1 lead à la fois", "type": "main", "index": 0 }]] },
     "Boucle 1 lead à la fois": { "main": [[{ "node": "Calculer attente restante", "type": "main", "index": 0 }]] },
