@@ -57,6 +57,8 @@ Expected format, in this exact order, always the same:
 
 Direct/casual tone, natural spoken English, 4 lines max. Never introduce yourself, never a link, never mention your activity.
 
+⚠️ **Never use an em dash (—) or en dash (–) anywhere, in the icebreaker, the setter conversation, or follow-ups.** Never use a plain hyphen as sentence punctuation either (e.g. "text - text"). Use a comma, a period, or a line break instead. This applies to every message sent from this account, not just icebreakers.
+
 ### Example of the target format
 ```
 Hello Sarah, I wanted to react to your post about closing your first enterprise deal after 8 months of outbound. That's the kind of win that changes the whole trajectory of a quarter. Was it mostly about finally nailing the pitch, or more about getting to the right person internally?
