@@ -4,6 +4,7 @@ import json
 import os
 import re
 import urllib.request
+import httpx
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Literal
@@ -648,9 +649,8 @@ async def send_telegram_confirmation(account_key: str, ok: bool, error: str = ""
     )
     try:
         url = f"https://api.telegram.org/bot{bot_token}/sendMessage"
-        payload = json.dumps({"chat_id": TELEGRAM_VALIDATION_CHAT_ID, "text": text}).encode("utf-8")
-        request_obj = urllib.request.Request(url, data=payload, headers={"Content-Type": "application/json"})
-        await asyncio.to_thread(urllib.request.urlopen, request_obj, timeout=10)
+        async with httpx.AsyncClient(timeout=10) as client:
+            await client.post(url, json={"chat_id": TELEGRAM_VALIDATION_CHAT_ID, "text": text})
     except Exception:
         pass
 
@@ -664,14 +664,13 @@ async def telegram_edit_submit(req: EditSubmitRequest):
         return {"ok": False, "error": "chatId ou finalText manquant"}
     try:
         url = f"{UNIPILE_DSN}/api/v1/chats/{req.chatId}/messages"
-        payload = json.dumps({"text": req.finalText}).encode("utf-8")
-        request_obj = urllib.request.Request(
-            url,
-            data=payload,
-            headers={"X-API-KEY": UNIPILE_ACCOUNT_KEY, "Content-Type": "application/json"},
-            method="POST",
-        )
-        await asyncio.to_thread(urllib.request.urlopen, request_obj, timeout=15)
+        async with httpx.AsyncClient(timeout=15) as client:
+            resp = await client.post(
+                url,
+                json={"text": req.finalText},
+                headers={"X-API-KEY": UNIPILE_ACCOUNT_KEY, "Content-Type": "application/json"},
+            )
+            resp.raise_for_status()
         await send_telegram_confirmation(req.accountKey, True)
         return {"ok": True}
     except Exception as e:
