@@ -637,14 +637,29 @@ class EditSubmitRequest(BaseModel):
     finalText: str
 
 
-async def send_telegram_confirmation(account_key: str, ok: bool, error: str = "") -> None:
+async def get_chat_prospect_name(chat_id: str) -> str:
+    try:
+        url = f"{UNIPILE_DSN}/api/v1/chats/{chat_id}/attendees"
+        async with httpx.AsyncClient(timeout=10) as client:
+            resp = await client.get(url, headers={"X-API-KEY": UNIPILE_ACCOUNT_KEY, "accept": "application/json"})
+            resp.raise_for_status()
+            items = resp.json().get("items", [])
+            if items and items[0].get("name"):
+                return items[0]["name"]
+    except Exception:
+        pass
+    return "Prospect inconnu"
+
+
+async def send_telegram_confirmation(account_key: str, ok: bool, error: str = "", prospect_name: str = "") -> None:
     bot_token = TELEGRAM_BOT_TOKEN_BY_ACCOUNT.get(account_key)
     if not bot_token:
         return
+    who = prospect_name or "Prospect inconnu"
     text = (
-        f"✅ Réponse envoyée sur LinkedIn (compte : {account_key})."
+        f"✅ Réponse envoyée sur LinkedIn à {who}."
         if ok
-        else f"❌ Échec de l'envoi sur LinkedIn (compte : {account_key}) : {error}"
+        else f"❌ Échec de l'envoi sur LinkedIn à {who} : {error}"
     )
     try:
         url = f"https://api.telegram.org/bot{bot_token}/sendMessage"
@@ -658,8 +673,9 @@ async def send_telegram_confirmation(account_key: str, ok: bool, error: str = ""
 async def telegram_edit_submit(req: EditSubmitRequest):
     """Envoi direct sur LinkedIn depuis le Mini App Telegram (bouton Envoyer),
     en contournant Telegram.WebApp.sendData() qui a un support incomplet sur Desktop."""
+    prospect_name = await get_chat_prospect_name(req.chatId) if req.chatId else "Prospect inconnu"
     if not req.chatId or not req.finalText.strip():
-        await send_telegram_confirmation(req.accountKey, False, "chatId ou finalText manquant")
+        await send_telegram_confirmation(req.accountKey, False, "chatId ou finalText manquant", prospect_name)
         return {"ok": False, "error": "chatId ou finalText manquant"}
     try:
         url = f"{UNIPILE_DSN}/api/v1/chats/{req.chatId}/messages"
@@ -670,11 +686,11 @@ async def telegram_edit_submit(req: EditSubmitRequest):
                 headers={"X-API-KEY": UNIPILE_ACCOUNT_KEY, "Content-Type": "application/json"},
             )
             resp.raise_for_status()
-        await send_telegram_confirmation(req.accountKey, True)
+        await send_telegram_confirmation(req.accountKey, True, prospect_name=prospect_name)
         return {"ok": True}
     except Exception as e:
         err = str(e)[:300]
-        await send_telegram_confirmation(req.accountKey, False, err)
+        await send_telegram_confirmation(req.accountKey, False, err, prospect_name)
         return {"ok": False, "error": err}
 
 
