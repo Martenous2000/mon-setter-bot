@@ -613,21 +613,21 @@ async def telegram_edit_miniapp():
     return EDIT_MINIAPP_HTML
 
 
-UNIPILE_DSN = "https://api41.unipile.com:17181"
-UNIPILE_ACCOUNT_KEY = "xPNfdXXM.26GjIiJrj1a59WRTEG9fgtwHUbF4/w38NWI/hGtOmyQ="
+UNIPILE_DSN = "https://api49.unipile.com:17933"
+UNIPILE_ACCOUNT_KEY = "4xVQjCjN.nLoPB5knVHCmxETjaq6y7zaUQpUUb3/cXLTGUonxn+I="
 TELEGRAM_VALIDATION_CHAT_ID = "8723535937"
 
 # Un bot Telegram dédié par compte (validation human-in-the-loop) — même mapping que les routers n8n.
 TELEGRAM_BOT_TOKEN_BY_ACCOUNT = {
     "martin": "8731294695:AAGw6i-_AbGMTDiZEbuoUFmEthHP9SLEo2w",
-    "jeanpierre": "8849108958:AAFdLERIDkvU3aGGWl0VhcWnezQn4Od0xfs",
     "jules": "8866841683:AAGGiA9EXeV4-IFJxjEPGRfiEFe2pbFMHmU",
     "thomas": "8833621341:AAGCRIG7g6Kc2nrWY-CHj9p45sZMLVap0pE",
     "theo": "8906115707:AAE6aPwnTK1PvqgkpmVZpFAX1PxAYjipF4g",
-    "elora": "8977591157:AAF7CIxfXxuIT39Bbxfqs7tG6sAeZSHqKNM",
     "nathan": "8995926182:AAHxIFlLXytUTPIr4kO9fijNbhRvFffeFXo",
-    "keanu": "8731294695:AAGw6i-_AbGMTDiZEbuoUFmEthHP9SLEo2w",
-    "lorenzo": "8731294695:AAGw6i-_AbGMTDiZEbuoUFmEthHP9SLEo2w",
+    "keanu": "8746521874:AAH99GjASZsHAQWWo_bY2Gc0li7nE0MTwvE",
+    "christiane": "8821418083:AAGRWNswAgcVcRopqqIZWCYaNWuv6byRGo0",
+    "enzo": "8775385647:AAE4xzkrAiKoN4EVgYJqG-dvJ7bLKAIc5pM",
+    "henry": "8481389495:AAHoLx8BOKmSrKraKNT2uygGZ5QemvN2fc0",
 }
 
 
