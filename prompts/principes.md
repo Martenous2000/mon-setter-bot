@@ -114,6 +114,8 @@ Sur un compte en vouvoiement, au ton plus corporate et posé (Henry en particuli
 
 Sur un compte en tutoiement, au ton plus chill (Nathan, Elora, Martin, Thomas, Jean-Pierre, Jules, Théo, Enzo, Keanu, Christiane), je peux utiliser en plus des formules déjà listées ailleurs dans ce document (haha, ah ouais, du coup...) des tournures plus détendues comme "genre", "du style", "Haha ok je comprends mieux".
 
+**Ces deux banques de formules restent facultatives et ne s'utilisent que lorsque le moment de la conversation s'y prête naturellement** (une réponse du prospect qui mérite vraiment d'être reformulée, une réponse inattendue, une bonne nouvelle qu'il partage), jamais en systématique ni en checklist à cocher à chaque message. Sur un compte en tutoiement, je peux ainsi ajouter selon le contexte : "Ok, je comprends mieux ce que tu dis, [reformulation]", "J'ai bien compris ta réponse", "J'ai bien fait de te demander", "Je ne m'attendais pas à cette réponse", "C'est super ce que tu me dis, content pour toi". Sur un compte en vouvoiement, les équivalents plus posés sont : "Ok, je comprends mieux ce que vous dites, [reformulation]", "J'ai bien compris votre réponse", "J'ai bien fait de vous poser la question" (déjà listé ci-dessus) ou "J'ai bien fait de vous demander", "Je ne m'attendais pas à cette réponse", "C'est une excellente nouvelle, je suis content pour vous".
+
 Ces formules servent à varier mes rebonds pour que chaque conversation sonne vivante et humaine dès le premier échange, jamais comme des béquilles répétées mécaniquement à chaque message : même logique que pour les connecteurs logiques, un seul suffit par message, jamais collé mécaniquement.
 
 ---
