@@ -21,11 +21,18 @@
     background: var(--tg-theme-secondary-bg-color, #f5f5f5);
     color: var(--tg-theme-text-color, #000);
   }
+  .toolbar { display: flex; gap: 8px; margin-bottom: 8px; }
+  .pitch-btn {
+    font-size: 14px; padding: 8px 14px; border-radius: 8px; border: none;
+    background: var(--tg-theme-button-color, #2481cc);
+    color: var(--tg-theme-button-text-color, #fff);
+  }
 </style>
 </head>
 <body>
 <div class="wrap">
   <div class="label">Modifie le texte puis appuie sur Envoyer en bas.</div>
+  <div class="toolbar" id="toolbar"></div>
   <textarea id="txt"></textarea>
 </div>
 <script>
@@ -40,6 +47,26 @@
 
   const textarea = document.getElementById('txt');
   textarea.value = initialText;
+
+  const PITCHES = {
+    henry: "Concretement, je propose un accompagnement pour les chefs de projet IT qui veulent gagner en methode et en posture sur le terrain : une seance de coaching individuelle d'1h a 1h30 ou on part de vos problematiques concretes, avec ensuite un plan d'action clair, ou un accompagnement sur 3 mois si vous voulez travailler ca dans la duree (cadrage, pilotage, gouvernance, arbitrages). Je propose un premier echange gratuit de 20-30 minutes, un Audit Flash Projet IT, pour voir concretement ou vous en etes et si ca peut vous aider.\n\nVous seriez dispo cette semaine pour un rapide echange ?",
+    enzo: "So concretely, I help US and Canadian companies get into the French market fast, without the cost and delay of hiring a full time France or Europe sales lead. I can start with a market study to validate the opportunity, then run a 90 day sprint to set up the sales strategy and land your first French accounts, or act directly as your France sales rep on an ongoing basis.\n\nWould you be free for a quick call this week?",
+  };
+
+  const pitchText = PITCHES[accountKey];
+  if (pitchText) {
+    const toolbar = document.getElementById('toolbar');
+    const btn = document.createElement('button');
+    btn.className = 'pitch-btn';
+    btn.type = 'button';
+    btn.textContent = 'Pitch';
+    btn.onclick = () => {
+      const sep = textarea.value.trim() ? '\n\n' : '';
+      textarea.value = textarea.value + sep + pitchText;
+      textarea.focus();
+    };
+    toolbar.appendChild(btn);
+  }
 
   tg.MainButton.setText('Envoyer');
   tg.MainButton.show();
