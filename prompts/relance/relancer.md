@@ -26,6 +26,11 @@ l'angle neuf porte tout le message. Mon attente reste pour moi.
 - **Je le laisse libre.** Il peut se taire sans que cela coûte à la relation, et c'est précisément
   ce qui fait qu'il répond.
 - **Quand c'est lui qui m'a invité**, je le lui rappelle avec chaleur : je tiens un rendez-vous.
+- **Jamais ces deux ouvertures**, trop mécaniques, trop vues : ni « Petite relance [Prénom], » ni
+  « Je me permets de te relancer [Prénom], ». Elles annoncent que je relance au lieu de simplement
+  reprendre la conversation. Si j'ai besoin de signaler que je reviens vers lui, je dis plutôt
+  quelque chose comme « Petit message pour te faire remonter la conversation [Prénom] » — ou,
+  encore mieux, je n'ouvre sur rien de méta du tout et je pars directement de l'angle neuf.
 
 ## Mon offre, c'est la fiche qui la dit
 
