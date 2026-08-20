@@ -228,6 +228,76 @@ async def notify_booking_issue(args):
     return {"content": [{"type": "text", "text": "Alerte envoyée à Martin, il va s'en occuper directement."}]}
 
 
+_ACTIVITY_ID_RE = re.compile(r"activity-(\d{6,})")
+_TRAILING_DIGITS_RE = re.compile(r"(\d{6,})(?!.*\d)")
+
+
+def _extract_activity_id(post_url: str) -> str:
+    """Extrait l'ID d'activity LinkedIn d'une URL de post. Regex prioritaire sur 'activity-<ID>',
+    repli sur la dernière suite de chiffres longue trouvée dans l'URL. Chaîne vide si rien trouvé."""
+    url = (post_url or "").strip()
+    if not url:
+        return ""
+    match = _ACTIVITY_ID_RE.search(url)
+    if match:
+        return match.group(1)
+    match = _TRAILING_DIGITS_RE.search(url)
+    if match:
+        return match.group(1)
+    return ""
+
+
+@tool(
+    "like_post",
+    (
+        "Réagit (like / love / etc.) à un post LinkedIn du prospect, avec le compte Unipile de la conversation en cours. "
+        "UTILISE ce tool dès que le prospect te demande de liker, réagir, ou mettre un j'adore sur un de ses posts. "
+        "post_url = l'URL complète du post LinkedIn (visible dans son profil fourni plus haut, ou donnée par le prospect). "
+        "reaction_type = le type de réaction ('like', 'celebrate', 'support', 'love', 'insightful', 'funny'), "
+        "'love' par défaut sauf si le prospect précise vouloir un simple like."
+    ),
+    {"post_url": str, "reaction_type": str},
+)
+async def like_post(args):
+    post_url = (args.get("post_url") or "").strip()
+    reaction_type = (args.get("reaction_type") or "love").strip().lower()
+    valid_reactions = {"like", "celebrate", "support", "love", "insightful", "funny"}
+    if reaction_type not in valid_reactions:
+        reaction_type = "love"
+
+    activity_id = _extract_activity_id(post_url)
+    if not activity_id:
+        return {
+            "content": [{"type": "text", "text": f"Impossible de trouver l'ID du post dans cette URL : {post_url or '(vide)'}"}],
+            "is_error": True,
+        }
+
+    ctx = CURRENT_CHAT_CONTEXT.get()
+    account_id = ctx.get("account_id", "")
+    if not account_id:
+        return {"content": [{"type": "text", "text": "Compte Unipile introuvable dans le contexte de la conversation."}], "is_error": True}
+
+    try:
+        url = f"{UNIPILE_DSN}/api/v1/posts/reaction"
+        payload = {
+            "account_id": account_id,
+            "post_id": f"urn:li:activity:{activity_id}",
+            "reaction_type": reaction_type,
+        }
+        async with httpx.AsyncClient(timeout=15) as client:
+            resp = await client.post(
+                url,
+                json=payload,
+                headers={"X-API-KEY": UNIPILE_ACCOUNT_KEY, "content-type": "application/json"},
+            )
+            resp.raise_for_status()
+    except Exception as e:
+        err = str(e)[:300]
+        return {"content": [{"type": "text", "text": f"Échec de la réaction Unipile sur le post : {err}"}], "is_error": True}
+
+    return {"content": [{"type": "text", "text": f"Réaction '{reaction_type}' postée avec succès sur le post."}]}
+
+
 @tool(
     "request_handover",
     "Demande un handover humain (tu prends le relais). UTILISE UNIQUEMENT si : (1) le prospect demande explicitement à parler à un humain, (2) frustration ou colère significative, (3) sujet sensible (santé, deuil, crise perso), (4) tu n'as pas l'info nécessaire pour répondre correctement, (5) incohérence repérée que tu ne peux pas résoudre. Reason = en quelques mots, pourquoi.",
@@ -297,6 +367,7 @@ SETTER_MCP_SERVER = create_sdk_mcp_server(
         notify_booking_issue,
         notify_stuck_conversation,
         request_handover,
+        like_post,
     ],
 )
 
@@ -309,6 +380,7 @@ ALLOWED_TOOLS = [
     "mcp__setter_tools__notify_booking_issue",
     "mcp__setter_tools__notify_stuck_conversation",
     "mcp__setter_tools__request_handover",
+    "mcp__setter_tools__like_post",
 ]
 
 
