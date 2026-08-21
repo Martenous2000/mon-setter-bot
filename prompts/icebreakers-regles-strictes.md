@@ -8,11 +8,13 @@ Avant même de choisir entre Type 1 et Type 2, vérifier qu'AUCUNE conversation 
 
 Méthode de vérification fiable (obligatoire) : paginer intégralement `/chats?account_id=X&limit=100` en suivant le `cursor` jusqu'à `null`, puis matcher sur le champ `attendee_provider_id` des résultats retournés. Les filtres query params `attendee_id`/`attendee_provider_id` passés directement à `/chats` sont PEU FIABLES et silencieusement ignorés par l'API (retournent toujours le même lot des ~100 chats les plus récents, indépendamment du filtre) — ne jamais s'y fier seul, toujours repasser par la pagination complète + matching local.
 
-## Type 1 — un post récent pertinent existe
+## Type 1 — cas par défaut, prioritaire (aucune limite d'ancienneté sur le post)
 
 Fichier source : `evo_system_type1_post_pertinent.txt`
 
-Condition d'usage : le prospect a un post récent (moins de 2 mois) qui correspond à un des types prioritaires (événement, plainte/coup de gueule justifié, réaction/opinion tranchée). Jamais un post "de valeur" pur (conseil, framework) — ce type de post est à éviter en priorité.
+Condition d'usage : le prospect a AU MOINS UN post qui correspond à un des types prioritaires (événement, plainte/coup de gueule justifié, réaction/opinion tranchée), quelle que soit son ancienneté. Il n'y a plus de fenêtre de fraîcheur (l'ancienne limite de 2 mois est supprimée) : un post pertinent d'il y a 4 mois, 8 mois ou plus reste utilisable en Type 1 tant qu'il correspond à un type prioritaire. Jamais un post "de valeur" pur (conseil, framework) — ce type de post est à éviter en priorité, quelle que soit sa date.
+
+Le Type 1 est désormais le cas par défaut : passer en revue l'historique de posts du prospect (pas seulement les plus récents) avant de conclure qu'aucun n'est exploitable.
 
 Format obligatoire (Variante 2, comportement par défaut) :
 - "Helllo [prénom]"
@@ -21,11 +23,11 @@ Format obligatoire (Variante 2, comportement par défaut) :
 - Question courte et spécifique qui rebondit sur le post, obligatoire en fin de message
 - 2-3 lignes maximum, jamais de PS, jamais de signature
 
-## Type 2 — aucun post récent pertinent
+## Type 2 — dernier recours, uniquement si vraiment aucun post pertinent n'existe
 
 Fichiers source : `evo_system_type2_pas_de_post_pertinent.txt` / `type2_system_final.txt`
 
-Condition d'usage : pas de post récent exploitable, ou seulement des posts anciens (plus de 2 mois) ou uniquement des posts "de valeur"/promotionnels.
+Condition d'usage : après avoir bien vérifié l'ensemble de l'historique de posts du prospect (pas seulement les récents), il n'existe VRAIMENT aucun post exploitable — soit aucun post du tout, soit uniquement des posts "de valeur"/promotionnels qui ne correspondent à aucun type prioritaire (événement, plainte/réaction). Le Type 2 n'est plus déclenché par une simple ancienneté du post (l'ancienne règle "plus de 2 mois = Type 2" est supprimée) : un post ancien mais pertinent reste du Type 1. Le Type 2 est un dernier recours, à n'utiliser que quand le Type 1 est réellement impossible.
 
 Format obligatoire, exactement 4 blocs séparés par une ligne vide :
 1. "Helllo [prénom]"
@@ -51,7 +53,7 @@ Format obligatoire, exactement 4 blocs séparés par une ligne vide :
 Sur un lot de 15 icebreakers, 7 ont été écrits directement "à la main" dans la conversation, sans repasser par les fichiers de règles ci-dessus, produisant un troisième format hybride non documenté : une seule ligne continue au lieu des 4 blocs du Type 2, sans PS, avec une durée approximée au lieu de la durée exacte du profil ("bientôt 20 ans" au lieu de "depuis 2006").
 
 Cause racine : générer un icebreaker de mémoire au lieu de vérifier explicitement, pour CHAQUE prospect et AVANT d'écrire quoi que ce soit :
-1. Existe-t-il un post récent (moins de 2 mois) qui correspond à un type prioritaire (événement/plainte/réaction) ? → si oui, Type 1, structure Variante 2.
+1. Existe-t-il un post qui correspond à un type prioritaire (événement/plainte/réaction), quelle que soit son ancienneté ? → si oui, Type 1, structure Variante 2.
 2. Si non → Type 2, les 4 blocs, avec la durée et le nom d'entreprise EXACTS relevés sur le profil, jamais estimés.
 
 Correctif permanent : avant tout envoi d'icebreaker, vérifier explicitement laquelle des deux conditions s'applique et respecter le format correspondant à la lettre — ne jamais produire un troisième format, même sous contrainte de temps ou de volume (ex: rounds d'envoi échelonnés, lots de 10+, urgence perçue).
@@ -67,3 +69,11 @@ Cause racine technique identifiée, différente de la 1ère occurrence : l'endpo
 Cela débloque le champ `work_experience` (tableau avec `company`, `position`, `start`, `end` au format `M/D/YYYY`) — c'est la seule source fiable de la durée exacte et du nom d'entreprise pour un lookup individuel hors scraping Apify. Ne jamais construire un bloc 2 sans avoir d'abord vérifié ce champ.
 
 Si même avec `linkedin_sections=experience` le poste actuel n'a pas de nom d'entreprise clair ou de date de début (ex: rôle salarié générique, freelance sans structure nommée), appliquer les cas particuliers déjà documentés dans `evo_system_type2_pas_de_post_pertinent.txt` (reformulation autour du métier) — ne jamais laisser le bloc 2 vide ou l'omettre.
+
+## Changement de règle (2026-08-21) — suppression de la fenêtre de 2 mois sur le Type 1
+
+Ancienne règle : Type 1 réservé aux posts pertinents de moins de 2 mois, Type 2 dès que le post pertinent le plus récent dépassait 2 mois (ou en l'absence de post).
+
+Nouvelle règle, à partir de maintenant : le Type 1 est le cas par défaut et prioritaire, sans aucune limite d'ancienneté sur le post — un post pertinent (événement, plainte/réaction justifiée) reste exploitable en Type 1 quel que soit son âge (2 mois, 6 mois, 1 an...). Le Type 2 devient un dernier recours strict, à n'utiliser que si, après revue de l'ensemble de l'historique de posts du prospect, il n'existe VRAIMENT aucun post pertinent (aucun post du tout, ou seulement des posts "de valeur"/promotionnels).
+
+Raison : l'ancienne fenêtre de 2 mois écartait à tort en Type 2 des prospects qui avaient pourtant un post pertinent exploitable, simplement parce qu'il était un peu ancien — perdant l'avantage du Type 1 (rebond direct sur un post réel, taux de réponse supérieur) sans raison de fond.
