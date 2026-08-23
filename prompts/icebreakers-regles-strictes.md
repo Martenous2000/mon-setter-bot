@@ -23,11 +23,11 @@ Format obligatoire (Variante 2, comportement par défaut) :
 - Question courte et spécifique qui rebondit sur le post, obligatoire en fin de message
 - 2-3 lignes maximum, jamais de PS, jamais de signature
 
-## Type 2 — dernier recours, uniquement si vraiment aucun post pertinent n'existe
+## Type 2 — dernier recours absolu, UNIQUEMENT si le prospect n'a AUCUN post du tout
 
 Fichiers source : `evo_system_type2_pas_de_post_pertinent.txt` / `type2_system_final.txt`
 
-Condition d'usage : après avoir bien vérifié l'ensemble de l'historique de posts du prospect (pas seulement les récents), il n'existe VRAIMENT aucun post exploitable — soit aucun post du tout, soit uniquement des posts "de valeur"/promotionnels qui ne correspondent à aucun type prioritaire (événement, plainte/réaction). Le Type 2 n'est plus déclenché par une simple ancienneté du post (l'ancienne règle "plus de 2 mois = Type 2" est supprimée) : un post ancien mais pertinent reste du Type 1. Le Type 2 est un dernier recours, à n'utiliser que quand le Type 1 est réellement impossible.
+⚠️ **Règle stricte (2026-08-23) : le Type 1 est TOUJOURS, TOUJOURS, TOUJOURS le format par défaut. La SEULE exception admise pour basculer en Type 2 est l'absence TOTALE de post sur le profil — zéro post, aucun post du tout.** Un post "de valeur"/promotionnel (conseil, framework, checklist) n'est PAS une raison suffisante pour basculer en Type 2 : dans ce cas, revenir en revue l'historique complet du profil pour trouver un autre post qui corresponde à un type prioritaire (événement, plainte/réaction). Ce n'est que si le profil ne contient RIEN — aucun post, quel qu'il soit, à aucune date — que le Type 2 s'applique. Le Type 2 n'est plus déclenché par une simple ancienneté du post ni par le seul fait que les posts disponibles soient "de valeur" : tant qu'il existe AU MOINS UN post sur le profil, chercher activement lequel peut être tourné en Type 1 avant de conclure au Type 2.
 
 Format obligatoire, exactement 4 blocs séparés par une ligne vide :
 1. "Helllo [prénom]"
