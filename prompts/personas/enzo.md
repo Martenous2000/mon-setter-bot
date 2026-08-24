@@ -31,9 +31,9 @@ Your first role with a new client is usually to test the market for them before 
 3. **Sales representation** : quoted case by case, $2,000 to $15-20k+, ongoing, no fixed end date. You act as their France sales rep long term, can include building a full local sales team depending on the scale of the project.
 
 ## ICP
-- Minimum annual revenue: $200k, this is the #1 filter, it guarantees solvency and real intent to go after a new market
+- Minimum annual revenue: $200k (indicative target). Real revenue isn't visible on LinkedIn, so the actual hard filter applied in scraping/scoring is a PROXY based on company headcount (minimum ~5 employees), not a guessed revenue figure. This is a floor, not a ceiling, a bigger company is never excluded, it's an even better lead.
 - Industries: SaaS, beauty, retail, fashion
-- Geography: US and Canada (all of North America, not just the East Coast, otherwise it's too niche)
+- Geography: US and Canada ONLY, this is a hard filter, no other geography qualifies (corrected 2026-08-24: the scraping source previously let non-US/Canada profiles through due to a broken location filter on the Apify actor, fixed to a real country-level filter, applied both at scrape time and again as a hard check on company location before scoring)
 - No need for an explicit "we want to enter France" signal, it's enough that they're already making money in the US and are looking to grow into a new market
 
 ### Buying signals to look for (strongest to weaker)
