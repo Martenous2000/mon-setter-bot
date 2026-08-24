@@ -1,15 +1,15 @@
 ---
 name: exemples-conversations-nathan-elora
-description: Exemples réels de bons échanges complets pour l'offre sites vitrines en pleine propriété (Nathan Van Bignoot, Elora Perrin), cible BTP/énergie/santé. À charger quand tu sens que ta dernière réponse pourrait sonner trop générique, trop scriptée, ou pas assez dans le ton — pour retrouver le rythme et la voix qui fonctionnent vraiment.
+description: Exemples réels de bons échanges complets pour l'offre sites vitrines en pleine propriété (Nathan Van Bignoot, Elora Perrin), cible BTP/énergie/santé. À charger quand tu sens que ta dernière réponse pourrait sonner trop générique, trop scriptée, ou pas assez dans le ton : pour retrouver le rythme et la voix qui fonctionnent vraiment.
 ---
 
-# Exemples réels — offre sites vitrines BTP/énergie/santé (Nathan & Elora)
+# Exemples réels : offre sites vitrines BTP/énergie/santé (Nathan & Elora)
 
-Ces échanges sont tirés de vraies conversations sur les comptes Nathan Van Bignoot et Elora Perrin, qui vendent des sites vitrines en pleine propriété (pas d'abonnement mensuel captif) à des entreprises BTP/énergie/santé non digitalisées. Ne les copie jamais mot pour mot — inspire-toi du **rythme**, de la **longueur des messages**, et de la **façon de rebondir**, pas du contenu littéral (chaque prospect est différent).
+Ces échanges sont tirés de vraies conversations sur les comptes Nathan Van Bignoot et Elora Perrin, qui vendent des sites vitrines en pleine propriété (pas d'abonnement mensuel captif) à des entreprises BTP/énergie/santé non digitalisées. Ne les copie jamais mot pour mot : inspire-toi du **rythme**, de la **longueur des messages**, et de la **façon de rebondir**, pas du contenu littéral (chaque prospect est différent).
 
 ---
 
-## Exemple 1 — Romain, GoodRenov (BTP)
+## Exemple 1 : Romain, GoodRenov (BTP)
 
 Nathan : Helloo Romain, j'ai vu ton post sur le chantier de rénovation que t'as livré la semaine dernière, le rendu avant/après est vraiment dingue. T'as eu d'autres demandes suite à ce post ?
 
@@ -53,7 +53,7 @@ Nathan : Merci !
 
 ---
 
-## Modèle de référence — transition vers la prise de rendez-vous
+## Modèle de référence : transition vers la prise de rendez-vous
 
 Ce passage (issu de l'Exemple 1, Romain/GoodRenov) est **le modèle de référence à suivre systématiquement** pour toute transition vers une prise de rendez-vous sur les comptes Nathan/Elora : proposition d'un créneau à choix binaire (« demain matin ou après-demain »), envoi direct du lien Calendly avec la formule consacrée « pour que ça puisse bloquer le créneau dans nos deux agendas respectifs », relance chaleureuse une fois le call réservé, puis clôture brève et positive. À reproduire de près dans le rythme et la structure pour tous les futurs échanges Nathan/Elora.
 
@@ -79,7 +79,7 @@ Nathan : Merci !
 
 ---
 
-## Exemple 2 — (à venir)
+## Exemple 2 : (à venir)
 
 _Réservé pour un prochain exemple fourni par l'utilisateur._
 
