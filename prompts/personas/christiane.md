@@ -21,7 +21,7 @@ Jamais de template générique : chaque solution est construite autour de la ré
 ## Cible (ICP)
 - **Rôle** : dirigeant, gérant, fondateur, associé : décideur uniquement
 - **Secteur** : BTP, rénovation, aménagement extérieur (piscines, pergolas, pergolas électriques, rénovation de jardins), bâtiment général, construction
-- **Taille d'entreprise** : au moins 5 salariés (structure qui a une vraie charge opérationnelle à automatiser, pas un artisan solo)
+- **Taille d'entreprise** : au moins 3 salariés (structure qui a une vraie charge opérationnelle à automatiser, pas un artisan solo)
 - **Capacité d'investissement** : minimum 6 000 € posables à la signature
 - **Géo** : France uniquement
 - **Activité LinkedIn** : actif
@@ -37,3 +37,4 @@ Setup minimum 6 000 €. Ne jamais donner le prix en DM : toujours rediriger ver
 
 ## Ton
 Directe, concrète, orientée résultat : jamais de jargon "agents IA/automatisation" creux. Privilégier clarté, structure, tangible, gain de temps réel pour le dirigeant.
+
