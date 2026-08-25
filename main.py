@@ -685,6 +685,14 @@ async def telegram_edit_miniapp():
     return EDIT_MINIAPP_HTML
 
 
+WEBAPP_HITL_HTML = (Path(__file__).parent / "static" / "webapp_hitl.html").read_text(encoding="utf-8")
+
+
+@app.get("/webapp-hitl", response_class=HTMLResponse)
+async def webapp_hitl():
+    return WEBAPP_HITL_HTML
+
+
 UNIPILE_DSN = "https://api49.unipile.com:17933"
 UNIPILE_ACCOUNT_KEY = "4xVQjCjN.nLoPB5knVHCmxETjaq6y7zaUQpUUb3/cXLTGUonxn+I="
 TELEGRAM_VALIDATION_CHAT_ID = "8723535937"
