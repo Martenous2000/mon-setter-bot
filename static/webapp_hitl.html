@@ -29,12 +29,6 @@
     color: var(--tg-theme-text-color, #f5f5f5);
     margin-bottom: 10px;
   }
-  .send-btn {
-    width: 100%; box-sizing: border-box; font-size: 16px; font-weight: 600;
-    padding: 14px; border-radius: 10px; border: none;
-    background: var(--tg-theme-button-color, #5288c1);
-    color: var(--tg-theme-button-text-color, #fff);
-  }
 </style>
 </head>
 <body>
@@ -45,7 +39,6 @@
     <button class="pitch-btn" type="button" id="pitchBtn">&#10133; Pitch</button>
   </div>
   <textarea id="txt"></textarea>
-  <button class="send-btn" type="button" id="sendBtn">Envoyer</button>
 </div>
 <script>
   const tg = window.Telegram.WebApp;
@@ -74,6 +67,7 @@
     theo: "Concretement on t'aide a obtenir des rendez-vous ultra qualifies en automatique chaque mois, sans que tu aies a toucher a la prospection. On installe un systeme IA sur mesure qui gere tout en done for you, et on garantit les resultats contractuellement. Le but c'est simple : que tu te retrouves face a des prospects qui ont le budget, le besoin et la decision, prets a signer.",
     keanu: "Concretement on t'aide a obtenir des rendez-vous ultra qualifies en automatique chaque mois, sans que tu aies a toucher a la prospection. On installe un systeme IA sur mesure qui gere tout en done for you, et on garantit les resultats contractuellement. Le but c'est simple : que tu te retrouves face a des prospects qui ont le budget, le besoin et la decision, prets a signer.",
     samuel: "Concretement on t'aide a obtenir des rendez-vous ultra qualifies en automatique chaque mois, sans que tu aies a toucher a la prospection. On installe un systeme IA sur mesure qui gere tout en done for you, et on garantit les resultats contractuellement. Le but c'est simple : que tu te retrouves face a des prospects qui ont le budget, le besoin et la decision, prets a signer.",
+    samuellyon: "Concretement on t'aide a obtenir des rendez-vous ultra qualifies en automatique chaque mois, sans que tu aies a toucher a la prospection. On installe un systeme IA sur mesure qui gere tout en done for you, et on garantit les resultats contractuellement. Le but c'est simple : que tu te retrouves face a des prospects qui ont le budget, le besoin et la decision, prets a signer.",
     cyril: "Concretement on t'aide a obtenir des rendez-vous ultra qualifies en automatique chaque mois, sans que tu aies a toucher a la prospection. On installe un systeme IA sur mesure qui gere tout en done for you, et on garantit les resultats contractuellement. Le but c'est simple : que tu te retrouves face a des prospects qui ont le budget, le besoin et la decision, prets a signer.",
     franck: "Concretement on t'aide a obtenir des rendez-vous ultra qualifies en automatique chaque mois, sans que tu aies a toucher a la prospection. On installe un systeme IA sur mesure qui gere tout en done for you, et on garantit les resultats contractuellement. Le but c'est simple : que tu te retrouves face a des prospects qui ont le budget, le besoin et la decision, prets a signer.",
     christiane: "Concretement on t'aide a obtenir des rendez-vous ultra qualifies en automatique chaque mois, sans que tu aies a toucher a la prospection. On installe un systeme IA sur mesure qui gere tout en done for you, et on garantit les resultats contractuellement. Le but c'est simple : que tu te retrouves face a des prospects qui ont le budget, le besoin et la decision, prets a signer.",
@@ -82,6 +76,7 @@
     henry: "Concretement j'accompagne des chefs de projet IT juniors et des profils en reconversion a prendre les bons reflexes sur le terrain : le cadrage, la gestion des parties prenantes, la posture face aux sponsors. Je propose un Audit Flash Projet IT, un echange offert de 20 a 30 minutes, pour qu'on regarde ensemble ce qui vous met le plus en difficulte aujourd'hui.",
     viannard: "Je vous accompagne sur l'expertise comptable et l'audit, avec une double competence France et Luxembourg, utile pour les structures ayant une activite transfrontaliere. Mon point d'entree c'est toujours votre situation comptable et fiscale concrete, jamais un discours generique sur l'optimisation.",
     enzo: "I help US and Canadian companies enter and start selling in the French market, as a first step into Europe. You already have the network in France, so instead of a 2-month onboarding and a senior local hire, companies can start selling in France almost immediately through me.",
+    florian: "Concretement on t'aide a obtenir des rendez-vous ultra qualifies en automatique chaque mois, sans que tu aies a toucher a la prospection. On installe un systeme IA sur mesure qui gere tout en done for you, et on garantit les resultats contractuellement. Le but c'est simple : que tu te retrouves face a des prospects qui ont le budget, le besoin et la decision, prets a signer.",
   };
 
   const FALLBACK_PITCH = PITCHES.martin;
@@ -98,13 +93,14 @@
     textarea.focus();
   });
 
-  document.getElementById('sendBtn').addEventListener('click', () => {
+  function doSend() {
     tg.sendData(JSON.stringify({ chat_id: chatId, text: textarea.value }));
-    tg.close();
-  });
+  }
 
   if (tg.MainButton) {
-    tg.MainButton.hide();
+    tg.MainButton.setText('Envoyer');
+    tg.MainButton.show();
+    tg.MainButton.onClick(doSend);
   }
 </script>
 </body>
