@@ -693,8 +693,8 @@ async def webapp_hitl():
     return WEBAPP_HITL_HTML
 
 
-UNIPILE_DSN = "https://api49.unipile.com:17933"
-UNIPILE_ACCOUNT_KEY = "4xVQjCjN.nLoPB5knVHCmxETjaq6y7zaUQpUUb3/cXLTGUonxn+I="
+UNIPILE_DSN = "https://api59.unipile.com:18979"
+UNIPILE_ACCOUNT_KEY = "LLmbsW7R.CaJenIxJtjn0BNeeE7bjC5hzZySPBnCtCfJAYlHEg2E="
 TELEGRAM_VALIDATION_CHAT_ID = "8723535937"
 
 # Un bot Telegram dédié par compte (validation human-in-the-loop) — même mapping que les routers n8n.
@@ -708,6 +708,12 @@ TELEGRAM_BOT_TOKEN_BY_ACCOUNT = {
     "christiane": "8821418083:AAGRWNswAgcVcRopqqIZWCYaNWuv6byRGo0",
     "enzo": "8775385647:AAE4xzkrAiKoN4EVgYJqG-dvJ7bLKAIc5pM",
     "henry": "8481389495:AAHoLx8BOKmSrKraKNT2uygGZ5QemvN2fc0",
+    "jeanpierre": "8849108958:AAFdLERIDkvU3aGGWl0VhcWnezQn4Od0xfs",
+    "jean-pierre": "8849108958:AAFdLERIDkvU3aGGWl0VhcWnezQn4Od0xfs",
+    "viannard": "8678263108:AAE1ojS89fO4el5rIn-R6vW6wRoV71ZYCLk",
+    "samuellyon": "8919729318:AAEej6N9QGDnfi6HY7qbA_FDaYudz_N7u90",
+    "samuel": "8919729318:AAEej6N9QGDnfi6HY7qbA_FDaYudz_N7u90",
+    "florian": "8979351330:AAGgzmr0GrL5TxRxnpRfLU2d0Nh635Z0Kf4",
 }
 
 
