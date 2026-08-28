@@ -182,6 +182,55 @@
       ]
     },
     {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1Vu44hHABV2zUfB9lyiEzjfuB0XO8adTq0FTacZCi9nQ",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "id": "={{ $json.id }}",
+            "name": "={{ $json.name }}",
+            "linkedinUrl": "={{ $json.linkedinUrl }}",
+            "publicIdentifier": "={{ $json.publicIdentifier }}",
+            "headline": "={{ $json.headline }}",
+            "company": "={{ $json.company }}",
+            "employeeCount": "={{ $json.employeeCount }}",
+            "score": "={{ $json.score }}",
+            "targetAccountName": "={{ $json.targetAccountName }}",
+            "scrapedAt": "={{ $now.setZone('Europe/Paris').toISO() }}"
+          },
+          "matchingColumns": [
+            "id"
+          ]
+        },
+        "options": {}
+      },
+      "id": "append-google-sheet",
+      "name": "Ajouter au Google Sheet Martin",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        -1000,
+        0
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "Fe3F00A34M9ebdAG",
+          "name": "Google Sheets account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
       "id": "filter-open-to-work",
       "name": "Exclure Open to Work",
       "type": "n8n-nodes-base.code",
@@ -241,6 +290,17 @@
       ]
     },
     "Verifier effectif entreprise (2-10 personnes)": {
+      "main": [
+        [
+          {
+            "node": "Ajouter au Google Sheet Martin",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ajouter au Google Sheet Martin": {
       "main": [
         [
           {
