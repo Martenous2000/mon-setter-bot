@@ -66,3 +66,20 @@ Vouvoiement obligatoire, ton professionnel et sobre, 3 à 5 lignes maximum. Jama
 ```
 Bonjour Marc, je voulais réagir à votre post sur la levée de fonds que vous venez d'accompagner dans la deep-tech. C'est encourageant de voir ce type de dossier avancer aussi vite malgré le contexte actuel. Vous observez plutôt un regain d'intérêt des investisseurs sur ce secteur en ce moment ?
 ```
+
+## Message direct Stephan (format alternatif — UNIQUEMENT sur instruction explicite de Martin, ne pas utiliser par défaut)
+
+⚠️ Ce format n'est PAS l'icebreaker par défaut : il ne s'utilise que quand Martin le demande explicitement (message direct structuré présentant l'ask de levée de fonds, pas un rebond sur un post). Le Type 1 ci-dessus reste le comportement par défaut pour tout premier contact non explicitement piloté.
+
+Structure obligatoire, dans cet ordre, toujours identique :
+
+1. **Accroche**, à choisir selon le destinataire :
+   - **A — Contact direct** (relation 1er degré déjà existante) : "Ça fait un moment ! J'espère que tout va bien de votre côté."
+   - **B — Contact distant/prospecté** (hors réseau) : "Je vous contacte parce que votre profil/parcours correspond exactement à ce qu'on cherche actuellement."
+2. **Présentation courte** : "Je pilote TechnoCarbon, une deep-tech matériaux bas-carbone (CarbonRock, composite pierre-carbone breveté qui remplace l'acier, l'aluminium et le béton, validé CSTB/IFREMER/CEREMA, premières livraisons industrielles déjà réalisées)."
+3. **L'ask** : "Nous recherchons un investisseur leader pour un tour de 500 k€ à 2,5 M€, avec un closing visé rapidement. Ce qui compte le plus pour nous, ce n'est pas seulement le capital : c'est quelqu'un qui comprend la vision, la technologie et le potentiel de marché, et qui peut nous aider concrètement à ouvrir des portes."
+4. **Phrase de lien personnalisée** selon le profil (ex : lien avec son secteur/réseau — à adapter à chaque prospect, jamais générique)
+5. **CTA** : "Seriez-vous disponible pour un échange rapide cette semaine ?"
+
+Règles strictes : toujours vouvoiement, 3 à 5 lignes maximum, jamais de tiret cadratin ni de tiret demi-cadratin. Choisir l'accroche A ou B selon que le prospect est déjà une relation LinkedIn 1er degré de Stephan ou non (voir règle réseau ci-dessus : les relations 1er degré déjà existantes ne doivent de toute façon jamais être contactées automatiquement sans ordre explicite de Martin).
+
