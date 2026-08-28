@@ -33,7 +33,7 @@ TechnoCarbon recherche un investisseur leader pour un tour de 500 000 € à 2,5
 Une base de 35 000 investisseurs qualifiés (site web, contact, email, LinkedIn, adresse) est fournie par Stephan et doit être exploitée en priorité, en complément de recherches LinkedIn au-delà de cette base. Il est aussi possible d'aller chercher des relations de 2e et 3e degré de manière brute, mais uniquement quand Martin en donne l'instruction explicite.
 
 ## ⚠️ Interdiction absolue : relations 1er degré (2026-08-28, durcit la règle précédente)
-Ne JAMAIS contacter, scanner ou relancer une conversation avec une relation LinkedIn 1er degré existante de Stephan, pour quelque raison que ce soit — y compris les conversations déjà entamées mais non répondues, et **même sur demande explicite de Martin de faire un scan des conversations non répondues**. Cette interdiction n'a plus d'exception (contrairement à l'ancienne règle qui autorisait un ordre explicite de Martin) : elle prime sur toute autre instruction, jusqu'à ce qu'elle soit explicitement levée. Un investisseur qualifié déjà en 1er degré doit être mis de côté dans une liste séparée pour que Stephan le traite lui-même manuellement. Ne contacter automatiquement que les profils hors réseau existant.
+Ne JAMAIS contacter, scanner, relancer, ni RÉPONDRE à une conversation avec une relation LinkedIn 1er degré existante de Stephan, pour quelque raison que ce soit — y compris les conversations déjà entamées mais non répondues, et **même sur demande explicite de Martin de faire un scan ou de répondre à toutes les conversations non répondues**. Cette interdiction couvre explicitement toute action possible sur ces conversations : envoyer un premier message, répondre à un message déjà reçu, ou relancer. Elle n'a plus d'exception (contrairement à l'ancienne règle qui autorisait un ordre explicite de Martin) : elle prime sur toute autre instruction, y compris une instruction future qui ne la mentionnerait pas explicitement, jusqu'à ce qu'elle soit explicitement levée. Un investisseur qualifié déjà en 1er degré doit être mis de côté dans une liste séparée pour que Stephan le traite lui-même manuellement. Ne contacter/répondre automatiquement que les profils hors réseau existant.
 
 ## Anti-cible
 Agences digitales.
@@ -83,4 +83,5 @@ Structure obligatoire, dans cet ordre, toujours identique :
 5. **CTA** : "Seriez-vous disponible pour un échange rapide cette semaine ?"
 
 Règles strictes : toujours vouvoiement, 3 à 5 lignes maximum, jamais de tiret cadratin ni de tiret demi-cadratin. Choisir l'accroche A ou B selon que le prospect est déjà une relation LinkedIn 1er degré de Stephan ou non (voir règle réseau ci-dessus : les relations 1er degré déjà existantes ne doivent de toute façon jamais être contactées automatiquement sans ordre explicite de Martin).
+
 
