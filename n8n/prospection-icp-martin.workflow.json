@@ -22,55 +22,17 @@
       ]
     },
     {
-      "parameters": {
-        "method": "POST",
-        "url": "https://api.apify.com/v2/acts/harvestapi~linkedin-profile-search/run-sync-get-dataset-items",
-        "sendHeaders": true,
-        "headerParameters": {
-          "parameters": [
-            {
-              "name": "Content-Type",
-              "value": "application/json"
-            }
-          ]
-        },
-        "sendBody": true,
-        "specifyBody": "json",
-        "jsonBody": "={{ JSON.stringify({ searchQuery: \"consultant automatisation IA startup France\", maxItems: 75, locations: [\"France\"], profileScraperMode: \"Full\" }) }}",
-        "options": {
-          "timeout": 280000
-        },
-        "authentication": "genericCredentialType",
-        "genericAuthType": "httpHeaderAuth"
-      },
-      "id": "apify-scrape",
-      "name": "Scraper Apify (fondateurs agence IA)",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.2,
+      "id": "unipile-search-scrape",
+      "name": "Rechercher leads (Unipile natif)",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
       "position": [
         -1780,
         0
       ],
-      "credentials": {
-        "httpHeaderAuth": {
-          "id": "LKiWoCX7cSFsMpdg",
-          "name": "Apify Key (payant 2026-07-28)"
-        }
-      },
-      "onError": "continueRegularOutput"
-    },
-    {
       "parameters": {
-        "jsCode": "// Aplati les resultats Apify et attache le compte cible\nconst items = $input.all();\nconst out = [];\nfor (const item of items) {\n  const profiles = Array.isArray(item.json) ? item.json : [item.json];\n  for (const p of profiles) {\n    if (!p || !p.linkedinUrl) continue;\n    out.push({ json: { ...p, targetAccountName: 'Martin Cuisinier', targetAccountId: '-tyMuFk1SFyAZIaeNVoRkA' } });\n  }\n}\nreturn out;"
-      },
-      "id": "flatten-profiles",
-      "name": "Aplatir profils",
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        -1560,
-        0
-      ]
+        "jsCode": "const key = \"LLmbsW7R.CaJenIxJtjn0BNeeE7bjC5hzZySPBnCtCfJAYlHEg2E=\";\nconst base = \"https://api59.unipile.com:18979\";\nconst accountId = \"wposCL6zQ_mVZfIbcUmF6g\";\nconst searchQuery = \"consultant automatisation IA startup France\";\nconst targetAccountName = \"Martin Cuisinier\";\n\nfunction parseWorkDurationMonths(exp) {\n  if (!exp || !exp.start) return 0;\n  const start = new Date(exp.start);\n  const end = exp.end ? new Date(exp.end) : new Date();\n  if (isNaN(start.getTime())) return 0;\n  const months = (end.getFullYear() - start.getFullYear()) * 12 + (end.getMonth() - start.getMonth());\n  return Math.max(months, 0);\n}\nfunction durationLabel(months) {\n  const yr = Math.floor(months / 12);\n  const mo = months % 12;\n  let s = '';\n  if (yr > 0) s += yr + ' yr ';\n  if (mo > 0) s += mo + ' mo';\n  return s.trim();\n}\n\nlet searchResults = [];\ntry {\n  const resp = await this.helpers.httpRequest({\n    method: 'POST',\n    url: base + '/api/v1/linkedin/search?account_id=' + accountId,\n    headers: { 'X-API-KEY': key, 'Content-Type': 'application/json' },\n    body: { api: 'classic', category: 'people', keywords: searchQuery },\n    json: true,\n  });\n  searchResults = (resp.items || []).filter(i => i.type === 'PEOPLE').slice(0, 40);\n} catch (e) {\n  return [];\n}\n\nconst out = [];\nfor (const person of searchResults) {\n  let profile = null;\n  try {\n    profile = await this.helpers.httpRequest({\n      method: 'GET',\n      url: base + '/api/v1/users/' + encodeURIComponent(person.id) + '?account_id=' + accountId + '&linkedin_sections=experience',\n      headers: { 'X-API-KEY': key },\n      json: true,\n    });\n  } catch (e) {\n    continue;\n  }\n  if (!profile) continue;\n\n  const exp = (profile.work_experience && profile.work_experience[0]) || {};\n  const months = parseWorkDurationMonths(exp);\n\n  out.push({\n    json: {\n      id: profile.provider_id,\n      firstName: profile.first_name || '',\n      lastName: profile.last_name || '',\n      linkedinUrl: 'https://www.linkedin.com/in/' + (profile.public_identifier || ''),\n      headline: profile.headline || '',\n      followerCount: profile.follower_count || 0,\n      currentPosition: [{\n        position: exp.position || '',\n        description: exp.description || '',\n        duration: durationLabel(months),\n        employmentType: exp.status || '',\n        companyName: exp.company || '',\n        companyLinkedinUrl: exp.company_id ? ('https://www.linkedin.com/company/' + exp.company_id) : '',\n      }],\n      targetAccountName: targetAccountName,\n      targetAccountId: accountId,\n    }\n  });\n}\nreturn out;\n"
+      }
     },
     {
       "parameters": {
@@ -95,12 +57,12 @@
         0
       ],
       "parameters": {
-        "jsCode": "const key = \"dAD+/okr.dhaKPu5eBrawhgUFEh/kT3rywp8+CujTZWOT+260gX0=\";\nconst base = \"https://api30.unipile.com:16068\";\nconst results = [];\n\nfor (const item of $input.all()) {\n  const p = item.json;\n  let employeeCount = null;\n  const companyPublicId = (p.companyLinkedinUrl || '').match(/linkedin\\.com\\/company\\/([^/?]+)/)?.[1] || '';\n\n  if (companyPublicId) {\n    try {\n      const resp = await this.helpers.httpRequest({\n        method: 'GET',\n        url: base + '/api/v1/linkedin/company/' + companyPublicId + '?account_id=' + p.targetAccountId,\n        headers: { 'X-API-KEY': key },\n        json: true\n      });\n      employeeCount = resp.employee_count != null ? resp.employee_count : null;\n    } catch (e) {\n      employeeCount = null;\n    }\n  }\n\n  // Critere obligatoire: entre 2 et 10 personnes dans l'entreprise (sweet spot pour l'offre 2000e/mois\n  // - en dessous de 2, budget hors de portee ; au dessus de 10, plus le meme profil de decideur/besoin)\n  if (employeeCount === null || employeeCount < 2 || employeeCount > 10) continue;\n\n  // Bonus de score pour effectif dans la fourchette ideale\n  let effectifBonus = 0;\n  if (employeeCount >= 5) effectifBonus = 15;\n  else if (employeeCount >= 2) effectifBonus = 10;\n\n  results.push({ json: { ...p, employeeCount, score: (p.score || 0) + effectifBonus } });\n}\n\nreturn results;"
+        "jsCode": "const key = \"LLmbsW7R.CaJenIxJtjn0BNeeE7bjC5hzZySPBnCtCfJAYlHEg2E=\";\nconst base = \"https://api59.unipile.com:18979\";\nconst results = [];\n\nfor (const item of $input.all()) {\n  const p = item.json;\n  let employeeCount = null;\n  const companyPublicId = (p.companyLinkedinUrl || '').match(/linkedin\\.com\\/company\\/([^/?]+)/)?.[1] || '';\n\n  if (companyPublicId) {\n    try {\n      const resp = await this.helpers.httpRequest({\n        method: 'GET',\n        url: base + '/api/v1/linkedin/company/' + companyPublicId + '?account_id=' + p.targetAccountId,\n        headers: { 'X-API-KEY': key },\n        json: true\n      });\n      employeeCount = resp.employee_count != null ? resp.employee_count : null;\n    } catch (e) {\n      employeeCount = null;\n    }\n  }\n\n  // Si aucune page Company n'est identifiable (frequent pour tres jeunes structures/startups sans page\n  // LinkedIn officielle), on ne peut pas verifier l'effectif : on garde le lead sans bonus/malus plutot\n  // que de le rejeter a tort (ce sont souvent de bons profils ICP malgre l'absence de page Company).\n  if (!companyPublicId || employeeCount === null) {\n    results.push({ json: { ...p, employeeCount: null } });\n    continue;\n  }\n\n  // Si la page Company existe et donne un effectif hors fourchette 2-10, on rejette (signal fiable).\n  if (employeeCount < 2 || employeeCount > 10) continue;\n\n  let effectifBonus = 0;\n  if (employeeCount >= 5) effectifBonus = 15;\n  else if (employeeCount >= 2) effectifBonus = 10;\n\n  results.push({ json: { ...p, employeeCount, score: (p.score || 0) + effectifBonus } });\n}\n\nreturn results;\n"
       }
     },
     {
       "parameters": {
-        "jsCode": "const key = \"dAD+/okr.dhaKPu5eBrawhgUFEh/kT3rywp8+CujTZWOT+260gX0=\";\nconst base = \"https://api30.unipile.com:16068\";\n\nlet sentIds = new Set();\ntry {\n  const resp = await this.helpers.httpRequest({\n    method: 'GET',\n    url: base + '/api/v1/users/invite/sent?account_id=-tyMuFk1SFyAZIaeNVoRkA&limit=200',\n    headers: { 'X-API-KEY': key },\n    json: true,\n  });\n  (resp.items || []).forEach(i => { if (i.invited_user_id) sentIds.add(i.invited_user_id); });\n} catch (e) {}\n\nconst staticData = $getWorkflowStaticData('global');\nstaticData.triedIds = staticData.triedIds || {};\nconst now = Date.now();\nconst TWELVE_HOURS = 12 * 3600000;\nfor (const id of Object.keys(staticData.triedIds)) {\n  if (now - staticData.triedIds[id] > TWELVE_HOURS) delete staticData.triedIds[id];\n}\nconst triedRecently = new Set(Object.keys(staticData.triedIds));\n\nconst items = $input.all();\nconst fresh = items.filter(i => !sentIds.has(i.json.id) && !triedRecently.has(i.json.id));\nfresh.sort((a, b) => (b.json.score || 0) - (a.json.score || 0));\nconst picked = fresh.slice(0, 16);\n\n// Pre-calcule un instant d'envoi cible pour chacun, reparti uniformement entre maintenant et 19h00 Paris,\n// avec un jitter +/-20% pour eviter un pattern parfaitement regulier.\nconst parisNow = new Date(new Date().toLocaleString('en-US', { timeZone: 'Europe/Paris' }));\nconst endOfWindow = new Date(parisNow);\nendOfWindow.setHours(19, 0, 0, 0);\nconst msRemaining = Math.max(endOfWindow.getTime() - parisNow.getTime(), 0);\nconst n = Math.max(picked.length, 1);\nconst baseIntervalMs = msRemaining / n;\n\nlet cursorMs = 0;\nfor (let idx = 0; idx < picked.length; idx++) {\n  const jitterFactor = 0.8 + Math.random() * 0.4;\n  cursorMs += baseIntervalMs * jitterFactor;\n  picked[idx].json._waitSeconds = Math.min(Math.max(Math.round(cursorMs / 1000), 20), 39600);\n}\n// _waitSeconds est un delai CUMULE depuis le debut du run (pas un delai relatif au lead precedent),\n// donc chaque etape Wait doit soustraire le temps deja ecoule pour rester alignee sur la fenetre.\nif (picked.length) picked[0].json._runStartMs = Date.now();\nfor (let idx = 1; idx < picked.length; idx++) picked[idx].json._runStartMs = picked[0].json._runStartMs;\n\nreturn picked;\n"
+        "jsCode": "const key = \"LLmbsW7R.CaJenIxJtjn0BNeeE7bjC5hzZySPBnCtCfJAYlHEg2E=\";\nconst base = \"https://api59.unipile.com:18979\";\n\nlet sentIds = new Set();\ntry {\n  const resp = await this.helpers.httpRequest({\n    method: 'GET',\n    url: base + '/api/v1/users/invite/sent?account_id=wposCL6zQ_mVZfIbcUmF6g&limit=200',\n    headers: { 'X-API-KEY': key },\n    json: true,\n  });\n  (resp.items || []).forEach(i => { if (i.invited_user_id) sentIds.add(i.invited_user_id); });\n} catch (e) {}\n\nconst staticData = $getWorkflowStaticData('global');\nstaticData.triedIds = staticData.triedIds || {};\nconst now = Date.now();\nconst TWELVE_HOURS = 12 * 3600000;\nfor (const id of Object.keys(staticData.triedIds)) {\n  if (now - staticData.triedIds[id] > TWELVE_HOURS) delete staticData.triedIds[id];\n}\nconst triedRecently = new Set(Object.keys(staticData.triedIds));\n\nconst items = $input.all();\nconst fresh = items.filter(i => !sentIds.has(i.json.id) && !triedRecently.has(i.json.id));\nfresh.sort((a, b) => (b.json.score || 0) - (a.json.score || 0));\nconst picked = fresh.slice(0, 16);\n\nconst parisNow = new Date(new Date().toLocaleString('en-US', { timeZone: 'Europe/Paris' }));\nconst endOfWindow = new Date(parisNow);\nendOfWindow.setHours(19, 0, 0, 0);\nconst msRemaining = Math.max(endOfWindow.getTime() - parisNow.getTime(), 0);\nconst n = Math.max(picked.length, 1);\nconst baseIntervalMs = msRemaining / n;\n\nlet cursorMs = 0;\nfor (let idx = 0; idx < picked.length; idx++) {\n  const jitterFactor = 0.8 + Math.random() * 0.4;\n  cursorMs += baseIntervalMs * jitterFactor;\n  picked[idx].json._waitSeconds = Math.min(Math.max(Math.round(cursorMs / 1000), 5), 39600);\n}\nif (picked.length) picked[0].json._runStartMs = Date.now();\nfor (let idx = 1; idx < picked.length; idx++) picked[idx].json._runStartMs = picked[0].json._runStartMs;\n\nreturn picked;\n"
       },
       "id": "dedup-unipile-1785414378347",
       "name": "Dedup vs invitations Unipile",
@@ -142,7 +104,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const parisHour = parseInt(new Intl.DateTimeFormat('fr-FR', { timeZone: 'Europe/Paris', hour: 'numeric', hour12: false }).format(new Date()), 10);\nif (parisHour < 8 || parisHour >= 19) {\n  return [];\n}\nreturn [{ json: $input.item.json }];\n"
+        "jsCode": "const parisHour = parseInt(new Intl.DateTimeFormat('fr-FR', { timeZone: 'Europe/Paris', hour: 'numeric', hour12: false }).format(new Date()), 10);\nif (parisHour < 8 || parisHour >= 19) {\n  return [];\n}\nreturn [{ json: $input.item.json }];"
       },
       "id": "window-1785414378347",
       "name": "Vérifier fenêtre 8h-19h",
@@ -155,7 +117,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const key = \"dAD+/okr.dhaKPu5eBrawhgUFEh/kT3rywp8+CujTZWOT+260gX0=\";\nconst base = \"https://api30.unipile.com:16068\";\nconst lead = $input.item.json;\nconst accountId = lead.targetAccountId || lead.accountId || '-tyMuFk1SFyAZIaeNVoRkA';\n\n// Codes typiques de quota/rate-limit LinkedIn releves par Unipile : 422 (cannot_resend_yet),\n// 429 (rate limit), 500 (erreur generique cote LinkedIn). On retente 2 fois avec backoff court\n// avant d'abandonner ce lead et de laisser le workflow continuer sur le suivant.\nconst RETRYABLE_STATUS = [422, 429, 500];\nconst MAX_ATTEMPTS = 3;\n\nlet lastError = null;\nlet sent = false;\nlet responseBody = null;\n\nfor (let attempt = 1; attempt <= MAX_ATTEMPTS && !sent; attempt++) {\n  try {\n    responseBody = await this.helpers.httpRequest({\n      method: 'POST',\n      url: base + '/api/v1/users/invite',\n      headers: { 'X-API-KEY': key, 'Content-Type': 'application/json' },\n      body: { provider_id: lead.id, account_id: accountId },\n      json: true,\n    });\n    sent = true;\n  } catch (e) {\n    lastError = e;\n    const status = e.response?.statusCode || e.statusCode || e.status || 0;\n    const quotaLikely = RETRYABLE_STATUS.includes(status);\n    if (!quotaLikely || attempt === MAX_ATTEMPTS) break;\n    // Backoff court avant retry : 15s puis 45s.\n    const backoffMs = attempt === 1 ? 15000 : 45000;\n    await new Promise(r => setTimeout(r, backoffMs));\n  }\n}\n\nreturn [{\n  json: {\n    ...lead,\n    _inviteSent: sent,\n    _inviteSkippedReason: sent ? null : ('quota_or_error_status_' + (lastError?.response?.statusCode || lastError?.statusCode || 'unknown')),\n  }\n}];\n"
+        "jsCode": "const key = \"LLmbsW7R.CaJenIxJtjn0BNeeE7bjC5hzZySPBnCtCfJAYlHEg2E=\";\nconst base = \"https://api59.unipile.com:18979\";\nconst lead = $input.item.json;\nconst accountId = lead.targetAccountId || lead.accountId || 'wposCL6zQ_mVZfIbcUmF6g';\n\n// Codes typiques de quota/rate-limit LinkedIn releves par Unipile : 422 (cannot_resend_yet),\n// 429 (rate limit), 500 (erreur generique cote LinkedIn). On retente 2 fois avec backoff court\n// avant d'abandonner ce lead et de laisser le workflow continuer sur le suivant.\nconst RETRYABLE_STATUS = [422, 429, 500];\nconst MAX_ATTEMPTS = 3;\n\nlet lastError = null;\nlet sent = false;\nlet responseBody = null;\n\nfor (let attempt = 1; attempt <= MAX_ATTEMPTS && !sent; attempt++) {\n  try {\n    responseBody = await this.helpers.httpRequest({\n      method: 'POST',\n      url: base + '/api/v1/users/invite',\n      headers: { 'X-API-KEY': key, 'Content-Type': 'application/json' },\n      body: { provider_id: lead.id, account_id: accountId },\n      json: true,\n    });\n    sent = true;\n  } catch (e) {\n    lastError = e;\n    const status = e.response?.statusCode || e.statusCode || e.status || 0;\n    const quotaLikely = RETRYABLE_STATUS.includes(status);\n    if (!quotaLikely || attempt === MAX_ATTEMPTS) break;\n    // Backoff court avant retry : 15s puis 45s.\n    const backoffMs = attempt === 1 ? 15000 : 45000;\n    await new Promise(r => setTimeout(r, backoffMs));\n  }\n}\n\nreturn [{\n  json: {\n    ...lead,\n    _inviteSent: sent,\n    _inviteSkippedReason: sent ? null : ('quota_or_error_status_' + (lastError?.response?.statusCode || lastError?.statusCode || 'unknown')),\n  }\n}];\n"
       },
       "id": "send-1785414378347",
       "name": "Envoyer demande de connexion",
@@ -186,28 +148,18 @@
         "operation": "appendOrUpdate",
         "documentId": {
           "__rl": true,
-          "value": "1Vu44hHABV2zUfB9lyiEzjfuB0XO8adTq0FTacZCi9nQ",
-          "mode": "id"
+          "mode": "id",
+          "value": "1Vu44hHABV2zUfB9lyiEzjfuB0XO8adTq0FTacZCi9nQ"
         },
         "sheetName": {
           "__rl": true,
-          "value": "gid=0",
-          "mode": "list"
+          "mode": "id",
+          "value": "874067492"
         },
         "columns": {
-          "mappingMode": "defineBelow",
-          "value": {
-            "id": "={{ $json.id }}",
-            "name": "={{ $json.name }}",
-            "linkedinUrl": "={{ $json.linkedinUrl }}",
-            "publicIdentifier": "={{ $json.publicIdentifier }}",
-            "headline": "={{ $json.headline }}",
-            "company": "={{ $json.company }}",
-            "employeeCount": "={{ $json.employeeCount }}",
-            "score": "={{ $json.score }}",
-            "targetAccountName": "={{ $json.targetAccountName }}",
-            "scrapedAt": "={{ $now.setZone('Europe/Paris').toISO() }}"
-          },
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "schema": [],
           "matchingColumns": [
             "id"
           ]
@@ -249,29 +201,7 @@
       "main": [
         [
           {
-            "node": "Scraper Apify (fondateurs agence IA)",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Scraper Apify (fondateurs agence IA)": {
-      "main": [
-        [
-          {
-            "node": "Aplatir profils",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Aplatir profils": {
-      "main": [
-        [
-          {
-            "node": "Exclure Open to Work",
+            "node": "Rechercher leads (Unipile natif)",
             "type": "main",
             "index": 0
           }
@@ -388,10 +318,22 @@
           }
         ]
       ]
+    },
+    "Rechercher leads (Unipile natif)": {
+      "main": [
+        [
+          {
+            "node": "Exclure Open to Work",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "settings": {
     "executionOrder": "v1",
-    "errorWorkflow": "xqvf2o0KvOMAScEk"
+    "errorWorkflow": "xqvf2o0KvOMAScEk",
+    "availableInMCP": true
   }
 }
