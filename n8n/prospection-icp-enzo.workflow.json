@@ -1,1 +1,338 @@
-{"name":"🔗 Prospection ICP - Scraping + Demandes de connexion (Enzo Vidiella)","description":null,"active":false,"isArchived":false,"nodes":[{"parameters":{"rule":{"interval":[{"field":"cronExpression","expression":"2 8 * * *"}]}},"id":"trigger-daily","name":"Déclencheur quotidien 8h","type":"n8n-nodes-base.scheduleTrigger","typeVersion":1.2,"position":[-2000,0]},{"parameters":{"method":"POST","url":"https://api.apify.com/v2/acts/harvestapi~linkedin-profile-search/run-sync-get-dataset-items","sendHeaders":true,"headerParameters":{"parameters":[{"name":"Content-Type","value":"application/json"}]},"sendBody":true,"specifyBody":"json","jsonBody":"={{ JSON.stringify({ searchQuery: \"founder CEO SaaS beauty retail fashion brand\", maxItems: 75, autoQuerySegmentation: true, autoQuerySegmentationTargetCountries: [\"United States\", \"Canada\"], profileScraperMode: \"Full\" }) }}","options":{"timeout":280000},"authentication":"genericCredentialType","genericAuthType":"httpHeaderAuth"},"id":"apify-scrape","name":"Scraper Apify (founders US-Canada SaaS-beauty-retail-fashion)","type":"n8n-nodes-base.httpRequest","typeVersion":4.2,"position":[-1780,0],"credentials":{"httpHeaderAuth":{"id":"LKiWoCX7cSFsMpdg","name":"Apify Key (payant 2026-07-28)"}},"onError":"continueRegularOutput"},{"parameters":{"jsCode":"// Aplati les resultats Apify et attache le compte cible\nconst items = $input.all();\nconst out = [];\nfor (const item of items) {\n  const profiles = Array.isArray(item.json) ? item.json : [item.json];\n  for (const p of profiles) {\n    if (!p || !p.linkedinUrl) continue;\n    out.push({ json: { ...p, targetAccountName: 'Enzo Vidiella', targetAccountId: 'rK6EsaFyRYG4xxssJ5X6vQ' } });\n  }\n}\nreturn out;"},"id":"flatten-profiles","name":"Aplatir profils","type":"n8n-nodes-base.code","typeVersion":2,"position":[-1560,0]},{"parameters":{"jsCode":"// Scoring ICP Enzo sur 100 pts — ne garde que score >= 60\nfunction parseDurationMonths(duration) {\n  if (!duration) return 0;\n  let months = 0;\n  const yrMatch = duration.match(/(\\d+)\\s*yr/);\n  const moMatch = duration.match(/(\\d+)\\s*mo/);\n  if (yrMatch) months += parseInt(yrMatch[1], 10) * 12;\n  if (moMatch) months += parseInt(moMatch[1], 10);\n  return months;\n}\n\nfunction scoreProfile(p) {\n  const pos = (p.currentPosition && p.currentPosition[0]) || {};\n  const headline = (p.headline || p.summary || '').toLowerCase();\n  const posTitle = (pos.position || '').toLowerCase();\n  const desc = (pos.description || '').toLowerCase();\n  const months = parseDurationMonths(pos.duration);\n\n  // S1: fondateur/CEO + anciennete\n  let s1 = 0;\n  const isFounder = /founder|ceo|owner|president|co-founder/.test(posTitle) || /founder|ceo|owner/.test(headline);\n  if (isFounder) s1 += 15;\n  if (months >= 12) s1 += 15;\n  else if (months >= 6) s1 += 7;\n\n  // S2: secteur cible (SaaS, beauty, retail, fashion)\n  let s2 = 0;\n  const sectorKeywords = /saas|software|beauty|cosmetic|retail|fashion|apparel|ecommerce|e-commerce|dtc|d2c/;\n  if (sectorKeywords.test(headline) || sectorKeywords.test(desc)) s2 += 20;\n\n  // S3: signal d'achat fort — recrutement actif poste commercial/directeur Europe\n  let s3 = 0;\n  if (/hiring|we're hiring|job opening|now hiring/.test(desc)) s3 += 10;\n  if (/europe sales|country manager europe|head of sales europe|eu expansion|expanding to europe|international expansion/.test(desc) || /europe sales|country manager europe/.test(headline)) s3 += 20;\n  if (p.followerCount && p.followerCount > 1000) s3 += 5;\n\n  // S4: signal d'expansion / nouveau marche (pas besoin d'un signal explicite France)\n  let s4 = 0;\n  if (/expand|expansion|new market|scaling|growth/.test(desc)) s4 += 15;\n\n  const total = s1 + s2 + s3 + s4;\n  return { total, s1, s2, s3, s4, months, isFounder };\n}\n\nconst items = $input.all();\nconst out = [];\nfor (const item of items) {\n  const p = item.json;\n  const countryCode = (p.location && p.location.countryCode || '').toUpperCase();\n  if (countryCode !== 'US' && countryCode !== 'CA') continue;\n  const score = scoreProfile(p);\n  if (score.total < 60) continue;\n  const pos = (p.currentPosition && p.currentPosition[0]) || {};\n  out.push({\n    json: {\n      id: p.id,\n      name: (p.firstName || '') + ' ' + (p.lastName || ''),\n      linkedinUrl: p.linkedinUrl,\n      publicIdentifier: (p.linkedinUrl || '').match(/linkedin\\.com\\/in\\/([^/?]+)/)?.[1] || '',\n      headline: p.headline || p.summary || '',\n      company: pos.companyName || '',\n      companyLinkedinUrl: pos.companyLinkedinUrl || '',\n      score: score.total,\n      targetAccountName: p.targetAccountName,\n      targetAccountId: p.targetAccountId\n    }\n  });\n}\nreturn out;"},"id":"score-profiles","name":"Scorer ICP (seuil >=60)","type":"n8n-nodes-base.code","typeVersion":2,"position":[-1340,0]},{"id":"check-revenue-proxy","name":"Verifier taille entreprise (proxy CA >= 200k$)","type":"n8n-nodes-base.code","typeVersion":2,"position":[-1180,0],"parameters":{"jsCode":"const key = \"dAD+/okr.dhaKPu5eBrawhgUFEh/kT3rywp8+CujTZWOT+260gX0=\";\nconst base = \"https://api30.unipile.com:16068\";\nconst results = [];\n\nfor (const item of $input.all()) {\n  const p = item.json;\n  let employeeCount = null;\n  const companyPublicId = (p.companyLinkedinUrl || '').match(/linkedin\\.com\\/company\\/([^/?]+)/)?.[1] || '';\n\n  if (companyPublicId) {\n    try {\n      const resp = await this.helpers.httpRequest({\n        method: 'GET',\n        url: base + '/api/v1/linkedin/company/' + companyPublicId + '?account_id=' + p.targetAccountId,\n        headers: { 'X-API-KEY': key },\n        json: true\n      });\n      employeeCount = resp.employee_count != null ? resp.employee_count : null;\n    } catch (e) {\n      employeeCount = null;\n    }\n  }\n\n  // Proxy taille d'entreprise pour un CA minimum de 200k$ : au moins 2 employes\n  // (en dessous, tres probablement sous le seuil de revenu et de budget requis)\n  if (employeeCount === null || employeeCount < 2) continue;\n\n  let sizeBonus = 0;\n  if (employeeCount >= 10) sizeBonus = 15;\n  else if (employeeCount >= 2) sizeBonus = 8;\n\n  results.push({ json: { ...p, employeeCount, score: (p.score || 0) + sizeBonus } });\n}\n\nreturn results;"}},{"parameters":{"jsCode":"const key = \"dAD+/okr.dhaKPu5eBrawhgUFEh/kT3rywp8+CujTZWOT+260gX0=\";\nconst base = \"https://api30.unipile.com:16068\";\nconst accountId = 'rK6EsaFyRYG4xxssJ5X6vQ';\n\nlet sentIds = new Set();\ntry {\n  const resp = await this.helpers.httpRequest({\n    method: 'GET',\n    url: base + '/api/v1/users/invite/sent?account_id=' + accountId + '&limit=200',\n    headers: { 'X-API-KEY': key },\n    json: true,\n  });\n  (resp.items || []).forEach(i => { if (i.invited_user_id) sentIds.add(i.invited_user_id); });\n} catch (e) {}\n\nconst staticData = $getWorkflowStaticData('global');\nstaticData.triedIds = staticData.triedIds || {};\nconst now = Date.now();\nconst TWELVE_HOURS = 12 * 3600000;\nfor (const id of Object.keys(staticData.triedIds)) {\n  if (now - staticData.triedIds[id] > TWELVE_HOURS) delete staticData.triedIds[id];\n}\nconst triedRecently = new Set(Object.keys(staticData.triedIds));\n\nconst items = $input.all();\nconst fresh = items.filter(i => !sentIds.has(i.json.id) && !triedRecently.has(i.json.id));\nfresh.sort((a, b) => (b.json.score || 0) - (a.json.score || 0));\nconst picked = fresh.slice(0, 16);\n\n// Pre-calcule un instant d'envoi cible pour chacun, reparti uniformement entre maintenant et 19h00 New York,\n// avec un jitter +/-20% pour eviter un pattern parfaitement regulier.\nconst nyNow = new Date(new Date().toLocaleString('en-US', { timeZone: 'America/New_York' }));\nconst endOfWindow = new Date(nyNow);\nendOfWindow.setHours(19, 0, 0, 0);\nconst msRemaining = Math.max(endOfWindow.getTime() - nyNow.getTime(), 0);\nconst n = Math.max(picked.length, 1);\nconst baseIntervalMs = msRemaining / n;\n\nlet cursorMs = 0;\nfor (let idx = 0; idx < picked.length; idx++) {\n  const jitterFactor = 0.8 + Math.random() * 0.4;\n  cursorMs += baseIntervalMs * jitterFactor;\n  picked[idx].json._waitSeconds = Math.min(Math.max(Math.round(cursorMs / 1000), 20), 39600);\n}\nif (picked.length) picked[0].json._runStartMs = Date.now();\nfor (let idx = 1; idx < picked.length; idx++) picked[idx].json._runStartMs = picked[0].json._runStartMs;\n\nreturn picked;\n"},"id":"dedup-unipile-enzo","name":"Dedup vs invitations Unipile","type":"n8n-nodes-base.code","typeVersion":2,"position":[700,200]},{"parameters":{"batchSize":1,"options":{}},"id":"loop-lead-enzo","name":"Boucle 1 lead a la fois","type":"n8n-nodes-base.splitInBatches","typeVersion":3,"position":[900,200]},{"parameters":{"amount":"={{ Math.max(Math.round(($json._runStartMs + $json._waitSeconds*1000 - Date.now())/1000), 5) }}","unit":"seconds"},"id":"wait-lead-enzo","name":"Attente etalee jusqu a 19h","type":"n8n-nodes-base.wait","typeVersion":1.1,"position":[1100,150],"webhookId":"7f6503bc-f0e3-4f27-93e6-5e179a44fbc6"},{"parameters":{"jsCode":"const nyHour = parseInt(new Intl.DateTimeFormat('en-US', { timeZone: 'America/New_York', hour: 'numeric', hour12: false }).format(new Date()), 10);\nif (nyHour < 8 || nyHour >= 19) {\n  return [];\n}\nreturn [{ json: $input.item.json }];\n"},"id":"window-enzo","name":"Vérifier fenêtre 8h-19h (New York)","type":"n8n-nodes-base.code","typeVersion":2,"position":[1300,150]},{"parameters":{"jsCode":"const key = \"dAD+/okr.dhaKPu5eBrawhgUFEh/kT3rywp8+CujTZWOT+260gX0=\";\nconst base = \"https://api30.unipile.com:16068\";\nconst lead = $input.item.json;\nconst providerId = $json.id;\nconst accountId = 'rK6EsaFyRYG4xxssJ5X6vQ';\n\nconst RETRYABLE_STATUS = [422, 429, 500];\nconst MAX_ATTEMPTS = 3;\n\nlet lastError = null;\nlet sent = false;\n\nfor (let attempt = 1; attempt <= MAX_ATTEMPTS && !sent; attempt++) {\n  try {\n    await this.helpers.httpRequest({\n      method: 'POST',\n      url: base + '/api/v1/users/invite',\n      headers: { 'X-API-KEY': key, 'Content-Type': 'application/json' },\n      body: { provider_id: providerId, account_id: accountId },\n      json: true,\n    });\n    sent = true;\n  } catch (e) {\n    lastError = e;\n    const status = e.response?.statusCode || e.statusCode || e.status || 0;\n    const quotaLikely = RETRYABLE_STATUS.includes(status);\n    if (!quotaLikely || attempt === MAX_ATTEMPTS) break;\n    const backoffMs = attempt === 1 ? 15000 : 45000;\n    await new Promise(r => setTimeout(r, backoffMs));\n  }\n}\n\nreturn [{\n  json: {\n    ...lead,\n    _inviteSent: sent,\n    _inviteSkippedReason: sent ? null : ('quota_or_error_status_' + (lastError?.response?.statusCode || lastError?.statusCode || 'unknown')),\n  }\n}];"},"id":"send-enzo","name":"Envoyer demande de connexion","type":"n8n-nodes-base.code","typeVersion":2,"position":[1500,150],"onError":"continueRegularOutput","alwaysOutputData":true},{"parameters":{"jsCode":"const staticData = $getWorkflowStaticData('global');\nstaticData.triedIds = staticData.triedIds || {};\nconst lead = $('Boucle 1 lead a la fois').item.json;\nif (lead && lead.id) {\n  staticData.triedIds[lead.id] = Date.now();\n}\nreturn [{ json: $input.item.json }];"},"id":"mark-tried-enzo","name":"Marquer tentative","type":"n8n-nodes-base.code","typeVersion":2,"position":[2100,150]},{"id":"filter-open-to-work","name":"Exclure Open to Work","type":"n8n-nodes-base.code","typeVersion":2,"position":[-1670,0],"parameters":{"jsCode":"// Exclut tout profil signalant \"Open to Work\" — structure (badge Apify) ou texte (headline/summary/about).\nfunction isOpenToWork(p) {\n  if (p == null) return false;\n  if (p.openToWork === true || p.open_to_work === true || p.isOpenToWork === true) return true;\n  if (Array.isArray(p.badges) && p.badges.some(b => /open.?to.?work/i.test(String(b)))) return true;\n\n  const fields = [p.headline, p.summary, p.about, p.title];\n  const text = fields.filter(Boolean).join(' ').toLowerCase();\n  const patterns = [\n    /open\\s*to\\s*work/i,\n    /#opentowork/i,\n    /ouvert(e)?\\s+aux\\s+opportunit/i,\n    /\\u00e0\\s+l['\\u2019]\\u00e9coute\\s+du\\s+march/i,\n    /en\\s+recherche\\s+d['\\u2019]emploi/i,\n    /disponible\\s+imm\\u00e9diatement/i,\n    /recherche\\s+active(?:ment)?\\s+un\\s+poste/i,\n  ];\n  return patterns.some(re => re.test(text));\n}\n\nconst items = $input.all();\nreturn items.filter(item => !isOpenToWork(item.json));"}},{"parameters":{"operation":"appendOrUpdate","documentId":{"__rl":true,"value":"1hMnsXCz7mu53vKPISPLglEK9fteyRWN9jZfcQTlbZ_A","mode":"id"},"sheetName":{"__rl":true,"value":"gid=0","mode":"list"},"columns":{"mappingMode":"defineBelow","value":{"id":"={{ $json.id }}","name":"={{ $json.name }}","linkedinUrl":"={{ $json.linkedinUrl }}","publicIdentifier":"={{ $json.publicIdentifier }}","headline":"={{ $json.headline }}","company":"={{ $json.company }}","employeeCount":"={{ $json.employeeCount }}","score":"={{ $json.score }}","targetAccountName":"={{ $json.targetAccountName }}","scrapedAt":"={{ $now.setZone('Europe/Paris').toISO() }}"},"matchingColumns":["id"]},"options":{}},"id":"append-google-sheet","name":"Ajouter au Google Sheet Enzo","type":"n8n-nodes-base.googleSheets","typeVersion":4.5,"position":[-980,0],"credentials":{"googleSheetsOAuth2Api":{"id":"Fe3F00A34M9ebdAG","name":"Google Sheets account"}},"onError":"continueRegularOutput"}],"connections":{"Déclencheur quotidien 8h":{"main":[[{"node":"Scraper Apify (founders US-Canada SaaS-beauty-retail-fashion)","type":"main","index":0}]]},"Scraper Apify (founders US-Canada SaaS-beauty-retail-fashion)":{"main":[[{"node":"Aplatir profils","type":"main","index":0}]]},"Aplatir profils":{"main":[[{"node":"Exclure Open to Work","type":"main","index":0}]]},"Scorer ICP (seuil >=60)":{"main":[[{"node":"Verifier taille entreprise (proxy CA >= 200k$)","type":"main","index":0}]]},"Verifier taille entreprise (proxy CA >= 200k$)":{"main":[[{"node":"Ajouter au Google Sheet Enzo","type":"main","index":0}]]},"Dedup vs invitations Unipile":{"main":[[{"node":"Boucle 1 lead a la fois","type":"main","index":0}]]},"Boucle 1 lead a la fois":{"main":[[],[{"node":"Attente etalee jusqu a 19h","type":"main","index":0}]]},"Envoyer demande de connexion":{"main":[[{"node":"Marquer tentative","type":"main","index":0}]]},"Marquer tentative":{"main":[[{"node":"Boucle 1 lead a la fois","type":"main","index":0}]]},"Attente etalee jusqu a 19h":{"main":[[{"node":"Vérifier fenêtre 8h-19h (New York)","type":"main","index":0}]]},"Vérifier fenêtre 8h-19h (New York)":{"main":[[{"node":"Envoyer demande de connexion","type":"main","index":0}]]},"Exclure Open to Work":{"main":[[{"node":"Scorer ICP (seuil >=60)","type":"main","index":0}]]},"Ajouter au Google Sheet Enzo":{"main":[[{"node":"Dedup vs invitations Unipile","type":"main","index":0}]]}},"settings":{"executionOrder":"v1","availableInMCP":true},"staticData":null,"nodeGroups":[],"activeVersionId":null,"versionCounter":7,"triggerCount":0,"sourceWorkflowId":null,"activeVersion":null}
+{
+  "name": "🔗 Prospection ICP - Scraping + Demandes de connexion (Enzo Vidiella)",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "30 21 * * *"
+            }
+          ]
+        }
+      },
+      "id": "trigger-daily",
+      "name": "Déclencheur quotidien 8h",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -2000,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Scoring ICP Enzo sur 100 pts — ne garde que score >= 60\nfunction parseDurationMonths(duration) {\n  if (!duration) return 0;\n  let months = 0;\n  const yrMatch = duration.match(/(\\d+)\\s*yr/);\n  const moMatch = duration.match(/(\\d+)\\s*mo/);\n  if (yrMatch) months += parseInt(yrMatch[1], 10) * 12;\n  if (moMatch) months += parseInt(moMatch[1], 10);\n  return months;\n}\n\nfunction scoreProfile(p) {\n  const pos = (p.currentPosition && p.currentPosition[0]) || {};\n  const headline = (p.headline || p.summary || '').toLowerCase();\n  const posTitle = (pos.position || '').toLowerCase();\n  const desc = (pos.description || '').toLowerCase();\n  const months = parseDurationMonths(pos.duration);\n\n  // S1: fondateur/CEO + anciennete\n  let s1 = 0;\n  const isFounder = /founder|ceo|owner|president|co-founder/.test(posTitle) || /founder|ceo|owner/.test(headline);\n  if (isFounder) s1 += 15;\n  if (months >= 12) s1 += 15;\n  else if (months >= 6) s1 += 7;\n\n  // S2: secteur cible (SaaS, beauty, retail, fashion)\n  let s2 = 0;\n  const sectorKeywords = /saas|software|beauty|cosmetic|retail|fashion|apparel|ecommerce|e-commerce|dtc|d2c/;\n  if (sectorKeywords.test(headline) || sectorKeywords.test(desc)) s2 += 20;\n\n  // S3: signal d'achat fort — recrutement actif poste commercial/directeur Europe\n  let s3 = 0;\n  if (/hiring|we're hiring|job opening|now hiring/.test(desc)) s3 += 10;\n  if (/europe sales|country manager europe|head of sales europe|eu expansion|expanding to europe|international expansion/.test(desc) || /europe sales|country manager europe/.test(headline)) s3 += 20;\n  if (p.followerCount && p.followerCount > 1000) s3 += 5;\n\n  // S4: signal d'expansion / nouveau marche (pas besoin d'un signal explicite France)\n  let s4 = 0;\n  if (/expand|expansion|new market|scaling|growth/.test(desc)) s4 += 15;\n\n  const total = s1 + s2 + s3 + s4;\n  return { total, s1, s2, s3, s4, months, isFounder };\n}\n\nconst items = $input.all();\nconst out = [];\nfor (const item of items) {\n  const p = item.json;\n  const countryCode = (p.location && p.location.countryCode || '').toUpperCase();\n  if (countryCode !== 'US' && countryCode !== 'CA') continue;\n  const score = scoreProfile(p);\n  if (score.total < 60) continue;\n  const pos = (p.currentPosition && p.currentPosition[0]) || {};\n  out.push({\n    json: {\n      id: p.id,\n      name: (p.firstName || '') + ' ' + (p.lastName || ''),\n      linkedinUrl: p.linkedinUrl,\n      publicIdentifier: (p.linkedinUrl || '').match(/linkedin\\.com\\/in\\/([^/?]+)/)?.[1] || '',\n      headline: p.headline || p.summary || '',\n      company: pos.companyName || '',\n      companyLinkedinUrl: pos.companyLinkedinUrl || '',\n      score: score.total,\n      targetAccountName: p.targetAccountName,\n      targetAccountId: p.targetAccountId\n    }\n  });\n}\nreturn out;"
+      },
+      "id": "score-profiles",
+      "name": "Scorer ICP (seuil >=60)",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1340,
+        0
+      ]
+    },
+    {
+      "id": "check-revenue-proxy",
+      "name": "Verifier taille entreprise (proxy CA >= 200k$)",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1180,
+        0
+      ],
+      "parameters": {
+        "jsCode": "const key = \"LLmbsW7R.CaJenIxJtjn0BNeeE7bjC5hzZySPBnCtCfJAYlHEg2E=\";\nconst base = \"https://api59.unipile.com:18979\";\nconst results = [];\n\nfor (const item of $input.all()) {\n  const p = item.json;\n  let employeeCount = null;\n  const companyPublicId = (p.companyLinkedinUrl || '').match(/linkedin\\.com\\/company\\/([^/?]+)/)?.[1] || '';\n\n  if (companyPublicId) {\n    try {\n      const resp = await this.helpers.httpRequest({\n        method: 'GET',\n        url: base + '/api/v1/linkedin/company/' + companyPublicId + '?account_id=' + p.targetAccountId,\n        headers: { 'X-API-KEY': key },\n        json: true\n      });\n      employeeCount = resp.employee_count != null ? resp.employee_count : null;\n    } catch (e) {\n      employeeCount = null;\n    }\n  }\n\n  if (employeeCount === null || employeeCount < 2) continue;\n\n  let sizeBonus = 0;\n  if (employeeCount >= 10) sizeBonus = 15;\n  else if (employeeCount >= 2) sizeBonus = 8;\n\n  results.push({ json: { ...p, employeeCount, score: (p.score || 0) + sizeBonus } });\n}\n\nreturn results;"
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const key = \"LLmbsW7R.CaJenIxJtjn0BNeeE7bjC5hzZySPBnCtCfJAYlHEg2E=\";\nconst base = \"https://api59.unipile.com:18979\";\nconst accountId = 'rK6EsaFyRYG4xxssJ5X6vQ';\n\nlet sentIds = new Set();\ntry {\n  const resp = await this.helpers.httpRequest({\n    method: 'GET',\n    url: base + '/api/v1/users/invite/sent?account_id=' + accountId + '&limit=200',\n    headers: { 'X-API-KEY': key },\n    json: true,\n  });\n  (resp.items || []).forEach(i => { if (i.invited_user_id) sentIds.add(i.invited_user_id); });\n} catch (e) {}\n\nconst staticData = $getWorkflowStaticData('global');\nstaticData.triedIds = staticData.triedIds || {};\nconst now = Date.now();\nconst TWELVE_HOURS = 12 * 3600000;\nfor (const id of Object.keys(staticData.triedIds)) {\n  if (now - staticData.triedIds[id] > TWELVE_HOURS) delete staticData.triedIds[id];\n}\nconst triedRecently = new Set(Object.keys(staticData.triedIds));\n\nconst items = $input.all();\nconst fresh = items.filter(i => !sentIds.has(i.json.id) && !triedRecently.has(i.json.id));\nfresh.sort((a, b) => (b.json.score || 0) - (a.json.score || 0));\nconst picked = fresh.slice(0, 16);\n\nconst nyNow = new Date(new Date().toLocaleString('en-US', { timeZone: 'America/New_York' }));\nconst endOfWindow = new Date(nyNow);\nendOfWindow.setHours(23, 0, 0, 0);\nconst msRemaining = Math.max(endOfWindow.getTime() - nyNow.getTime(), 0);\nconst n = Math.max(picked.length, 1);\nconst baseIntervalMs = msRemaining / n;\n\nlet cursorMs = 0;\nfor (let idx = 0; idx < picked.length; idx++) {\n  const jitterFactor = 0.8 + Math.random() * 0.4;\n  cursorMs += baseIntervalMs * jitterFactor;\n  picked[idx].json._waitSeconds = Math.min(Math.max(Math.round(cursorMs / 1000), 20), 39600);\n}\nif (picked.length) picked[0].json._runStartMs = Date.now();\nfor (let idx = 1; idx < picked.length; idx++) picked[idx].json._runStartMs = picked[0].json._runStartMs;\n\nreturn picked;\n"
+      },
+      "id": "dedup-unipile-enzo",
+      "name": "Dedup vs invitations Unipile",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        700,
+        200
+      ]
+    },
+    {
+      "parameters": {
+        "batchSize": 1,
+        "options": {}
+      },
+      "id": "loop-lead-enzo",
+      "name": "Boucle 1 lead a la fois",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        900,
+        200
+      ]
+    },
+    {
+      "parameters": {
+        "amount": "={{ Math.max(Math.round(($json._runStartMs + $json._waitSeconds*1000 - Date.now())/1000), 5) }}",
+        "unit": "seconds"
+      },
+      "id": "wait-lead-enzo",
+      "name": "Attente etalee jusqu a 19h",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1100,
+        150
+      ],
+      "webhookId": "7f6503bc-f0e3-4f27-93e6-5e179a44fbc6"
+    },
+    {
+      "parameters": {
+        "jsCode": "const nyHour = parseInt(new Intl.DateTimeFormat('en-US', { timeZone: 'America/New_York', hour: 'numeric', hour12: false }).format(new Date()), 10);\nif (nyHour < 8 || nyHour >= 23) {\n  return [];\n}\nreturn [{ json: $input.item.json }];\n"
+      },
+      "id": "window-enzo",
+      "name": "Vérifier fenêtre 8h-19h (New York)",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1300,
+        150
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const key = \"LLmbsW7R.CaJenIxJtjn0BNeeE7bjC5hzZySPBnCtCfJAYlHEg2E=\";\nconst base = \"https://api59.unipile.com:18979\";\nconst lead = $input.item.json;\nconst providerId = $json.id;\nconst accountId = 'rK6EsaFyRYG4xxssJ5X6vQ';\n\nconst RETRYABLE_STATUS = [422, 429, 500];\nconst MAX_ATTEMPTS = 3;\n\nlet lastError = null;\nlet sent = false;\n\nfor (let attempt = 1; attempt <= MAX_ATTEMPTS && !sent; attempt++) {\n  try {\n    await this.helpers.httpRequest({\n      method: 'POST',\n      url: base + '/api/v1/users/invite',\n      headers: { 'X-API-KEY': key, 'Content-Type': 'application/json' },\n      body: { provider_id: providerId, account_id: accountId },\n      json: true,\n    });\n    sent = true;\n  } catch (e) {\n    lastError = e;\n    const status = e.response?.statusCode || e.statusCode || e.status || 0;\n    const quotaLikely = RETRYABLE_STATUS.includes(status);\n    if (!quotaLikely || attempt === MAX_ATTEMPTS) break;\n    const backoffMs = attempt === 1 ? 15000 : 45000;\n    await new Promise(r => setTimeout(r, backoffMs));\n  }\n}\n\nreturn [{\n  json: {\n    ...lead,\n    _inviteSent: sent,\n    _inviteSkippedReason: sent ? null : ('quota_or_error_status_' + (lastError?.response?.statusCode || lastError?.statusCode || 'unknown')),\n  }\n}];"
+      },
+      "id": "send-enzo",
+      "name": "Envoyer demande de connexion",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1500,
+        150
+      ],
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "jsCode": "const staticData = $getWorkflowStaticData('global');\nstaticData.triedIds = staticData.triedIds || {};\nconst lead = $('Boucle 1 lead a la fois').item.json;\nif (lead && lead.id) {\n  staticData.triedIds[lead.id] = Date.now();\n}\nreturn [{ json: $input.item.json }];"
+      },
+      "id": "mark-tried-enzo",
+      "name": "Marquer tentative",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2100,
+        150
+      ]
+    },
+    {
+      "id": "filter-open-to-work",
+      "name": "Exclure Open to Work",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1670,
+        0
+      ],
+      "parameters": {
+        "jsCode": "// Exclut tout profil signalant \"Open to Work\" — structure (badge Apify) ou texte (headline/summary/about).\nfunction isOpenToWork(p) {\n  if (p == null) return false;\n  if (p.openToWork === true || p.open_to_work === true || p.isOpenToWork === true) return true;\n  if (Array.isArray(p.badges) && p.badges.some(b => /open.?to.?work/i.test(String(b)))) return true;\n\n  const fields = [p.headline, p.summary, p.about, p.title];\n  const text = fields.filter(Boolean).join(' ').toLowerCase();\n  const patterns = [\n    /open\\s*to\\s*work/i,\n    /#opentowork/i,\n    /ouvert(e)?\\s+aux\\s+opportunit/i,\n    /\\u00e0\\s+l['\\u2019]\\u00e9coute\\s+du\\s+march/i,\n    /en\\s+recherche\\s+d['\\u2019]emploi/i,\n    /disponible\\s+imm\\u00e9diatement/i,\n    /recherche\\s+active(?:ment)?\\s+un\\s+poste/i,\n  ];\n  return patterns.some(re => re.test(text));\n}\n\nconst items = $input.all();\nreturn items.filter(item => !isOpenToWork(item.json));"
+      }
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "1hMnsXCz7mu53vKPISPLglEK9fteyRWN9jZfcQTlbZ_A"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "id",
+          "value": "480593185"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "schema": [],
+          "matchingColumns": [
+            "id"
+          ]
+        },
+        "options": {}
+      },
+      "id": "append-google-sheet",
+      "name": "Ajouter au Google Sheet Enzo",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        -1000,
+        0
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "Fe3F00A34M9ebdAG",
+          "name": "Google Sheets account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "id": "f307ce33-9f35-454d-a467-d5ed4c334a1f",
+      "name": "Rechercher leads (Unipile natif)",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1780,
+        0
+      ],
+      "parameters": {
+        "jsCode": "const key = \"LLmbsW7R.CaJenIxJtjn0BNeeE7bjC5hzZySPBnCtCfJAYlHEg2E=\";\nconst base = \"https://api59.unipile.com:18979\";\nconst accountId = \"rK6EsaFyRYG4xxssJ5X6vQ\";\nconst searchQuery = \"founder CEO SaaS beauty retail fashion brand\";\nconst targetAccountName = \"Enzo Vidiella\";\n\nfunction parseWorkDurationMonths(exp) {\n  if (!exp || !exp.start) return 0;\n  const start = new Date(exp.start);\n  const end = exp.end ? new Date(exp.end) : new Date();\n  if (isNaN(start.getTime())) return 0;\n  const months = (end.getFullYear() - start.getFullYear()) * 12 + (end.getMonth() - start.getMonth());\n  return Math.max(months, 0);\n}\nfunction durationLabel(months) {\n  const yr = Math.floor(months / 12);\n  const mo = months % 12;\n  let s = '';\n  if (yr > 0) s += yr + ' yr ';\n  if (mo > 0) s += mo + ' mo';\n  return s.trim();\n}\n\nlet searchResults = [];\ntry {\n  const resp = await this.helpers.httpRequest({\n    method: 'POST',\n    url: base + '/api/v1/linkedin/search?account_id=' + accountId,\n    headers: { 'X-API-KEY': key, 'Content-Type': 'application/json' },\n    body: { api: 'classic', category: 'people', keywords: searchQuery },\n    json: true,\n  });\n  searchResults = (resp.items || []).filter(i => i.type === 'PEOPLE').slice(0, 40);\n} catch (e) {\n  return [];\n}\n\nconst out = [];\nfor (const person of searchResults) {\n  let profile = null;\n  try {\n    profile = await this.helpers.httpRequest({\n      method: 'GET',\n      url: base + '/api/v1/users/' + encodeURIComponent(person.id) + '?account_id=' + accountId + '&linkedin_sections=experience',\n      headers: { 'X-API-KEY': key },\n      json: true,\n    });\n  } catch (e) {\n    continue;\n  }\n  if (!profile) continue;\n\n  const exp = (profile.work_experience && profile.work_experience[0]) || {};\n  const months = parseWorkDurationMonths(exp);\n\n  out.push({\n    json: {\n      id: profile.provider_id,\n      firstName: profile.first_name || '',\n      lastName: profile.last_name || '',\n      linkedinUrl: 'https://www.linkedin.com/in/' + (profile.public_identifier || ''),\n      headline: profile.headline || '',\n      followerCount: profile.follower_count || 0,\n      location: { countryCode: (profile.primary_locale && profile.primary_locale.country) || '' },\n      currentPosition: [{\n        position: exp.position || '',\n        description: exp.description || '',\n        duration: durationLabel(months),\n        employmentType: exp.status || '',\n        companyName: exp.company || '',\n        companyLinkedinUrl: exp.company_id ? ('https://www.linkedin.com/company/' + exp.company_id) : '',\n      }],\n      targetAccountName: targetAccountName,\n      targetAccountId: accountId,\n    }\n  });\n}\nreturn out;\n"
+      }
+    }
+  ],
+  "connections": {
+    "Scorer ICP (seuil >=60)": {
+      "main": [
+        [
+          {
+            "node": "Verifier taille entreprise (proxy CA >= 200k$)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Verifier taille entreprise (proxy CA >= 200k$)": {
+      "main": [
+        [
+          {
+            "node": "Ajouter au Google Sheet Enzo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Dedup vs invitations Unipile": {
+      "main": [
+        [
+          {
+            "node": "Boucle 1 lead a la fois",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Boucle 1 lead a la fois": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Attente etalee jusqu a 19h",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Envoyer demande de connexion": {
+      "main": [
+        [
+          {
+            "node": "Marquer tentative",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Marquer tentative": {
+      "main": [
+        [
+          {
+            "node": "Boucle 1 lead a la fois",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Attente etalee jusqu a 19h": {
+      "main": [
+        [
+          {
+            "node": "Vérifier fenêtre 8h-19h (New York)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Vérifier fenêtre 8h-19h (New York)": {
+      "main": [
+        [
+          {
+            "node": "Envoyer demande de connexion",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Exclure Open to Work": {
+      "main": [
+        [
+          {
+            "node": "Scorer ICP (seuil >=60)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ajouter au Google Sheet Enzo": {
+      "main": [
+        [
+          {
+            "node": "Dedup vs invitations Unipile",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Déclencheur quotidien 8h": {
+      "main": [
+        [
+          {
+            "node": "Rechercher leads (Unipile natif)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Rechercher leads (Unipile natif)": {
+      "main": [
+        [
+          {
+            "node": "Exclure Open to Work",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": true
+  }
+}
