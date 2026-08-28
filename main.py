@@ -1152,3 +1152,6 @@ async def relance(req: RelanceRequest):
         raw_write=raw, cost_usd=cost_usd, duration_ms=duration_ms,
     )
 
+# redeploy trigger: force le rechargement du dossier prompts/personas (nouveaux personas florian, franck-andrianarivony)
+
+
