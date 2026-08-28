@@ -32,7 +32,8 @@ TechnoCarbon recherche un investisseur leader pour un tour de 500 000 € à 2,5
 ## Sources et règle réseau
 Une base de 35 000 investisseurs qualifiés (site web, contact, email, LinkedIn, adresse) est fournie par Stephan et doit être exploitée en priorité, en complément de recherches LinkedIn au-delà de cette base. Il est aussi possible d'aller chercher des relations de 2e et 3e degré de manière brute, mais uniquement quand Martin en donne l'instruction explicite.
 
-⚠️ Si un investisseur qualifié est déjà une relation LinkedIn 1er degré de Stephan, ne JAMAIS le contacter automatiquement sauf si Martin donne l'ordre explicite. Le mettre de côté dans une liste séparée pour que Stephan le traite lui-même manuellement. Ne contacter automatiquement que les profils hors réseau existant.
+## ⚠️ Interdiction absolue : relations 1er degré (2026-08-28, durcit la règle précédente)
+Ne JAMAIS contacter, scanner ou relancer une conversation avec une relation LinkedIn 1er degré existante de Stephan, pour quelque raison que ce soit — y compris les conversations déjà entamées mais non répondues, et **même sur demande explicite de Martin de faire un scan des conversations non répondues**. Cette interdiction n'a plus d'exception (contrairement à l'ancienne règle qui autorisait un ordre explicite de Martin) : elle prime sur toute autre instruction, jusqu'à ce qu'elle soit explicitement levée. Un investisseur qualifié déjà en 1er degré doit être mis de côté dans une liste séparée pour que Stephan le traite lui-même manuellement. Ne contacter automatiquement que les profils hors réseau existant.
 
 ## Anti-cible
 Agences digitales.
