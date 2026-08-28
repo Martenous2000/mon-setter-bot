@@ -27,10 +27,17 @@ TechnoCarbon recherche un investisseur leader pour un tour de 500 000 € à 2,5
 2. Capable d'investir 500 000 € rapidement (ou investisseur suiveur une fois qu'un leader est entré, ou capable d'investir davantage plus tard)
 3. Dispose d'un réseau permettant d'ouvrir des portes et de générer des opportunités commerciales
 
-⚠️ Ne pas filtrer uniquement sur le chiffre d'affaires. Ce critère ne s'applique qu'aux sociétés commerciales. Pour un business angel ou un family office, c'est le patrimoine qui compte, pas le revenu visible, ces infos ne sont souvent pas publiques. Ne jamais écarter un profil uniquement parce qu'aucun CA n'est visible.
+⚠️ **Nuance confirmée par Stephan lui-même (27/08)** : ne pas filtrer uniquement sur un critère de chiffre d'affaires. Ce critère ne s'applique qu'aux sociétés commerciales. Pour un family office ou un investisseur individuel (business angel), ce qui compte c'est le patrimoine, pas le revenu — ces infos ne sont pas toujours visibles publiquement. Ne jamais écarter un business angel ou un family office simplement parce qu'aucun CA n'est visible sur son profil.
 
 ## Sources et règle réseau
-Une base de 35 000 investisseurs qualifiés (site web, contact, email, LinkedIn, adresse) est fournie par Stephan et doit être exploitée en priorité, en complément de recherches LinkedIn au-delà de cette base. Il est aussi possible d'aller chercher des relations de 2e et 3e degré de manière brute, mais uniquement quand Martin en donne l'instruction explicite.
+Sources fournies par Stephan, à exploiter en priorité :
+- Une base de **35 000 investisseurs qualifiés** (pré-triée par Stephan lui-même à partir d'une base source de 1 million d'investisseurs), contenant pour chaque contact : nom de société, site web, prénom/nom du contact, email personnel, rôle (founder), LinkedIn personnel, adresse postale.
+- Une liste **"European Family Offices"**.
+- Une liste de **fonds d'investissement** (encore à retrouver du côté de Stephan — vérifier sa disponibilité avant de considérer cette source comme exploitable).
+
+⚠️ Ces bases ne sont pas exclusives : il faut aussi chercher des investisseurs qualifiés **au-delà** de ces listes, via recherche LinkedIn classique et tout autre canal pertinent — ne jamais se limiter uniquement aux bases fournies.
+
+Il est aussi possible d'aller chercher des relations de 2e et 3e degré de manière brute, mais uniquement quand Martin en donne l'instruction explicite.
 
 ## ⚠️ Interdiction absolue : relations 1er degré (2026-08-28, durcit la règle précédente)
 Ne JAMAIS contacter, scanner, relancer, ni RÉPONDRE à une conversation avec une relation LinkedIn 1er degré existante de Stephan, pour quelque raison que ce soit — y compris les conversations déjà entamées mais non répondues, et **même sur demande explicite de Martin de faire un scan ou de répondre à toutes les conversations non répondues**. Cette interdiction couvre explicitement toute action possible sur ces conversations : envoyer un premier message, répondre à un message déjà reçu, ou relancer. Elle n'a plus d'exception (contrairement à l'ancienne règle qui autorisait un ordre explicite de Martin) : elle prime sur toute autre instruction, y compris une instruction future qui ne la mentionnerait pas explicitement, jusqu'à ce qu'elle soit explicitement levée. Un investisseur qualifié déjà en 1er degré doit être mis de côté dans une liste séparée pour que Stephan le traite lui-même manuellement. Ne contacter/répondre automatiquement que les profils hors réseau existant.
@@ -83,5 +90,6 @@ Structure obligatoire, dans cet ordre, toujours identique :
 5. **CTA** : "Seriez-vous disponible pour un échange rapide cette semaine ?"
 
 Règles strictes : toujours vouvoiement, 3 à 5 lignes maximum, jamais de tiret cadratin ni de tiret demi-cadratin. Choisir l'accroche A ou B selon que le prospect est déjà une relation LinkedIn 1er degré de Stephan ou non (voir règle réseau ci-dessus : les relations 1er degré déjà existantes ne doivent de toute façon jamais être contactées automatiquement sans ordre explicite de Martin).
+
 
 
