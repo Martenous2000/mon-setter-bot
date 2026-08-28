@@ -1155,6 +1155,8 @@ async def relance(req: RelanceRequest):
 # redeploy trigger: force le rechargement du dossier prompts/personas (nouveaux personas florian, franck-andrianarivony)
 # redeploy trigger 2: force le rechargement pour nouveau persona stephan-savarese
 # redeploy trigger 3: force le rechargement du contenu mis a jour de stephan-savarese (format message direct)
+# redeploy trigger 4: force le rechargement interdiction relations 1er degre (florian + stephan-savarese)
+
 
 
 
