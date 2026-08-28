@@ -27,11 +27,23 @@
     background: var(--tg-theme-button-color, #2481cc);
     color: var(--tg-theme-button-text-color, #fff);
   }
+  .schedule-row { display: flex; gap: 8px; align-items: center; margin-bottom: 8px; }
+  .schedule-row input {
+    width: 64px; font-size: 16px; padding: 8px; text-align: center;
+    border: 1px solid var(--tg-theme-hint-color, #ccc); border-radius: 8px;
+    background: var(--tg-theme-secondary-bg-color, #f5f5f5);
+    color: var(--tg-theme-text-color, #000);
+  }
+  .schedule-row span { font-size: 14px; opacity: 0.7; }
 </style>
 </head>
 <body>
 <div class="wrap">
-  <div class="label">Modifie le texte puis appuie sur Envoyer en bas.</div>
+  <div class="label" id="mainLabel">Modifie le texte puis appuie sur Envoyer en bas.</div>
+  <div class="schedule-row" id="scheduleRow" style="display:none;">
+    <input type="number" id="mins" min="0" max="59" value="0" inputmode="numeric"><span>min</span>
+    <input type="number" id="secs" min="0" max="59" value="30" inputmode="numeric"><span>sec avant envoi</span>
+  </div>
   <div class="toolbar" id="toolbar"></div>
   <textarea id="txt"></textarea>
 </div>
@@ -44,9 +56,15 @@
   const initialText = decodeURIComponent(params.get('text') || '');
   const accountKey = params.get('account') || '';
   const chatId = params.get('chat') || '';
+  const mode = params.get('mode') || 'edit';
 
   const textarea = document.getElementById('txt');
   textarea.value = initialText;
+
+  if (mode === 'schedule') {
+    document.getElementById('mainLabel').textContent = 'Modifie le texte si besoin, choisis le delai, puis appuie sur Programmer en bas.';
+    document.getElementById('scheduleRow').style.display = 'flex';
+  }
 
   const PITCHES = {
     henry: "Concretement, je propose un accompagnement pour les chefs de projet IT qui veulent gagner en methode et en posture sur le terrain : une seance de coaching individuelle d'1h a 1h30 ou on part de vos problematiques concretes, avec ensuite un plan d'action clair, ou un accompagnement sur 3 mois si vous voulez travailler ca dans la duree (cadrage, pilotage, gouvernance, arbitrages). Je propose un premier echange gratuit de 20-30 minutes, un Audit Flash Projet IT, pour voir concretement ou vous en etes et si ca peut vous aider.\n\nVous seriez dispo cette semaine pour un rapide echange ?",
@@ -77,22 +95,39 @@
     toolbar.appendChild(btn);
   }
 
-  tg.MainButton.setText('Envoyer');
+  tg.MainButton.setText(mode === 'schedule' ? 'Programmer' : 'Envoyer');
   tg.MainButton.show();
   tg.MainButton.onClick(async () => {
     tg.MainButton.showProgress();
     try {
-      const resp = await fetch('/telegram/edit-submit', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ accountKey, chatId, finalText: textarea.value }),
-      });
+      let resp;
+      if (mode === 'schedule') {
+        const mins = parseInt(document.getElementById('mins').value, 10) || 0;
+        const secs = parseInt(document.getElementById('secs').value, 10) || 0;
+        const delaySeconds = mins * 60 + secs;
+        if (delaySeconds <= 0) {
+          tg.MainButton.hideProgress();
+          alert('Choisis un delai superieur a 0 seconde.');
+          return;
+        }
+        resp = await fetch('/telegram/schedule-submit', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ accountKey, chatId, finalText: textarea.value, delaySeconds }),
+        });
+      } else {
+        resp = await fetch('/telegram/edit-submit', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ accountKey, chatId, finalText: textarea.value }),
+        });
+      }
       const data = await resp.json();
       if (data.ok) {
         tg.close();
       } else {
         tg.MainButton.hideProgress();
-        alert('Erreur envoi : ' + (data.error || 'inconnue'));
+        alert('Erreur : ' + (data.error || 'inconnue'));
       }
     } catch (e) {
       tg.MainButton.hideProgress();
