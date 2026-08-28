@@ -714,6 +714,7 @@ TELEGRAM_BOT_TOKEN_BY_ACCOUNT = {
     "samuellyon": "8919729318:AAEej6N9QGDnfi6HY7qbA_FDaYudz_N7u90",
     "samuel": "8919729318:AAEej6N9QGDnfi6HY7qbA_FDaYudz_N7u90",
     "florian": "8979351330:AAGgzmr0GrL5TxRxnpRfLU2d0Nh635Z0Kf4",
+    "franck-andrianarivony": "8792288619:AAEQkKougLgsP64baFkhQTao3rblofX9ksY",
 }
 
 
@@ -721,6 +722,13 @@ class EditSubmitRequest(BaseModel):
     accountKey: str
     chatId: str
     finalText: str
+
+
+class ScheduleSubmitRequest(BaseModel):
+    accountKey: str
+    chatId: str
+    finalText: str
+    delaySeconds: int
 
 
 async def get_chat_prospect_name(chat_id: str) -> str:
@@ -778,6 +786,50 @@ async def telegram_edit_submit(req: EditSubmitRequest):
         err = str(e)[:300]
         await send_telegram_confirmation(req.accountKey, False, err, prospect_name)
         return {"ok": False, "error": err}
+
+
+async def send_telegram_scheduled_ack(account_key: str, delay_seconds: int, prospect_name: str) -> None:
+    bot_token = TELEGRAM_BOT_TOKEN_BY_ACCOUNT.get(account_key)
+    if not bot_token:
+        return
+    mins, secs = divmod(delay_seconds, 60)
+    delay_str = f"{mins}min {secs}s" if mins else f"{secs}s"
+    text = f"⏰ Réponse programmée pour {prospect_name} dans {delay_str}."
+    try:
+        url = f"https://api.telegram.org/bot{bot_token}/sendMessage"
+        async with httpx.AsyncClient(timeout=10) as client:
+            await client.post(url, json={"chat_id": TELEGRAM_VALIDATION_CHAT_ID, "text": text})
+    except Exception:
+        pass
+
+
+async def _send_after_delay(account_key: str, chat_id: str, final_text: str, delay_seconds: int, prospect_name: str) -> None:
+    await asyncio.sleep(delay_seconds)
+    try:
+        url = f"{UNIPILE_DSN}/api/v1/chats/{chat_id}/messages"
+        async with httpx.AsyncClient(timeout=15) as client:
+            resp = await client.post(
+                url,
+                json={"text": final_text},
+                headers={"X-API-KEY": UNIPILE_ACCOUNT_KEY, "Content-Type": "application/json"},
+            )
+            resp.raise_for_status()
+        await send_telegram_confirmation(account_key, True, prospect_name=prospect_name)
+    except Exception as e:
+        await send_telegram_confirmation(account_key, False, str(e)[:300], prospect_name)
+
+
+@app.post("/telegram/schedule-submit")
+async def telegram_schedule_submit(req: ScheduleSubmitRequest):
+    """Programme l'envoi sur LinkedIn dans X secondes/minutes, depuis le bouton
+    ⏰ Programmer du Mini App. Confirme immédiatement la programmation sur Telegram,
+    puis envoie automatiquement une fois le délai écoulé."""
+    prospect_name = await get_chat_prospect_name(req.chatId) if req.chatId else "Prospect inconnu"
+    if not req.chatId or not req.finalText.strip() or req.delaySeconds <= 0:
+        return {"ok": False, "error": "chatId, finalText ou delaySeconds invalide"}
+    asyncio.create_task(_send_after_delay(req.accountKey, req.chatId, req.finalText, req.delaySeconds, prospect_name))
+    await send_telegram_scheduled_ack(req.accountKey, req.delaySeconds, prospect_name)
+    return {"ok": True}
 
 
 @app.post("/chat", response_model=ChatResponse)
