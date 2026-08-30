@@ -477,6 +477,42 @@
         3900,
         300
       ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ 'https://YOUR_UNIPILE_DSN/api/v1/users/invite/received/' + $json.inviteId + '?account_id=' + $json.accountId }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-API-KEY",
+              "value": "YOUR_UNIPILE_API_KEY"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "accept",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ provider: 'LINKEDIN', shared_secret: $json.sharedSecret, account_id: $json.accountId, action: 'decline' }) }}",
+        "options": {}
+      },
+      "id": "decline-invitation-node",
+      "name": "Decline Invitation",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2540,
+        500
+      ],
+      "onError": "continueRegularOutput"
     }
   ],
   "connections": {
@@ -603,7 +639,7 @@
         ],
         [
           {
-            "node": "Loop Invitations",
+            "node": "Decline Invitation",
             "type": "main",
             "index": 0
           }
@@ -666,6 +702,17 @@
       ]
     },
     "Send Telegram": {
+      "main": [
+        [
+          {
+            "node": "Loop Invitations",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Decline Invitation": {
       "main": [
         [
           {
