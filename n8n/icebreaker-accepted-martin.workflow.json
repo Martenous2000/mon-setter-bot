@@ -1,0 +1,454 @@
+{
+  "name": "🔗 Icebreaker Linkedin (accepted request) V2 - Martin Cuisinier",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "icebreaker-accepted-martin",
+        "responseMode": "onReceived",
+        "options": {}
+      },
+      "id": "jp-001",
+      "name": "Webhook Trigger",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        0,
+        300
+      ],
+      "webhookId": "icebreaker-accepted-martin"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "let body = $input.first().json.body || $input.first().json;\nif (body && typeof body === 'object') {\n  const bodyKeys = Object.keys(body);\n  const jsonKey = bodyKeys.find(k => k.startsWith('{'));\n  if (jsonKey) {\n    const raw = Object.entries(body).map(([k, v]) => k + '=' + v).join('&');\n    try { body = JSON.parse(raw); } catch (e) {\n      const extract = (field) => { const re = new RegExp('\"' + field + '\":\"([^\"]*)\"'); const m = raw.match(re); return m ? m[1] : ''; };\n      body = { account_id: extract('account_id'), user_provider_id: extract('user_provider_id'), user_full_name: extract('user_full_name'), user_public_identifier: extract('user_public_identifier'), user_profile_url: extract('user_profile_url') };\n    }\n  }\n}\nconst data = body.data || body.object || body;\nlet accountId = body.account_id || data.account_id || '';\nconst providerId = String(data.user_provider_id || data.provider_id || data.id || '');\nlet name = data.user_full_name || data.name || data.display_name || '';\nconst publicId = data.user_public_identifier || data.public_identifier || '';\nlet profileUrl = data.user_profile_url || data.public_profile_url || data.profile_url || '';\nif (!profileUrl && publicId) profileUrl = 'https://www.linkedin.com/in/' + publicId;\nif (!profileUrl && providerId) profileUrl = 'https://www.linkedin.com/in/' + providerId;\nlet prenom = '';\nif (name) prenom = name.split(/\\s+/)[0] || '';\nif (prenom) prenom = prenom.charAt(0).toUpperCase() + prenom.slice(1).toLowerCase();\nif (!accountId) accountId = 'wposCL6zQ_mVZfIbcUmF6g';\nif (!providerId) throw new Error('Donnees webhook incompletes: providerId manquant');\nreturn [{ json: { accountId, providerId, name, prenom, publicId, profileUrl } }];"
+      },
+      "id": "jp-002",
+      "name": "Extract Contact Info",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        260,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const providerId = $('Extract Contact Info').first().json.providerId;\nconst accountId = $('Extract Contact Info').first().json.accountId;\nlet cursor = null;\nlet hasMessages = false;\nlet pages = 0;\ndo {\n  const url = 'https://YOUR_UNIPILE_DSN/api/v1/chats?account_id=' + accountId + '&limit=100' + (cursor ? '&cursor=' + encodeURIComponent(cursor) : '');\n  const resp = await this.helpers.httpRequest({ method: 'GET', url, headers: { 'X-API-KEY': 'YOUR_UNIPILE_API_KEY' }, json: true });\n  const chats = resp.items || [];\n  for (const chat of chats) {\n    const attendeeId = String(chat.attendee_provider_id || '');\n    if (attendeeId === providerId) { hasMessages = true; break; }\n    const attendees = chat.attendees || [];\n    for (const a of attendees) { if (String(a.provider_id || '') === providerId) { hasMessages = true; break; } }\n    if (hasMessages) break;\n  }\n  cursor = resp.cursor || null;\n  pages++;\n} while (cursor && !hasMessages && pages < 20);\nreturn [{ json: { ...$('Extract Contact Info').first().json, shouldContinue: !hasMessages } }];"
+      },
+      "id": "jp-003",
+      "name": "Check Existing Chat (full pagination)",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        520,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": ""
+          },
+          "conditions": [
+            {
+              "id": "cond-no-msg",
+              "leftValue": "={{ $json.shouldContinue }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "jp-004",
+      "name": "IF No Messages Yet",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        780,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "=https://YOUR_UNIPILE_DSN/api/v1/users/{{ $json.publicId || $json.providerId }}?account_id=wposCL6zQ_mVZfIbcUmF6g",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-API-KEY",
+              "value": "YOUR_UNIPILE_API_KEY"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "jp-005",
+      "name": "Scrape Profile (Unipile)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1040,
+        300
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "=https://YOUR_UNIPILE_DSN/api/v1/users/{{ $json.provider_id || $('Extract Contact Info').item.json.providerId }}/posts?account_id=wposCL6zQ_mVZfIbcUmF6g&limit=10&is_company=false",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-API-KEY",
+              "value": "YOUR_UNIPILE_API_KEY"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "jp-006",
+      "name": "Scrape Posts (Unipile)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1300,
+        300
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const resp = await this.helpers.httpRequest({\n  method: 'GET',\n  url: 'https://api.github.com/repos/Martenous2000/mon-setter-bot/contents/prompts/personas/me.md',\n  headers: { 'Authorization': 'token YOUR_GITHUB_TOKEN', 'Accept': 'application/vnd.github.v3.raw', 'User-Agent': 'n8n-martin-workflow' },\n});\nconst personaMd = typeof resp === 'string' ? resp : (resp.toString ? resp.toString() : JSON.stringify(resp));\nconst resp2 = await this.helpers.httpRequest({\n  method: 'GET',\n  url: 'https://api.github.com/repos/Martenous2000/mon-setter-bot/contents/prompts/icebreakers-regles-strictes.md',\n  headers: { 'Authorization': 'token YOUR_GITHUB_TOKEN', 'Accept': 'application/vnd.github.v3.raw', 'User-Agent': 'n8n-martin-workflow' },\n});\nconst reglesMd = typeof resp2 === 'string' ? resp2 : (resp2.toString ? resp2.toString() : JSON.stringify(resp2));\nreturn [{ json: { ...$input.first().json, personaMd, reglesMd } }];"
+      },
+      "id": "jp-007",
+      "name": "Fetch Persona + Regles GitHub",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1560,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const contactData = $('Extract Contact Info').first().json;\nconst profile = $('Scrape Profile (Unipile)').first().json || {};\nconst personaMd = $input.first().json.personaMd || '';\nconst reglesMd = $input.first().json.reglesMd || '';\nconst prenom = contactData.prenom || '';\nconst providerId = contactData.providerId;\nconst profileUrl = contactData.profileUrl || '';\nconst headline = profile.headline || '';\nconst name = contactData.name || '';\n\nlet posts = [];\ntry {\n  const raw = $('Scrape Posts (Unipile)').first().json;\n  posts = raw.items || raw.posts || (Array.isArray(raw) ? raw : []);\n  if (!Array.isArray(posts)) posts = [];\n} catch(e) { posts = []; }\n\n// Type 1 only, no freshness window per règles strictes: pick first post with real text, prefer event/complaint/opinion style but any works.\nconst usablePosts = posts.filter(p => (p.text || p.content || '').trim().length > 20).slice(0, 3);\nconst hasPosts = usablePosts.length > 0;\n\nlet userContent;\nif (hasPosts) {\n  const postsText = usablePosts.map((p, i) => 'Post ' + (i+1) + ': ' + (p.text || p.content || '').substring(0, 600)).join('\\n\\n');\n  userContent = 'Prenom du lead : ' + prenom + '\\nCeci fait suite a l\\'acceptation de sa demande de connexion.\\nDerniers posts LinkedIn disponibles (choisis le plus adapte a une reaction sincere) :\\n' + postsText;\n} else {\n  userContent = 'Prenom du lead : ' + prenom + '\\nCeci fait suite a l\\'acceptation de sa demande de connexion.\\nAUCUN post trouve pour ce profil malgre une recherche sur 10 posts recents. Headline: ' + (headline || '(vide)') + '\\nRemonte ce cas (pas de Type 2), redige un message d\\'ouverture minimal respectant quand meme le format Type 1 general (Helllo, aucune formule generique, tutoiement) base sur la headline en dernier recours.';\n}\n\nconst systemPrompt = 'Tu es Martin Cuisinier sur LinkedIn. Voici ton persona complet (ICP, positionnement) :\\n\\n' + personaMd + '\\n\\nVoici les regles strictes obligatoires pour rediger un icebreaker (Type 1 uniquement, format exact, interdits) :\\n\\n' + reglesMd + '\\n\\nApplique ces regles A LA LETTRE : format \"Helllo [prenom]\" en debut de message, 2-3 lignes maximum, jamais de Type 2, jamais de formule generique type \"merci pour la connexion\" ou \"j\\'espere que tu vas bien\", tutoiement, 1 emoji maximum (jamais 😄, prefere 😉 si besoin), jamais de tiret cadratin, jamais de guillemets autour du message final, question courte et specifique en fin de message qui rebondit sur le post.\\n\\nReponds UNIQUEMENT avec le message final, sans guillemets autour, rien d\\'autre.';\n\nlet icebreaker = '';\ntry {\n  const resp = await this.helpers.httpRequest({\n    method: 'POST',\n    url: 'https://openrouter.ai/api/v1/chat/completions',\n    headers: { 'Authorization': 'Bearer YOUR_OPENROUTER_API_KEY', 'Content-Type': 'application/json' },\n    body: JSON.stringify({ model: 'anthropic/claude-opus-4', messages: [ { role: 'system', content: systemPrompt }, { role: 'user', content: userContent } ], temperature: 0.5, max_tokens: 150 }),\n    json: true,\n  });\n  icebreaker = (resp.choices[0].message.content || '').trim();\n  if ((icebreaker.startsWith('\"') && icebreaker.endsWith('\"'))) icebreaker = icebreaker.slice(1, -1);\n} catch(e) {\n  icebreaker = 'Helllo ' + prenom + ', je viens de voir ton profil, ca me parle bien ce que tu fais. Tu te concentres sur quoi en ce moment';\n}\n\nreturn [{ json: { accountId: contactData.accountId, providerId, prenom, headline, profileUrl, icebreaker, hasPosts, name } }];"
+      },
+      "id": "jp-008",
+      "name": "Generate Icebreaker (Type 1, GitHub rules)",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1820,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://YOUR_UNIPILE_DSN/api/v1/chats",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-API-KEY",
+              "value": "YOUR_UNIPILE_API_KEY"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "accept",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ account_id: $json.accountId, attendees_ids: [$json.providerId], text: $json.icebreaker }) }}",
+        "options": {}
+      },
+      "id": "jp-009",
+      "name": "Send DM",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2080,
+        300
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "1Vu44hHABV2zUfB9lyiEzjfuB0XO8adTq0FTacZCi9nQ"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "Leads Martin 2e-3e degre"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Lien profil LKD": "={{ $json.profileUrl }}",
+            "Icebreaker": "={{ $json.icebreaker }}"
+          },
+          "matchingColumns": [
+            "Lien profil LKD"
+          ],
+          "schema": [
+            {
+              "id": "Lien profil LKD",
+              "displayName": "Lien profil LKD",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "nom",
+              "displayName": "nom",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "bio",
+              "displayName": "bio",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Location",
+              "displayName": "Location",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "ICP match",
+              "displayName": "ICP match",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Demande de co",
+              "displayName": "Demande de co",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Icebreaker",
+              "displayName": "Icebreaker",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Raison ICP",
+              "displayName": "Raison ICP",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "jp-010",
+      "name": "Mark Icebreaker in Sheet",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        2340,
+        300
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "Fe3F00A34M9ebdAG",
+          "name": "Google Sheets account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.telegram.org/botYOUR_TELEGRAM_BOT_TOKEN/sendMessage",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ chat_id: 'YOUR_TELEGRAM_CHAT_ID', text: 'Martin - accepted request : icebreaker envoye a ' + ($json.name || $json.prenom) + '\\n\\nProfil: ' + $json.profileUrl + '\\nMessage: ' + $json.icebreaker }) }}",
+        "options": {}
+      },
+      "id": "jp-011",
+      "name": "Send Telegram",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2600,
+        300
+      ]
+    }
+  ],
+  "connections": {
+    "Webhook Trigger": {
+      "main": [
+        [
+          {
+            "node": "Extract Contact Info",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Contact Info": {
+      "main": [
+        [
+          {
+            "node": "Check Existing Chat (full pagination)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Existing Chat (full pagination)": {
+      "main": [
+        [
+          {
+            "node": "IF No Messages Yet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF No Messages Yet": {
+      "main": [
+        [
+          {
+            "node": "Scrape Profile (Unipile)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Scrape Profile (Unipile)": {
+      "main": [
+        [
+          {
+            "node": "Scrape Posts (Unipile)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Scrape Posts (Unipile)": {
+      "main": [
+        [
+          {
+            "node": "Fetch Persona + Regles GitHub",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Persona + Regles GitHub": {
+      "main": [
+        [
+          {
+            "node": "Generate Icebreaker (Type 1, GitHub rules)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Icebreaker (Type 1, GitHub rules)": {
+      "main": [
+        [
+          {
+            "node": "Send DM",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send DM": {
+      "main": [
+        [
+          {
+            "node": "Mark Icebreaker in Sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mark Icebreaker in Sheet": {
+      "main": [
+        [
+          {
+            "node": "Send Telegram",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "Europe/Paris"
+  }
+}
