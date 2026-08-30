@@ -1,0 +1,263 @@
+{
+  "name": "Icebreaker proactif - Viannard-Cinthia MAYOKA",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes",
+              "minutesInterval": 10
+            }
+          ]
+        }
+      },
+      "id": "trigger-node",
+      "name": "Cron 10 minutes",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -2000,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "return [{ json: { name: 'Viannard-Cinthia MAYOKA', accountId: 'C_1bEBbSRgSEkkGBUAJ-fA', personaFile: 'viannard.md', lang: 'fr' } }];"
+      },
+      "id": "config-node",
+      "name": "Config compte",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1780,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const account = $input.item.json;\nconst key = \"YOUR_UNIPILE_API_KEY\";\nconst base = \"https://YOUR_UNIPILE_DSN\";\nlet items = [];\nlet cursor = null;\ndo {\n  const url = base + '/api/v1/chats?account_id=' + account.accountId + '&limit=100' + (cursor ? '&cursor=' + cursor : '');\n  const resp = await this.helpers.httpRequest({ method: 'GET', url, headers: { 'X-API-KEY': key }, json: true });\n  items = items.concat(resp.items || []);\n  cursor = resp.cursor || null;\n} while (cursor);\nconst contactedIds = new Set(items.map(c => c.attendee_provider_id).filter(Boolean));\nreturn [{ json: { ...account, contactedIds: Array.from(contactedIds) } }];"
+      },
+      "id": "paginate-chats-node",
+      "name": "Paginer les chats existants",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1560,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const account = $input.item.json;\nconst key = \"YOUR_UNIPILE_API_KEY\";\nconst base = \"https://YOUR_UNIPILE_DSN\";\nconst contactedIds = new Set(account.contactedIds);\n\n// Early-exit : on arrete de paginer des qu'on trouve un candidat, au lieu de tout charger\n// d'abord. Reduit fortement le temps d'execution de ce node (source principale des\n// crashs out-of-memory observes sur cette instance n8n a ressources limitees).\nlet cursor = null;\nlet pick = null;\ndo {\n  const url = base + '/api/v1/users/relations?account_id=' + account.accountId + '&limit=100' + (cursor ? '&cursor=' + cursor : '');\n  const resp = await this.helpers.httpRequest({ method: 'GET', url, headers: { 'X-API-KEY': key }, json: true });\n  const items = resp.items || [];\n  pick = items.find(r => {\n    const pid = r.member_id || r.provider_id;\n    return pid && !contactedIds.has(pid);\n  }) || null;\n  if (pick) break;\n  cursor = resp.cursor || null;\n} while (cursor);\n\nif (!pick) return [];\nreturn [{ json: { ...account, providerId: pick.member_id || pick.provider_id, publicIdentifier: pick.public_identifier, prenom: pick.first_name, name: (pick.first_name || '') + ' ' + (pick.last_name || ''), headline: pick.headline || '' } }];"
+      },
+      "id": "filter-relations-node",
+      "name": "Trouver 1 nouveau lead sans conversation",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1340,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const contact = $input.item.json;\nconst key = \"YOUR_UNIPILE_API_KEY\";\nconst base = \"https://YOUR_UNIPILE_DSN\";\n\nconst profile = await this.helpers.httpRequest({\n  method: 'GET',\n  url: base + '/api/v1/users/' + encodeURIComponent(contact.publicIdentifier) + '?account_id=' + contact.accountId + '&linkedin_sections=experience',\n  headers: { 'X-API-KEY': key },\n  json: true\n});\n\nlet posts = { items: [] };\nfor (let attempt = 0; attempt < 2; attempt++) {\n  try {\n    posts = await this.helpers.httpRequest({\n      method: 'GET',\n      url: base + '/api/v1/users/' + contact.providerId + '/posts?account_id=' + contact.accountId + '&limit=20',\n      headers: { 'X-API-KEY': key },\n      json: true\n    });\n    break;\n  } catch (e) {\n    if (attempt === 0) {\n      await new Promise(r => setTimeout(r, 3000));\n    }\n  }\n}\n\nreturn [{ json: { ...contact, profile, posts } }];"
+      },
+      "id": "fetch-profile-node",
+      "name": "Recuperer profil complet + posts",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1120,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const contact = $input.item.json;\nconst ghToken = 'YOUR_GITHUB_TOKEN';\nconst headers = { 'Authorization': 'token ' + ghToken, 'Accept': 'application/vnd.github.raw', 'User-Agent': 'n8n-icebreaker' };\n\nconst personaUrl = 'https://api.github.com/repos/Martenous2000/mon-setter-bot/contents/prompts/personas/' + contact.personaFile;\nconst reglesUrl = 'https://api.github.com/repos/Martenous2000/mon-setter-bot/contents/prompts/icebreakers-regles-strictes.md';\n\nlet personaMd = '';\nlet reglesMd = '';\ntry {\n  personaMd = await this.helpers.httpRequest({ method: 'GET', url: personaUrl, headers, encoding: 'utf8' });\n} catch (e) { personaMd = ''; }\ntry {\n  reglesMd = await this.helpers.httpRequest({ method: 'GET', url: reglesUrl, headers, encoding: 'utf8' });\n} catch (e) { reglesMd = ''; }\n\nreturn [{ json: { ...contact, personaMd, reglesMd } }];"
+      },
+      "id": "fetch-persona-node",
+      "name": "Charger persona + regles depuis GitHub",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -900,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const combined = $input.item.json;\nconst lead = combined.profile;\nconst contact = combined;\nconst postsResp = combined.posts;\nconst personaMd = combined.personaMd || '';\nconst reglesMd = combined.reglesMd || '';\n\nconst prenom = contact.prenom || '';\nconst headline = contact.headline || '';\nconst work = (lead.work_experience && lead.work_experience[0]) || {};\nconst companyName = work.company || '';\nconst startDate = work.start || '';\n\nfunction dureeExacte(start) {\n  if (!start) return '';\n  const parts = start.split('/');\n  if (parts.length !== 3) return '';\n  const [m, d, y] = parts.map(Number);\n  const sd = new Date(y, m - 1, d);\n  const now = new Date();\n  let months = (now.getFullYear() - sd.getFullYear()) * 12 + (now.getMonth() - sd.getMonth());\n  if (months < 12) return months + ' mois';\n  const years = Math.floor(months / 12);\n  return years + ' an' + (years > 1 ? 's' : '');\n}\nconst dureeReelle = dureeExacte(startDate);\nconst isSelfEmployed = /^(self[- ]?employed|freelance|ind[ee]pendant|auto[- ]?entrepreneur)$/i.test((companyName || '').trim());\n\nconst posts = postsResp.items || [];\nconst parseDate = (v) => {\n  if (!v) return 0;\n  if (typeof v === 'string') {\n    const m = v.match(/^(\\d+)(m|h|d|w|mo|yr)$/);\n    if (m) {\n      const n = parseInt(m[1], 10);\n      const unitMs = { m: 60000, h: 3600000, d: 86400000, w: 7 * 86400000, mo: 30 * 86400000, yr: 360 * 86400000 };\n      return Date.now() - n * unitMs[m[2]];\n    }\n  }\n  return new Date(v).getTime() || 0;\n};\nconst ownPosts = posts.filter(p => {\n  const text = (p.text || '').trim();\n  const isRepost = p.is_repost === true;\n  return text.length > 20 && !isRepost;\n}).sort((a, b) => (parseDate(b.date) || 0) - (parseDate(a.date) || 0));\nconst recentPost = ownPosts[0] || null;\nconst hasPosts = !!recentPost;\nconst hasUsableBio = (companyName && dureeReelle) || headline.trim().length > 15;\n\nif (!hasPosts && !hasUsableBio) {\n  return [{ json: { ...contact, icebreaker: '', skip: true } }];\n}\n\n// Le persona (charge depuis GitHub) contient deja les regles d'icebreaker specifiques\n// au compte (Type 1/2, ton, langue). On l'utilise comme base du system prompt et on\n// n'ajoute que le fallback global si le persona ne precise rien sur l'icebreaker.\nconst basePrompt = personaMd + (reglesMd ? ('\\n\\n---\\n\\n' + reglesMd) : '');\n\nconst dureeContext = isSelfEmployed\n  ? ('Statut freelance/independant, activite/bio : ' + (headline || '(vide)'))\n  : (companyName && dureeReelle)\n    ? ('Entreprise : ' + companyName + ', duree exacte : ' + dureeReelle)\n    : ('Bio / headline uniquement : ' + (headline || '(vide)'));\n\nlet userContent;\nif (hasPosts) {\n  const postText = (recentPost.text || '').substring(0, 800);\n  userContent = 'Tu dois generer l\\'icebreaker (premier message) pour ce prospect precis, en respectant STRICTEMENT ton persona et les regles d\\'icebreaker ci-dessus (Type 1 si applicable vu qu\\'un post recent existe).\\n\\nPrenom du prospect : ' + (prenom || '(aucun)') + '\\nHeadline LinkedIn : ' + (headline || '(vide)') + '\\nDernier post LinkedIn du prospect (utilise-le pour le Type 1) :\\n' + postText + '\\n\\nReponds UNIQUEMENT avec le message final complet, rien d\\'autre. Jamais de tiret cadratin, demi-cadratin, ou tiret simple utilise comme ponctuation entre deux idees (virgule ou point a la place).';\n} else {\n  userContent = 'Tu dois generer l\\'icebreaker (premier message) pour ce prospect precis, en respectant STRICTEMENT ton persona et les regles d\\'icebreaker ci-dessus (Type 2 car aucun post recent exploitable).\\n\\nPrenom du prospect : ' + (prenom || '(aucun)') + '\\n' + dureeContext + '\\n\\nReponds UNIQUEMENT avec le message final complet, rien d\\'autre. Jamais de tiret cadratin, demi-cadratin, ou tiret simple utilise comme ponctuation entre deux idees (virgule ou point a la place).';\n}\n\nlet aiOutput = '';\ntry {\n  const resp = await this.helpers.httpRequest({\n    method: 'POST',\n    url: 'https://openrouter.ai/api/v1/chat/completions',\n    headers: { 'Authorization': 'Bearer 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', 'Content-Type': 'application/json' },\n    body: JSON.stringify({ model: 'anthropic/claude-opus-4', messages: [{ role: 'system', content: basePrompt }, { role: 'user', content: userContent }], temperature: 0.6, max_tokens: 280 }),\n    json: true\n  });\n  aiOutput = (resp.choices[0].message.content || '').trim();\n  if ((aiOutput.startsWith('\"') && aiOutput.endsWith('\"')) || (aiOutput.startsWith(\"'\") && aiOutput.endsWith(\"'\"))) aiOutput = aiOutput.slice(1, -1);\n  aiOutput = aiOutput.replace(/\\s*[\\u2014\\u2013]\\s*/g, ', ').replace(/([a-zA-Z0-9])\\s+-\\s+([a-zA-Z0-9])/g, '$1, $2');\n} catch(e) { aiOutput = ''; }\n\nconst icebreaker = aiOutput || '';\nconst skip = !icebreaker;\nreturn [{ json: { ...contact, icebreaker, hasPosts, skip } }];"
+      },
+      "id": "generate-icebreaker-node",
+      "name": "Generer icebreaker (via persona GitHub)",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -680,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "options": {
+          "caseSensitive": true,
+          "leftValue": "",
+          "typeValidation": "strict"
+        },
+        "conditions": [
+          {
+            "leftValue": "={{ $json.skip }}",
+            "rightValue": true,
+            "operator": {
+              "type": "boolean",
+              "operation": "true"
+            }
+          }
+        ],
+        "combinator": "and"
+      },
+      "id": "if-skip-node",
+      "name": "IF Icebreaker OK",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -460,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://YOUR_UNIPILE_DSN/api/v1/chats",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-API-KEY",
+              "value": "YOUR_UNIPILE_API_KEY"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "Accept",
+              "value": "application/json; charset=utf-8"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ account_id: $json.accountId, attendees_ids: [$json.providerId], text: $json.icebreaker }) }}",
+        "options": {
+          "timeout": 20000
+        }
+      },
+      "id": "send-node",
+      "name": "Envoyer icebreaker",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -240,
+        220
+      ]
+    }
+  ],
+  "connections": {
+    "Cron 10 minutes": {
+      "main": [
+        [
+          {
+            "node": "Config compte",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Config compte": {
+      "main": [
+        [
+          {
+            "node": "Paginer les chats existants",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Paginer les chats existants": {
+      "main": [
+        [
+          {
+            "node": "Trouver 1 nouveau lead sans conversation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Trouver 1 nouveau lead sans conversation": {
+      "main": [
+        [
+          {
+            "node": "Recuperer profil complet + posts",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Recuperer profil complet + posts": {
+      "main": [
+        [
+          {
+            "node": "Charger persona + regles depuis GitHub",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Charger persona + regles depuis GitHub": {
+      "main": [
+        [
+          {
+            "node": "Generer icebreaker (via persona GitHub)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generer icebreaker (via persona GitHub)": {
+      "main": [
+        [
+          {
+            "node": "IF Icebreaker OK",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF Icebreaker OK": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Envoyer icebreaker",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": true
+  }
+}
