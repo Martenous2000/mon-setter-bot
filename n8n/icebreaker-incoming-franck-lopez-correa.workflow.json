@@ -1,0 +1,684 @@
+{
+  "name": "🔗 Icebreaker Linkedin (incoming request) V1 - Franck Lopez-Correa",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "GET",
+        "path": "icebreaker-incoming-francklc",
+        "responseMode": "onReceived",
+        "options": {}
+      },
+      "id": "inc-002",
+      "name": "Manual Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        0,
+        400
+      ],
+      "webhookId": "icebreaker-incoming-francklc"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 9,
+              "triggerAtMinute": 0
+            }
+          ]
+        }
+      },
+      "id": "inc-001",
+      "name": "Schedule Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        200
+      ]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "https://YOUR_UNIPILE_DSN/api/v1/users/invite/received?account_id=3UTPJEg0QbyilqQ-4ad0rA&limit=100",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-API-KEY",
+              "value": "YOUR_UNIPILE_API_KEY"
+            },
+            {
+              "name": "accept",
+              "value": "application/json"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "inc-003",
+      "name": "Fetch Invitations",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        260,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const response = $input.first().json;\nconst items = response.items || [];\nif (items.length === 0) return [{ json: { _noInvitations: true } }];\nconst results = [];\nfor (const inv of items) {\n  const inviter = inv.inviter || {};\n  const specifics = inv.specifics || {};\n  let publicId = inviter.inviter_public_identifier || '';\n  let profileUrl = publicId ? 'https://www.linkedin.com/in/' + publicId : '';\n  let prenom = (inviter.inviter_name || '').split(/\\\\s+/)[0] || '';\n  if (prenom) prenom = prenom.charAt(0).toUpperCase() + prenom.slice(1).toLowerCase();\n  results.push({ json: {\n    inviteId: inv.id,\n    providerId: inviter.inviter_id || '',\n    name: inviter.inviter_name || '',\n    prenom,\n    description: inviter.inviter_description || '',\n    publicIdentifier: publicId,\n    profileUrl,\n    sharedSecret: specifics.shared_secret || '',\n    accountId: '3UTPJEg0QbyilqQ-4ad0rA',\n    _noInvitations: false\n  }});\n}\nreturn results;"
+      },
+      "id": "inc-004",
+      "name": "Parse Invitations",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        520,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "batchSize": 1,
+        "options": {}
+      },
+      "id": "inc-005",
+      "name": "Loop Invitations",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        780,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": ""
+          },
+          "conditions": [
+            {
+              "id": "cond-no-inv",
+              "leftValue": "={{ $json._noInvitations }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "inc-006",
+      "name": "IF Has Invitations",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        1040,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "=https://YOUR_UNIPILE_DSN/api/v1/users/{{ $json.publicIdentifier }}?account_id=3UTPJEg0QbyilqQ-4ad0rA&linkedin_sections=experience",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-API-KEY",
+              "value": "YOUR_UNIPILE_API_KEY"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "inc-007",
+      "name": "Scrape Profile (Unipile)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1300,
+        200
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "=https://YOUR_UNIPILE_DSN/api/v1/users/{{ $('Scrape Profile (Unipile)').item.json.provider_id }}/posts?account_id=3UTPJEg0QbyilqQ-4ad0rA&limit=5&is_company=false",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-API-KEY",
+              "value": "YOUR_UNIPILE_API_KEY"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "inc-007b",
+      "name": "Scrape Posts (Unipile)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1560,
+        200
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "\nconst resp = await this.helpers.httpRequest({\n  method: 'GET',\n  url: 'https://api.github.com/repos/Martenous2000/mon-setter-bot/contents/prompts/personas/franck.md',\n  headers: { 'Authorization': 'token YOUR_GITHUB_TOKEN', 'Accept': 'application/vnd.github.v3.raw', 'User-Agent': 'n8n-francklc-workflow' },\n});\nconst personaMd = typeof resp === 'string' ? resp : (resp.toString ? resp.toString() : JSON.stringify(resp));\nreturn [{ json: { ...$input.first().json, personaMd } }];\n"
+      },
+      "id": "inc-github",
+      "name": "Fetch Persona GitHub (FranckLC)",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1560,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const invData = $('IF Has Invitations').first().json;\nconst profile = $('Scrape Profile (Unipile)').first().json || {};\nconst personaMd = $input.first().json.personaMd || '';\nconst headline = profile.headline || invData.description || '';\nconst about = profile.summary || '';\nconst bio = headline + (about ? '\\n' + about : '');\n\nconst systemPrompt = 'You are qualifying a LinkedIn lead. Below is the full targeting persona (ICP) instructions for this account. Follow them exactly to decide if this lead matches.\\n\\n' + personaMd + '\\n\\nBased on the ICP section above, reply ONLY with OUI or NON (French words expected by the pipeline, ignore the English content when answering this specific instruction).';\n\nlet icpResult = 'non';\ntry {\n  const resp = await this.helpers.httpRequest({\n    method: 'POST',\n    url: 'https://openrouter.ai/api/v1/chat/completions',\n    headers: { 'Authorization': 'Bearer YOUR_OPENROUTER_API_KEY', 'Content-Type': 'application/json' },\n    body: JSON.stringify({ model: 'anthropic/claude-haiku-4.5', messages: [ { role: 'system', content: systemPrompt }, { role: 'user', content: 'Name: ' + invData.name + '\\nBio/Headline: ' + bio } ], temperature: 0.1, max_tokens: 10 }),\n    json: true,\n  });\n  const answer = (resp.choices[0].message.content || '').trim().toUpperCase();\n  icpResult = answer.includes('OUI') ? 'oui' : 'non';\n} catch(e) { icpResult = 'non'; }\n\nreturn [{ json: { ...invData, headline, about, bio, personaMd, action: icpResult === 'oui' ? 'accept' : 'skip' } }];"
+      },
+      "id": "inc-008",
+      "name": "Classify Lead (GitHub ICP)",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1820,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": ""
+          },
+          "conditions": [
+            {
+              "id": "cond-accept",
+              "leftValue": "={{ $json.action }}",
+              "rightValue": "accept",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "inc-011",
+      "name": "IF Accept",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        2080,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ 'https://YOUR_UNIPILE_DSN/api/v1/users/invite/received/' + $json.inviteId + '?account_id=' + $json.accountId }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-API-KEY",
+              "value": "YOUR_UNIPILE_API_KEY"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "accept",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ provider: 'LINKEDIN', shared_secret: $json.sharedSecret, account_id: $json.accountId, action: 'accept' }) }}",
+        "options": {}
+      },
+      "id": "inc-012",
+      "name": "Accept Invitation",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2340,
+        300
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "resume": "timeInterval",
+        "amount": 10,
+        "unit": "seconds"
+      },
+      "id": "inc-013",
+      "name": "Wait 10s",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        2600,
+        300
+      ],
+      "webhookId": "a387eb38-7d81-479a-9f35-86b63407ad00"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const contactData = $('Classify Lead (GitHub ICP)').first().json;\nconst prenom = contactData.prenom || '';\nconst providerId = contactData.providerId;\nconst profileUrl = contactData.profileUrl || '';\nconst headline = contactData.headline || '';\nconst name = contactData.name || '';\nconst personaMd = contactData.personaMd || '';\n\n// Unipile returns a relative age string like '1d', '3h', '2w', '1mo', not an absolute date.\nfunction relativeAgeToDays(v) {\n  if (!v) return 9999;\n  const m = String(v).match(/^(\\\\d+)\\\\s*(h|d|w|mo|y)/i);\n  if (!m) return 9999;\n  const n = parseInt(m[1], 10);\n  const unit = m[2].toLowerCase();\n  if (unit === 'h') return n / 24;\n  if (unit === 'd') return n;\n  if (unit === 'w') return n * 7;\n  if (unit === 'mo') return n * 30;\n  if (unit === 'y') return n * 365;\n  return 9999;\n}\n\nlet posts = [];\ntry {\n  const raw = $('Scrape Posts (Unipile)').first().json;\n  posts = raw.items || raw.posts || (Array.isArray(raw) ? raw : []);\n  if (!Array.isArray(posts)) posts = [];\n} catch(e) { posts = []; }\n\nconst recentPosts = posts.filter(p => {\n  const ageDays = relativeAgeToDays(p.date);\n  const text = (p.text || p.content || '').trim();\n  return ageDays <= 14 && text.length > 20;\n}).sort((a,b) => relativeAgeToDays(a.date) - relativeAgeToDays(b.date)).slice(0, 1);\n\nconst hasPosts = recentPosts.length > 0;\nlet userContent;\nif (hasPosts) {\n  const postText = (recentPosts[0].text || recentPosts[0].content || '').substring(0, 600);\n  userContent = 'Lead first name: ' + prenom + '\\nRecent LinkedIn post to react to:\\n' + postText;\n} else {\n  userContent = 'Lead first name: ' + prenom + '\\nNo recent post available. Headline/bio: ' + (headline || '(empty)');\n}\n\nconst systemPrompt = 'Below is the full persona and messaging instructions for this LinkedIn account (Franck Lopez-Correa). Follow the Icebreaker section EXACTLY as written in the persona (format, tone, language, tutoiement/vouvoiement, greeting word, forbidden words/punctuation) - the persona itself defines the language and register, do not assume a default. If a recent post is provided, use the Type 1 format (react to the post) exactly as specified. If no post is provided, write a short opener in the same tone/register/language reformulating their activity from the headline/bio, ending with a short open question, respecting the forbidden list from the persona.\\n\\n' + personaMd + '\\n\\nReply ONLY with the final icebreaker message, nothing else.';\n\nlet icebreaker = '';\ntry {\n  const resp = await this.helpers.httpRequest({\n    method: 'POST',\n    url: 'https://openrouter.ai/api/v1/chat/completions',\n    headers: { 'Authorization': 'Bearer YOUR_OPENROUTER_API_KEY', 'Content-Type': 'application/json' },\n    body: JSON.stringify({ model: 'anthropic/claude-opus-4', messages: [ { role: 'system', content: systemPrompt }, { role: 'user', content: userContent } ], temperature: 0.5, max_tokens: 150 }),\n    json: true,\n  });\n  icebreaker = (resp.choices[0].message.content || '').trim();\n  if ((icebreaker.startsWith('\"') && icebreaker.endsWith('\"'))) icebreaker = icebreaker.slice(1, -1);\n} catch(e) {\n  icebreaker = 'Bonjour ' + prenom + ', je viens de voir votre profil, ca m\\'interesse ce que vous faites. Vous vous concentrez sur quoi en ce moment';\n}\n\nreturn [{ json: { accountId: contactData.accountId, providerId, prenom, headline, profileUrl, icebreaker, hasPosts, name } }];"
+      },
+      "id": "inc-018",
+      "name": "Generate Icebreaker (GitHub persona)",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2860,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://YOUR_UNIPILE_DSN/api/v1/chats",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-API-KEY",
+              "value": "YOUR_UNIPILE_API_KEY"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "accept",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ account_id: $json.accountId, attendees_ids: [$json.providerId], text: $json.icebreaker }) }}",
+        "options": {}
+      },
+      "id": "inc-019",
+      "name": "Send DM",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3120,
+        300
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "1aI_e8KhxScRXu_Tcd6k5GvWirHCZMqQV9smVPUN4yTg"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "Leads Franck Lopez-Correa 2e-3e degre"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Lien profil LKD": "={{ $json.profileUrl }}",
+            "Icebreaker": "={{ $json.icebreaker }}"
+          },
+          "matchingColumns": [
+            "Lien profil LKD"
+          ],
+          "schema": [
+            {
+              "id": "Lien profil LKD",
+              "displayName": "Lien profil LKD",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "nom",
+              "displayName": "nom",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "bio",
+              "displayName": "bio",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Location",
+              "displayName": "Location",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "ICP match",
+              "displayName": "ICP match",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Demande de co",
+              "displayName": "Demande de co",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Icebreaker",
+              "displayName": "Icebreaker",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Raison ICP",
+              "displayName": "Raison ICP",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "inc-sheet",
+      "name": "Mark Icebreaker in Sheet",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        3380,
+        300
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "Fe3F00A34M9ebdAG",
+          "name": "Google Sheets account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.telegram.org/botYOUR_TELEGRAM_BOT_TOKEN/sendMessage",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ chat_id: 'YOUR_TELEGRAM_CHAT_ID', text: 'Franck Lopez-Correa - incoming request : icebreaker envoye a ' + $json.name + '\\n\\nProfil: ' + $json.profileUrl + '\\nMessage: ' + $json.icebreaker }) }}",
+        "options": {}
+      },
+      "id": "inc-025",
+      "name": "Send Telegram",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3640,
+        300
+      ]
+    }
+  ],
+  "connections": {
+    "Manual Webhook": {
+      "main": [
+        [
+          {
+            "node": "Fetch Invitations",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Fetch Invitations",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Invitations": {
+      "main": [
+        [
+          {
+            "node": "Parse Invitations",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Invitations": {
+      "main": [
+        [
+          {
+            "node": "Loop Invitations",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Invitations": {
+      "main": [
+        [],
+        [
+          {
+            "node": "IF Has Invitations",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF Has Invitations": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Scrape Profile (Unipile)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Scrape Profile (Unipile)": {
+      "main": [
+        [
+          {
+            "node": "Scrape Posts (Unipile)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Scrape Posts (Unipile)": {
+      "main": [
+        [
+          {
+            "node": "Fetch Persona GitHub (FranckLC)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Persona GitHub (FranckLC)": {
+      "main": [
+        [
+          {
+            "node": "Classify Lead (GitHub ICP)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Classify Lead (GitHub ICP)": {
+      "main": [
+        [
+          {
+            "node": "IF Accept",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF Accept": {
+      "main": [
+        [
+          {
+            "node": "Accept Invitation",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Loop Invitations",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Accept Invitation": {
+      "main": [
+        [
+          {
+            "node": "Wait 10s",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait 10s": {
+      "main": [
+        [
+          {
+            "node": "Generate Icebreaker (GitHub persona)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Icebreaker (GitHub persona)": {
+      "main": [
+        [
+          {
+            "node": "Send DM",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send DM": {
+      "main": [
+        [
+          {
+            "node": "Mark Icebreaker in Sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mark Icebreaker in Sheet": {
+      "main": [
+        [
+          {
+            "node": "Send Telegram",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Telegram": {
+      "main": [
+        [
+          {
+            "node": "Loop Invitations",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "America/New_York"
+  }
+}
