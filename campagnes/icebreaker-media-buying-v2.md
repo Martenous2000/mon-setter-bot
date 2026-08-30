@@ -1,7 +1,9 @@
-# Icebreaker Media Buying V2 - 3 temps
+# Icebreaker Media Buying V2 - format court
 
 ## Contexte
-Version V2 : reprend la structure habituelle de l'icebreaker (accroche sur le post recent + presentation de l'offre agence de prospection IA), mais remplace la 3eme phrase (call to action) par la proposition de partenariat media buying. A envoyer manuellement, un contact a la fois - PAS d'envoi automatise en boucle (risque de ban LinkedIn sur les comptes Martin/Keanu/Jules/Jean-Pierre/Thomas).
+Version V2 : message court en 2 phrases. Phrase 1 = accroche personnalisee sur un element concret et verifiable du profil/activite du contact (pas de post invente - a verifier au cas par cas avant envoi). Phrase 2 = proposition de partenariat media buying, copiee-collee telle quelle a chaque fois.
+
+A envoyer manuellement, un contact a la fois - PAS d'envoi automatise en boucle (risque de ban LinkedIn sur les comptes Martin/Keanu/Jules/Jean-Pierre/Thomas).
 
 ## Repartition des comptes (round-robin manuel)
 - Round 1 : compte Martin
@@ -10,46 +12,29 @@ Version V2 : reprend la structure habituelle de l'icebreaker (accroche sur le po
 - Round 4 : compte Jean-Pierre
 - Des qu'un contact repond ou genere un lead, on s'arrete sur ce fil (pas de relance automatique).
 
-## Structure du message (3 temps)
+## Structure du message (2 phrases)
 
-### Temps 1 (accroche sur le post recent)
+### Phrase 1 (accroche personnalisee - a adapter a chaque contact)
+Commente un element concret et reel du profil : un resultat chiffre, une specificite de positionnement, un client notable, une phrase de headline marquante. Doit sonner comme si on avait vraiment regarde son profil.
+
+### Phrase 2 (proposition de partenariat - fixe, copier-coller)
 ```
-Salut [Prenom],
-
-Je suis tombe sur ton dernier post sur [theme post], je te contacte parce que j'ai un deal qui pourrait t'interesser.
-```
-
-### Temps 2 (offre - inchange par rapport a l'icebreaker habituel)
-```
-Je gere une agence de prospection IA sur LinkedIn, setup complet plus IA conversationnelle qui prend des rendez-vous automatiquement. Normalement je facture 3000€ de setup, plus un forfait recurrent ensuite.
-
-Le deal que je propose : je t'installe mon systeme gratuitement (le setup a 3000€ offert), tu l'utilises pour trouver TES clients a toi. En echange, tu me fais tourner une campagne pub a hauteur du meme montant pour mon activite a moi. On ne part pas de zero non plus, je fais deja tourner des Ads en interne, donc c'est un canal en plus pour moi, pas un pari dans le vide.
-
-Zero echange d'argent. Chacun couvre ses frais reels, moi les tokens IA et le scraping, toi le budget pub. Chacun repart avec des leads dans son domaine.
+Je recherche un partenariat à faire avec une personne spécialisée dans le media buying, si jamais t'es disponible on peut en discuter quelques minutes au téléphone demain
 ```
 
-### Temps 3 (NOUVEAU - proposition de partenariat media buying, remplace l'ancien CTA)
+## Exemple donne par l'utilisateur
+
 ```
-Je recherche un partenariat a faire avec un(e) media buyer, si jamais t'es disponible on peut en discuter quelques minutes au telephone demain ?
+Salut Ouassim, votre signature face à 6 agences en étant les plus jeunes et les plus petits grâce à une solution technique complète plutôt qu'un simple devis est une belle démonstration. Je recherche un partenariat à faire avec une personne spécialisée dans le media buying, si jamais t'es disponible on peut en discuter quelques minutes au téléphone demain
 ```
 
 ## Exemple rempli (Sonia Attou - 1er contact du tableau, compte Martin)
 
 ```
-Salut Sonia,
-
-Je suis tombee sur ton dernier post, je te contacte parce que j'ai un deal qui pourrait t'interesser.
-
-Je gere une agence de prospection IA sur LinkedIn, setup complet plus IA conversationnelle qui prend des rendez-vous automatiquement. Normalement je facture 3000€ de setup, plus un forfait recurrent ensuite.
-
-Le deal que je propose : je t'installe mon systeme gratuitement (le setup a 3000€ offert), tu l'utilises pour trouver TES clients a toi. En echange, tu me fais tourner une campagne pub a hauteur du meme montant pour mon activite a moi. On ne part pas de zero non plus, je fais deja tourner des Ads en interne, donc c'est un canal en plus pour moi, pas un pari dans le vide.
-
-Zero echange d'argent. Chacun couvre ses frais reels, moi les tokens IA et le scraping, toi le budget pub. Chacun repart avec des leads dans son domaine.
-
-Je recherche un partenariat a faire avec un(e) media buyer, si jamais t'es disponible on peut en discuter quelques minutes au telephone demain ?
+Salut Sonia, Creative Strategist & Media Buyer Meta Ads, ce positionnement combinant creation et achat media est exactement le type de profil que je recherche. Je recherche un partenariat à faire avec une personne spécialisée dans le media buying, si jamais t'es disponible on peut en discuter quelques minutes au téléphone demain
 ```
 
-Note : le theme du post exact de Sonia n'a pas ete verifie au moment de la generation - a personnaliser avant envoi reel avec le sujet precis de son dernier post LinkedIn.
+Note : cet exemple est generique car je n'ai pas verifie de resultat chiffre ou de client precis sur le profil de Sonia Attou au-dela du headline. Pour un vrai envoi, verifier le profil complet (about, experiences, posts recents) pour trouver un element concret et specifique a mentionner, comme dans l'exemple Ouassim (chiffre precis + contexte de victoire commerciale).
 
 ## Liste des 34 contacts (media buyers Meta Ads, 1er degre, hors e-commerce)
 
@@ -93,6 +78,7 @@ Note : le theme du post exact de Sonia n'a pas ete verifie au moment de la gener
 ## Note importante
 Envoi manuel uniquement, contact par contact. Ne pas automatiser l'envoi en boucle sur intervalle fixe (40-70s) avec rotation de comptes : ce pattern est detecte par LinkedIn comme automatisation et expose les comptes a une restriction ou un ban.
 
-## Changelog vs V1
-V1 : template generique avec CTA "ca te dit qu'on en discute 15 minutes ?" + lien profil LinkedIn.
-V2 : structure identique a l'icebreaker habituel (accroche post recent + offre), mais le CTA final devient une proposition de partenariat media buying explicite : "Je recherche un partenariat a faire avec un(e) media buyer, si jamais t'es disponible on peut en discuter quelques minutes au telephone demain ?"
+## Changelog
+V1 : template long avec deal 3000€ detaille + CTA "15 minutes" + lien profil.
+V2 (premiere version) : meme structure longue que V1, juste le CTA final change.
+V2 (version actuelle) : format court, 2 phrases. Accroche personnalisee sur un element reel et verifie du profil du contact + proposition de partenariat fixe copier-coller.
