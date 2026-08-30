@@ -1,1 +1,574 @@
-{"name":"🔗 Prospection ICP - Scraping + Demandes de connexion (Florian Gros)","description":null,"active":true,"isArchived":false,"nodes":[{"parameters":{"rule":{"interval":[{"field":"cronExpression","expression":"2 8 * * *"}]}},"id":"trigger-daily","name":"Déclencheur quotidien 8h","type":"n8n-nodes-base.scheduleTrigger","typeVersion":1.2,"position":[-2000,0]},{"parameters":{"method":"POST","url":"https://api.apify.com/v2/acts/harvestapi~linkedin-profile-search/run-sync-get-dataset-items","sendHeaders":true,"headerParameters":{"parameters":[{"name":"Content-Type","value":"application/json"}]},"sendBody":true,"specifyBody":"json","jsonBody":"={{ JSON.stringify({ searchQuery: \"formateur coach business high ticket formation en ligne France\", maxItems: 75, locations: [\"France\"], profileScraperMode: \"Full\" }) }}","options":{"timeout":280000},"authentication":"genericCredentialType","genericAuthType":"httpHeaderAuth"},"id":"apify-scrape","name":"Scraper Apify (formateurs coachs high-ticket)","type":"n8n-nodes-base.httpRequest","typeVersion":4.2,"position":[-1780,0],"credentials":{"httpHeaderAuth":{"id":"LKiWoCX7cSFsMpdg","name":"Apify Key (payant 2026-07-28)"}},"onError":"continueRegularOutput"},{"parameters":{"jsCode":"// Aplati les resultats Apify et attache le compte cible\nconst items = $input.all();\nconst out = [];\nfor (const item of items) {\n  const profiles = Array.isArray(item.json) ? item.json : [item.json];\n  for (const p of profiles) {\n    if (!p || !p.linkedinUrl) continue;\n    out.push({ json: { ...p, targetAccountName: 'Florian Gros', targetAccountId: 'd3yLtuTNQwCJPsSE-ekAew' } });\n  }\n}\nreturn out;"},"id":"flatten-profiles","name":"Aplatir profils","type":"n8n-nodes-base.code","typeVersion":2,"position":[-1560,0]},{"parameters":{"jsCode":"// Scoring ICP sur 100 pts (grille adaptee Florian : formateurs/coachs high-ticket) — ne garde que score >= 60\nfunction parseDurationMonths(duration) {\n  if (!duration) return 0;\n  let months = 0;\n  const yrMatch = duration.match(/(\\d+)\\s*yr/);\n  const moMatch = duration.match(/(\\d+)\\s*mo/);\n  if (yrMatch) months += parseInt(yrMatch[1], 10) * 12;\n  if (moMatch) months += parseInt(moMatch[1], 10);\n  return months;\n}\n\nfunction scoreProfile(p) {\n  const pos = (p.currentPosition && p.currentPosition[0]) || {};\n  const headline = (p.headline || p.summary || '').toLowerCase();\n  const posTitle = (pos.position || '').toLowerCase();\n  const desc = (pos.description || '').toLowerCase();\n  const months = parseDurationMonths(pos.duration);\n\n  let s1 = 0;\n  const isFounderCoach = /fondateur|founder|infopreneur|createur de formation|createuse de formation|formateur|formatrice|coach|mentor|expert en marketing/.test(posTitle) || /fondateur|founder|infopreneur|formateur|coach|mentor/.test(headline);\n  if (isFounderCoach) s1 += 15;\n  if (months > 12 && months <= 60) s1 += 15;\n  else if (months > 60) s1 += 8;\n  else if (months >= 6) s1 += 5;\n\n  let s2 = 0;\n  const trainingKeywords = /formation en ligne|programme|masterclass|bootcamp|mentorat|coaching premium|high.?ticket/;\n  const makeMoneyKeywords = /business en ligne|marketing digital|entrepreneuriat|generation de revenus|freelancing|personal branding|scaling|croissance/;\n  if (trainingKeywords.test(headline) || trainingKeywords.test(desc)) s2 += 15;\n  if (makeMoneyKeywords.test(headline) || makeMoneyKeywords.test(desc)) s2 += 10;\n\n  let s3 = 0;\n  if (/eleves|etudiants|resultats|chiffre d.affaires|ca de|croissance/.test(desc)) s3 += 10;\n  if (/appel decouverte|webinar|masterclass de vente|tunnel/.test(desc)) s3 += 10;\n  if (p.followerCount && p.followerCount > 1000) s3 += 5;\n\n  let s4 = 0;\n  if (/recrute|recrutement|hiring|setter|closer|sdr|commercial/.test(desc)) s4 += 15;\n  else if (pos.employmentType === 'Self-employed' || pos.employmentType === 'Freelance') s4 += 5;\n\n  // Exclusions strictes anti-secteurs / anti-roles / low-ticket\n  const excludeSector = /e-?commerce|saas|agence marketing|agence publicitaire|restauration|hotellerie|artisan|btp|industrie|transport|logistique/;\n  const excludeRole = /salarie|employe|stagiaire|alternant|assistant|community manager|social media manager|media buyer|traffic manager|sdr\\b|bdr\\b|account manager|chef de projet/;\n  const lowTicket = /low.?ticket|ebook|e-book|petit prix/;\n  if (excludeSector.test(headline) || excludeSector.test(desc)) return { total: 0 };\n  if (excludeRole.test(posTitle)) return { total: 0 };\n  if (lowTicket.test(headline) || lowTicket.test(desc)) return { total: 0 };\n\n  const total = s1 + s2 + s3 + s4;\n  return { total, s1, s2, s3, s4, months, isFounderCoach };\n}\n\nconst items = $input.all();\nconst out = [];\nfor (const item of items) {\n  const p = item.json;\n  const score = scoreProfile(p);\n  if (score.total < 60) continue;\n  const pos = (p.currentPosition && p.currentPosition[0]) || {};\n  out.push({\n    json: {\n      id: p.id,\n      name: (p.firstName || '') + ' ' + (p.lastName || ''),\n      linkedinUrl: p.linkedinUrl,\n      publicIdentifier: (p.linkedinUrl || '').match(/linkedin\\.com\\/in\\/([^/?]+)/)?.[1] || '',\n      headline: p.headline || p.summary || '',\n      company: pos.companyName || '',\n      companyLinkedinUrl: pos.companyLinkedinUrl || '',\n      score: score.total,\n      targetAccountName: p.targetAccountName,\n      targetAccountId: p.targetAccountId\n    }\n  });\n}\nreturn out;\n"},"id":"score-profiles","name":"Scorer ICP (seuil >=60)","type":"n8n-nodes-base.code","typeVersion":2,"position":[-1340,0]},{"id":"check-effectif-entreprise","name":"Verifier effectif entreprise (2-10 personnes)","type":"n8n-nodes-base.code","typeVersion":2,"position":[-1180,0],"parameters":{"jsCode":"const key = \"dAD+/okr.dhaKPu5eBrawhgUFEh/kT3rywp8+CujTZWOT+260gX0=\";\nconst base = \"https://api30.unipile.com:16068\";\nconst results = [];\n\nfor (const item of $input.all()) {\n  const p = item.json;\n  let employeeCount = null;\n  const companyPublicId = (p.companyLinkedinUrl || '').match(/linkedin\\.com\\/company\\/([^/?]+)/)?.[1] || '';\n\n  if (companyPublicId) {\n    try {\n      const resp = await this.helpers.httpRequest({\n        method: 'GET',\n        url: base + '/api/v1/linkedin/company/' + companyPublicId + '?account_id=' + p.targetAccountId,\n        headers: { 'X-API-KEY': key },\n        json: true\n      });\n      employeeCount = resp.employee_count != null ? resp.employee_count : null;\n    } catch (e) {\n      employeeCount = null;\n    }\n  }\n\n  // Critere obligatoire: entre 2 et 10 personnes dans l'entreprise (sweet spot pour l'offre 2000e/mois\n  // - en dessous de 2, budget hors de portee ; au dessus de 10, plus le meme profil de decideur/besoin)\n  if (employeeCount === null || employeeCount < 2 || employeeCount > 10) continue;\n\n  // Bonus de score pour effectif dans la fourchette ideale\n  let effectifBonus = 0;\n  if (employeeCount >= 5) effectifBonus = 15;\n  else if (employeeCount >= 2) effectifBonus = 10;\n\n  results.push({ json: { ...p, employeeCount, score: (p.score || 0) + effectifBonus } });\n}\n\nreturn results;"}},{"parameters":{"jsCode":"const key = \"dAD+/okr.dhaKPu5eBrawhgUFEh/kT3rywp8+CujTZWOT+260gX0=\";\nconst base = \"https://api30.unipile.com:16068\";\n\nlet sentIds = new Set();\ntry {\n  const resp = await this.helpers.httpRequest({\n    method: 'GET',\n    url: base + '/api/v1/users/invite/sent?account_id=d3yLtuTNQwCJPsSE-ekAew&limit=200',\n    headers: { 'X-API-KEY': key },\n    json: true,\n  });\n  (resp.items || []).forEach(i => { if (i.invited_user_id) sentIds.add(i.invited_user_id); });\n} catch (e) {}\n\nconst staticData = $getWorkflowStaticData('global');\nstaticData.triedIds = staticData.triedIds || {};\nconst now = Date.now();\nconst TWELVE_HOURS = 12 * 3600000;\nfor (const id of Object.keys(staticData.triedIds)) {\n  if (now - staticData.triedIds[id] > TWELVE_HOURS) delete staticData.triedIds[id];\n}\nconst triedRecently = new Set(Object.keys(staticData.triedIds));\n\nconst items = $input.all();\nconst fresh = items.filter(i => !sentIds.has(i.json.id) && !triedRecently.has(i.json.id));\nfresh.sort((a, b) => (b.json.score || 0) - (a.json.score || 0));\nconst picked = fresh.slice(0, 16);\n\n// Pre-calcule un instant d'envoi cible pour chacun, reparti uniformement entre maintenant et 19h00 Paris,\n// avec un jitter +/-20% pour eviter un pattern parfaitement regulier.\nconst parisNow = new Date(new Date().toLocaleString('en-US', { timeZone: 'Europe/Paris' }));\nconst endOfWindow = new Date(parisNow);\nendOfWindow.setHours(19, 0, 0, 0);\nconst msRemaining = Math.max(endOfWindow.getTime() - parisNow.getTime(), 0);\nconst n = Math.max(picked.length, 1);\nconst baseIntervalMs = msRemaining / n;\n\nlet cursorMs = 0;\nfor (let idx = 0; idx < picked.length; idx++) {\n  const jitterFactor = 0.8 + Math.random() * 0.4;\n  cursorMs += baseIntervalMs * jitterFactor;\n  picked[idx].json._waitSeconds = Math.min(Math.max(Math.round(cursorMs / 1000), 20), 39600);\n}\n// _waitSeconds est un delai CUMULE depuis le debut du run (pas un delai relatif au lead precedent),\n// donc chaque etape Wait doit soustraire le temps deja ecoule pour rester alignee sur la fenetre.\nif (picked.length) picked[0].json._runStartMs = Date.now();\nfor (let idx = 1; idx < picked.length; idx++) picked[idx].json._runStartMs = picked[0].json._runStartMs;\n\nreturn picked;\n"},"id":"dedup-unipile-1785414378347","name":"Dedup vs invitations Unipile","type":"n8n-nodes-base.code","typeVersion":2,"position":[700,200]},{"parameters":{"batchSize":1,"options":{}},"id":"loop-lead-1785414378347","name":"Boucle 1 lead a la fois","type":"n8n-nodes-base.splitInBatches","typeVersion":3,"position":[900,200]},{"parameters":{"amount":"={{ Math.max(Math.round(($json._runStartMs + $json._waitSeconds*1000 - Date.now())/1000), 5) }}","unit":"seconds"},"id":"wait-lead-1785414378347","name":"Attente etalee jusqu a 19h","type":"n8n-nodes-base.wait","typeVersion":1.1,"position":[1100,150],"webhookId":"72599f53-6859-4de5-9ee0-294602dfca4f"},{"parameters":{"jsCode":"const parisHour = parseInt(new Intl.DateTimeFormat('fr-FR', { timeZone: 'Europe/Paris', hour: 'numeric', hour12: false }).format(new Date()), 10);\nif (parisHour < 8 || parisHour >= 19) {\n  return [];\n}\nreturn [{ json: $input.item.json }];\n"},"id":"window-1785414378347","name":"Vérifier fenêtre 8h-19h","type":"n8n-nodes-base.code","typeVersion":2,"position":[1300,150]},{"parameters":{"jsCode":"const key = \"dAD+/okr.dhaKPu5eBrawhgUFEh/kT3rywp8+CujTZWOT+260gX0=\";\nconst base = \"https://api30.unipile.com:16068\";\nconst lead = $input.item.json;\nconst accountId = lead.targetAccountId || lead.accountId || 'd3yLtuTNQwCJPsSE-ekAew';\n\n// Codes typiques de quota/rate-limit LinkedIn releves par Unipile : 422 (cannot_resend_yet),\n// 429 (rate limit), 500 (erreur generique cote LinkedIn). On retente 2 fois avec backoff court\n// avant d'abandonner ce lead et de laisser le workflow continuer sur le suivant.\nconst RETRYABLE_STATUS = [422, 429, 500];\nconst MAX_ATTEMPTS = 3;\n\nlet lastError = null;\nlet sent = false;\nlet responseBody = null;\n\nfor (let attempt = 1; attempt <= MAX_ATTEMPTS && !sent; attempt++) {\n  try {\n    responseBody = await this.helpers.httpRequest({\n      method: 'POST',\n      url: base + '/api/v1/users/invite',\n      headers: { 'X-API-KEY': key, 'Content-Type': 'application/json' },\n      body: { provider_id: lead.id, account_id: accountId },\n      json: true,\n    });\n    sent = true;\n  } catch (e) {\n    lastError = e;\n    const status = e.response?.statusCode || e.statusCode || e.status || 0;\n    const quotaLikely = RETRYABLE_STATUS.includes(status);\n    if (!quotaLikely || attempt === MAX_ATTEMPTS) break;\n    // Backoff court avant retry : 15s puis 45s.\n    const backoffMs = attempt === 1 ? 15000 : 45000;\n    await new Promise(r => setTimeout(r, backoffMs));\n  }\n}\n\nreturn [{\n  json: {\n    ...lead,\n    _inviteSent: sent,\n    _inviteSkippedReason: sent ? null : ('quota_or_error_status_' + (lastError?.response?.statusCode || lastError?.statusCode || 'unknown')),\n  }\n}];\n"},"id":"send-1785414378347","name":"Envoyer demande de connexion","type":"n8n-nodes-base.code","typeVersion":2,"position":[1500,150],"onError":"continueRegularOutput","alwaysOutputData":true},{"parameters":{"jsCode":"const staticData = $getWorkflowStaticData('global');\nstaticData.triedIds = staticData.triedIds || {};\nconst lead = $('Boucle 1 lead a la fois').item.json;\nif (lead && lead.id) {\n  staticData.triedIds[lead.id] = Date.now();\n}\nreturn [{ json: $input.item.json }];"},"id":"mark-tried-1785421170819","name":"Marquer tentative","type":"n8n-nodes-base.code","typeVersion":2,"position":[2100,150]},{"parameters":{"operation":"appendOrUpdate","documentId":{"__rl":true,"value":"15xewt2PGt-QgDklO6uMWfJhTx1G26D3WvjHcUk0xlpI","mode":"id"},"sheetName":{"__rl":true,"value":"gid=0","mode":"list"},"columns":{"mappingMode":"defineBelow","value":{"id":"={{ $json.id }}","name":"={{ $json.name }}","linkedinUrl":"={{ $json.linkedinUrl }}","publicIdentifier":"={{ $json.publicIdentifier }}","headline":"={{ $json.headline }}","company":"={{ $json.company }}","employeeCount":"={{ $json.employeeCount }}","score":"={{ $json.score }}","targetAccountName":"={{ $json.targetAccountName }}","scrapedAt":"={{ $now.setZone('Europe/Paris').toISO() }}"},"matchingColumns":["id"]},"options":{}},"id":"append-google-sheet","name":"Ajouter au Google Sheet Florian","type":"n8n-nodes-base.googleSheets","typeVersion":4.5,"position":[-1000,0],"credentials":{"googleSheetsOAuth2Api":{"id":"Fe3F00A34M9ebdAG","name":"Google Sheets account"}},"onError":"continueRegularOutput"},{"id":"filter-open-to-work","name":"Exclure Open to Work","type":"n8n-nodes-base.code","typeVersion":2,"position":[-1670,0],"parameters":{"jsCode":"// Exclut tout profil signalant \"Open to Work\" — structure (badge Apify) ou texte (headline/summary/about).\nfunction isOpenToWork(p) {\n  if (p == null) return false;\n  if (p.openToWork === true || p.open_to_work === true || p.isOpenToWork === true) return true;\n  if (Array.isArray(p.badges) && p.badges.some(b => /open.?to.?work/i.test(String(b)))) return true;\n\n  const fields = [p.headline, p.summary, p.about, p.title];\n  const text = fields.filter(Boolean).join(' ').toLowerCase();\n  const patterns = [\n    /open\\s*to\\s*work/i,\n    /#opentowork/i,\n    /ouvert(e)?\\s+aux\\s+opportunit/i,\n    /\\u00e0\\s+l['\\u2019]\\u00e9coute\\s+du\\s+march/i,\n    /en\\s+recherche\\s+d['\\u2019]emploi/i,\n    /disponible\\s+imm\\u00e9diatement/i,\n    /recherche\\s+active(?:ment)?\\s+un\\s+poste/i,\n  ];\n  return patterns.some(re => re.test(text));\n}\n\nconst items = $input.all();\nreturn items.filter(item => !isOpenToWork(item.json));"}}],"connections":{"Déclencheur quotidien 8h":{"main":[[{"node":"Scraper Apify (formateurs coachs high-ticket)","type":"main","index":0}]]},"Aplatir profils":{"main":[[{"node":"Exclure Open to Work","type":"main","index":0}]]},"Scorer ICP (seuil >=60)":{"main":[[{"node":"Verifier effectif entreprise (2-10 personnes)","type":"main","index":0}]]},"Verifier effectif entreprise (2-10 personnes)":{"main":[[{"node":"Ajouter au Google Sheet Florian","type":"main","index":0}]]},"Dedup vs invitations Unipile":{"main":[[{"node":"Boucle 1 lead a la fois","type":"main","index":0}]]},"Boucle 1 lead a la fois":{"main":[[],[{"node":"Attente etalee jusqu a 19h","type":"main","index":0}]]},"Envoyer demande de connexion":{"main":[[{"node":"Marquer tentative","type":"main","index":0}]]},"Marquer tentative":{"main":[[{"node":"Boucle 1 lead a la fois","type":"main","index":0}]]},"Attente etalee jusqu a 19h":{"main":[[{"node":"Vérifier fenêtre 8h-19h","type":"main","index":0}]]},"Vérifier fenêtre 8h-19h":{"main":[[{"node":"Envoyer demande de connexion","type":"main","index":0}]]},"Exclure Open to Work":{"main":[[{"node":"Scorer ICP (seuil >=60)","type":"main","index":0}]]},"Ajouter au Google Sheet Florian":{"main":[[{"node":"Dedup vs invitations Unipile","type":"main","index":0}]]},"Scraper Apify (formateurs coachs high-ticket)":{"main":[[{"node":"Aplatir profils","type":"main","index":0}]]}},"settings":{"executionOrder":"v1","errorWorkflow":"xqvf2o0KvOMAScEk","availableInMCP":true},"staticData":{"node:Déclencheur quotidien 8h":{"recurrenceRules":[null],"recurrenceRuleSignatures":[null]}},"nodeGroups":[],"activeVersionId":"366ccbe0-497f-4f33-84b4-18a961eb8e00","versionCounter":6,"triggerCount":1,"sourceWorkflowId":null,"activeVersion":{"updatedAt":"2026-08-28T16:48:42.830Z","createdAt":"2026-08-28T16:48:42.830Z","versionId":"366ccbe0-497f-4f33-84b4-18a961eb8e00","workflowId":"hxjBRsMmczzERdbP","nodes":[{"parameters":{"rule":{"interval":[{"field":"cronExpression","expression":"2 8 * * *"}]}},"id":"trigger-daily","name":"Déclencheur quotidien 8h","type":"n8n-nodes-base.scheduleTrigger","typeVersion":1.2,"position":[-2000,0]},{"parameters":{"method":"POST","url":"https://api.apify.com/v2/acts/harvestapi~linkedin-profile-search/run-sync-get-dataset-items","sendHeaders":true,"headerParameters":{"parameters":[{"name":"Content-Type","value":"application/json"}]},"sendBody":true,"specifyBody":"json","jsonBody":"={{ JSON.stringify({ searchQuery: \"consultant automatisation IA startup France\", maxItems: 75, locations: [\"France\"], profileScraperMode: \"Full\" }) }}","options":{"timeout":280000},"authentication":"genericCredentialType","genericAuthType":"httpHeaderAuth"},"id":"apify-scrape","name":"Scraper Apify (fondateurs agence IA)","type":"n8n-nodes-base.httpRequest","typeVersion":4.2,"position":[-1780,0],"credentials":{"httpHeaderAuth":{"id":"LKiWoCX7cSFsMpdg","name":"Apify Key (payant 2026-07-28)"}},"onError":"continueRegularOutput"},{"parameters":{"jsCode":"// Aplati les resultats Apify et attache le compte cible\nconst items = $input.all();\nconst out = [];\nfor (const item of items) {\n  const profiles = Array.isArray(item.json) ? item.json : [item.json];\n  for (const p of profiles) {\n    if (!p || !p.linkedinUrl) continue;\n    out.push({ json: { ...p, targetAccountName: 'Martin Cuisinier', targetAccountId: '-tyMuFk1SFyAZIaeNVoRkA' } });\n  }\n}\nreturn out;"},"id":"flatten-profiles","name":"Aplatir profils","type":"n8n-nodes-base.code","typeVersion":2,"position":[-1560,0]},{"parameters":{"jsCode":"// Scoring ICP sur 100 pts (grille validee) — ne garde que score >= 60\nfunction parseDurationMonths(duration) {\n  if (!duration) return 0;\n  let months = 0;\n  const yrMatch = duration.match(/(\\d+)\\s*yr/);\n  const moMatch = duration.match(/(\\d+)\\s*mo/);\n  if (yrMatch) months += parseInt(yrMatch[1], 10) * 12;\n  if (moMatch) months += parseInt(moMatch[1], 10);\n  return months;\n}\n\nfunction scoreProfile(p) {\n  const pos = (p.currentPosition && p.currentPosition[0]) || {};\n  const headline = (p.headline || p.summary || '').toLowerCase();\n  const posTitle = (pos.position || '').toLowerCase();\n  const desc = (pos.description || '').toLowerCase();\n  const months = parseDurationMonths(pos.duration);\n\n  let s1 = 0;\n  const isFounder = /fondateur|founder|ceo|dirigeant|president|associe|co-fondateur|co-founder/.test(posTitle) || /fondateur|founder|ceo|dirigeant/.test(headline);\n  if (isFounder) s1 += 15;\n  if (months >= 12) s1 += 15;\n  else if (months >= 6) s1 += 7;\n\n  let s2 = 0;\n  const iaKeywords = /intelligence artificielle|\\bia\\b|automatisation|agents ia|ai\\b/;\n  const b2bKeywords = /entreprise|b2b|pme|eti|agence|cabinet|consultant/;\n  if (iaKeywords.test(headline) || iaKeywords.test(desc)) s2 += 15;\n  if (b2bKeywords.test(headline) || b2bKeywords.test(desc)) s2 += 10;\n\n  let s3 = 0;\n  if (/recrute|recrutement|hiring|nous cherchons/.test(desc)) s3 += 10;\n  if (/client|resultat|generated|accompagn|partenaire|partnership/.test(desc)) s3 += 10;\n  if (p.followerCount && p.followerCount > 1000) s3 += 5;\n\n  let s4 = 0;\n  if (/equipe|team|collaborateur|associe|co-fondateur|co-founder/.test(desc) || /co-fondateur|co-founder/.test(posTitle)) s4 += 20;\n  else if (pos.employmentType === 'Self-employed' || pos.employmentType === 'Freelance') s4 += 5;\n\n  const total = s1 + s2 + s3 + s4;\n  return { total, s1, s2, s3, s4, months, isFounder };\n}\n\nconst items = $input.all();\nconst out = [];\nfor (const item of items) {\n  const p = item.json;\n  const score = scoreProfile(p);\n  if (score.total < 60) continue;\n  const pos = (p.currentPosition && p.currentPosition[0]) || {};\n  out.push({\n    json: {\n      id: p.id,\n      name: (p.firstName || '') + ' ' + (p.lastName || ''),\n      linkedinUrl: p.linkedinUrl,\n      publicIdentifier: (p.linkedinUrl || '').match(/linkedin\\.com\\/in\\/([^/?]+)/)?.[1] || '',\n      headline: p.headline || p.summary || '',\n      company: pos.companyName || '',\n      companyLinkedinUrl: pos.companyLinkedinUrl || '',\n      score: score.total,\n      targetAccountName: p.targetAccountName,\n      targetAccountId: p.targetAccountId\n    }\n  });\n}\nreturn out;"},"id":"score-profiles","name":"Scorer ICP (seuil >=60)","type":"n8n-nodes-base.code","typeVersion":2,"position":[-1340,0]},{"id":"check-effectif-entreprise","name":"Verifier effectif entreprise (2-10 personnes)","type":"n8n-nodes-base.code","typeVersion":2,"position":[-1180,0],"parameters":{"jsCode":"const key = \"dAD+/okr.dhaKPu5eBrawhgUFEh/kT3rywp8+CujTZWOT+260gX0=\";\nconst base = \"https://api30.unipile.com:16068\";\nconst results = [];\n\nfor (const item of $input.all()) {\n  const p = item.json;\n  let employeeCount = null;\n  const companyPublicId = (p.companyLinkedinUrl || '').match(/linkedin\\.com\\/company\\/([^/?]+)/)?.[1] || '';\n\n  if (companyPublicId) {\n    try {\n      const resp = await this.helpers.httpRequest({\n        method: 'GET',\n        url: base + '/api/v1/linkedin/company/' + companyPublicId + '?account_id=' + p.targetAccountId,\n        headers: { 'X-API-KEY': key },\n        json: true\n      });\n      employeeCount = resp.employee_count != null ? resp.employee_count : null;\n    } catch (e) {\n      employeeCount = null;\n    }\n  }\n\n  // Critere obligatoire: entre 2 et 10 personnes dans l'entreprise (sweet spot pour l'offre 2000e/mois\n  // - en dessous de 2, budget hors de portee ; au dessus de 10, plus le meme profil de decideur/besoin)\n  if (employeeCount === null || employeeCount < 2 || employeeCount > 10) continue;\n\n  // Bonus de score pour effectif dans la fourchette ideale\n  let effectifBonus = 0;\n  if (employeeCount >= 5) effectifBonus = 15;\n  else if (employeeCount >= 2) effectifBonus = 10;\n\n  results.push({ json: { ...p, employeeCount, score: (p.score || 0) + effectifBonus } });\n}\n\nreturn results;"}},{"parameters":{"jsCode":"const key = \"dAD+/okr.dhaKPu5eBrawhgUFEh/kT3rywp8+CujTZWOT+260gX0=\";\nconst base = \"https://api30.unipile.com:16068\";\n\nlet sentIds = new Set();\ntry {\n  const resp = await this.helpers.httpRequest({\n    method: 'GET',\n    url: base + '/api/v1/users/invite/sent?account_id=-tyMuFk1SFyAZIaeNVoRkA&limit=200',\n    headers: { 'X-API-KEY': key },\n    json: true,\n  });\n  (resp.items || []).forEach(i => { if (i.invited_user_id) sentIds.add(i.invited_user_id); });\n} catch (e) {}\n\nconst staticData = $getWorkflowStaticData('global');\nstaticData.triedIds = staticData.triedIds || {};\nconst now = Date.now();\nconst TWELVE_HOURS = 12 * 3600000;\nfor (const id of Object.keys(staticData.triedIds)) {\n  if (now - staticData.triedIds[id] > TWELVE_HOURS) delete staticData.triedIds[id];\n}\nconst triedRecently = new Set(Object.keys(staticData.triedIds));\n\nconst items = $input.all();\nconst fresh = items.filter(i => !sentIds.has(i.json.id) && !triedRecently.has(i.json.id));\nfresh.sort((a, b) => (b.json.score || 0) - (a.json.score || 0));\nconst picked = fresh.slice(0, 16);\n\n// Pre-calcule un instant d'envoi cible pour chacun, reparti uniformement entre maintenant et 19h00 Paris,\n// avec un jitter +/-20% pour eviter un pattern parfaitement regulier.\nconst parisNow = new Date(new Date().toLocaleString('en-US', { timeZone: 'Europe/Paris' }));\nconst endOfWindow = new Date(parisNow);\nendOfWindow.setHours(19, 0, 0, 0);\nconst msRemaining = Math.max(endOfWindow.getTime() - parisNow.getTime(), 0);\nconst n = Math.max(picked.length, 1);\nconst baseIntervalMs = msRemaining / n;\n\nlet cursorMs = 0;\nfor (let idx = 0; idx < picked.length; idx++) {\n  const jitterFactor = 0.8 + Math.random() * 0.4;\n  cursorMs += baseIntervalMs * jitterFactor;\n  picked[idx].json._waitSeconds = Math.min(Math.max(Math.round(cursorMs / 1000), 20), 39600);\n}\n// _waitSeconds est un delai CUMULE depuis le debut du run (pas un delai relatif au lead precedent),\n// donc chaque etape Wait doit soustraire le temps deja ecoule pour rester alignee sur la fenetre.\nif (picked.length) picked[0].json._runStartMs = Date.now();\nfor (let idx = 1; idx < picked.length; idx++) picked[idx].json._runStartMs = picked[0].json._runStartMs;\n\nreturn picked;\n"},"id":"dedup-unipile-1785414378347","name":"Dedup vs invitations Unipile","type":"n8n-nodes-base.code","typeVersion":2,"position":[700,200]},{"parameters":{"batchSize":1,"options":{}},"id":"loop-lead-1785414378347","name":"Boucle 1 lead a la fois","type":"n8n-nodes-base.splitInBatches","typeVersion":3,"position":[900,200]},{"parameters":{"amount":"={{ Math.max(Math.round(($json._runStartMs + $json._waitSeconds*1000 - Date.now())/1000), 5) }}","unit":"seconds"},"id":"wait-lead-1785414378347","name":"Attente etalee jusqu a 19h","type":"n8n-nodes-base.wait","typeVersion":1.1,"position":[1100,150],"webhookId":"72599f53-6859-4de5-9ee0-294602dfca4f"},{"parameters":{"jsCode":"const parisHour = parseInt(new Intl.DateTimeFormat('fr-FR', { timeZone: 'Europe/Paris', hour: 'numeric', hour12: false }).format(new Date()), 10);\nif (parisHour < 8 || parisHour >= 19) {\n  return [];\n}\nreturn [{ json: $input.item.json }];\n"},"id":"window-1785414378347","name":"Vérifier fenêtre 8h-19h","type":"n8n-nodes-base.code","typeVersion":2,"position":[1300,150]},{"parameters":{"jsCode":"const key = \"dAD+/okr.dhaKPu5eBrawhgUFEh/kT3rywp8+CujTZWOT+260gX0=\";\nconst base = \"https://api30.unipile.com:16068\";\nconst lead = $input.item.json;\nconst accountId = lead.targetAccountId || lead.accountId || '-tyMuFk1SFyAZIaeNVoRkA';\n\n// Codes typiques de quota/rate-limit LinkedIn releves par Unipile : 422 (cannot_resend_yet),\n// 429 (rate limit), 500 (erreur generique cote LinkedIn). On retente 2 fois avec backoff court\n// avant d'abandonner ce lead et de laisser le workflow continuer sur le suivant.\nconst RETRYABLE_STATUS = [422, 429, 500];\nconst MAX_ATTEMPTS = 3;\n\nlet lastError = null;\nlet sent = false;\nlet responseBody = null;\n\nfor (let attempt = 1; attempt <= MAX_ATTEMPTS && !sent; attempt++) {\n  try {\n    responseBody = await this.helpers.httpRequest({\n      method: 'POST',\n      url: base + '/api/v1/users/invite',\n      headers: { 'X-API-KEY': key, 'Content-Type': 'application/json' },\n      body: { provider_id: lead.id, account_id: accountId },\n      json: true,\n    });\n    sent = true;\n  } catch (e) {\n    lastError = e;\n    const status = e.response?.statusCode || e.statusCode || e.status || 0;\n    const quotaLikely = RETRYABLE_STATUS.includes(status);\n    if (!quotaLikely || attempt === MAX_ATTEMPTS) break;\n    // Backoff court avant retry : 15s puis 45s.\n    const backoffMs = attempt === 1 ? 15000 : 45000;\n    await new Promise(r => setTimeout(r, backoffMs));\n  }\n}\n\nreturn [{\n  json: {\n    ...lead,\n    _inviteSent: sent,\n    _inviteSkippedReason: sent ? null : ('quota_or_error_status_' + (lastError?.response?.statusCode || lastError?.statusCode || 'unknown')),\n  }\n}];\n"},"id":"send-1785414378347","name":"Envoyer demande de connexion","type":"n8n-nodes-base.code","typeVersion":2,"position":[1500,150],"onError":"continueRegularOutput","alwaysOutputData":true},{"parameters":{"jsCode":"const staticData = $getWorkflowStaticData('global');\nstaticData.triedIds = staticData.triedIds || {};\nconst lead = $('Boucle 1 lead a la fois').item.json;\nif (lead && lead.id) {\n  staticData.triedIds[lead.id] = Date.now();\n}\nreturn [{ json: $input.item.json }];"},"id":"mark-tried-1785421170819","name":"Marquer tentative","type":"n8n-nodes-base.code","typeVersion":2,"position":[2100,150]},{"parameters":{"operation":"appendOrUpdate","documentId":{"__rl":true,"value":"1Vu44hHABV2zUfB9lyiEzjfuB0XO8adTq0FTacZCi9nQ","mode":"id"},"sheetName":{"__rl":true,"value":"gid=0","mode":"list"},"columns":{"mappingMode":"defineBelow","value":{"id":"={{ $json.id }}","name":"={{ $json.name }}","linkedinUrl":"={{ $json.linkedinUrl }}","publicIdentifier":"={{ $json.publicIdentifier }}","headline":"={{ $json.headline }}","company":"={{ $json.company }}","employeeCount":"={{ $json.employeeCount }}","score":"={{ $json.score }}","targetAccountName":"={{ $json.targetAccountName }}","scrapedAt":"={{ $now.setZone('Europe/Paris').toISO() }}"},"matchingColumns":["id"]},"options":{}},"id":"append-google-sheet","name":"Ajouter au Google Sheet Martin","type":"n8n-nodes-base.googleSheets","typeVersion":4.5,"position":[-1000,0],"credentials":{"googleSheetsOAuth2Api":{"id":"Fe3F00A34M9ebdAG","name":"Google Sheets account"}},"onError":"continueRegularOutput"},{"id":"filter-open-to-work","name":"Exclure Open to Work","type":"n8n-nodes-base.code","typeVersion":2,"position":[-1670,0],"parameters":{"jsCode":"// Exclut tout profil signalant \"Open to Work\" — structure (badge Apify) ou texte (headline/summary/about).\nfunction isOpenToWork(p) {\n  if (p == null) return false;\n  if (p.openToWork === true || p.open_to_work === true || p.isOpenToWork === true) return true;\n  if (Array.isArray(p.badges) && p.badges.some(b => /open.?to.?work/i.test(String(b)))) return true;\n\n  const fields = [p.headline, p.summary, p.about, p.title];\n  const text = fields.filter(Boolean).join(' ').toLowerCase();\n  const patterns = [\n    /open\\s*to\\s*work/i,\n    /#opentowork/i,\n    /ouvert(e)?\\s+aux\\s+opportunit/i,\n    /\\u00e0\\s+l['\\u2019]\\u00e9coute\\s+du\\s+march/i,\n    /en\\s+recherche\\s+d['\\u2019]emploi/i,\n    /disponible\\s+imm\\u00e9diatement/i,\n    /recherche\\s+active(?:ment)?\\s+un\\s+poste/i,\n  ];\n  return patterns.some(re => re.test(text));\n}\n\nconst items = $input.all();\nreturn items.filter(item => !isOpenToWork(item.json));"}}],"connections":{"Déclencheur quotidien 8h":{"main":[[{"node":"Scraper Apify (fondateurs agence IA)","type":"main","index":0}]]},"Scraper Apify (fondateurs agence IA)":{"main":[[{"node":"Aplatir profils","type":"main","index":0}]]},"Aplatir profils":{"main":[[{"node":"Exclure Open to Work","type":"main","index":0}]]},"Scorer ICP (seuil >=60)":{"main":[[{"node":"Verifier effectif entreprise (2-10 personnes)","type":"main","index":0}]]},"Verifier effectif entreprise (2-10 personnes)":{"main":[[{"node":"Ajouter au Google Sheet Martin","type":"main","index":0}]]},"Ajouter au Google Sheet Martin":{"main":[[{"node":"Dedup vs invitations Unipile","type":"main","index":0}]]},"Dedup vs invitations Unipile":{"main":[[{"node":"Boucle 1 lead a la fois","type":"main","index":0}]]},"Boucle 1 lead a la fois":{"main":[[],[{"node":"Attente etalee jusqu a 19h","type":"main","index":0}]]},"Envoyer demande de connexion":{"main":[[{"node":"Marquer tentative","type":"main","index":0}]]},"Marquer tentative":{"main":[[{"node":"Boucle 1 lead a la fois","type":"main","index":0}]]},"Attente etalee jusqu a 19h":{"main":[[{"node":"Vérifier fenêtre 8h-19h","type":"main","index":0}]]},"Vérifier fenêtre 8h-19h":{"main":[[{"node":"Envoyer demande de connexion","type":"main","index":0}]]},"Exclure Open to Work":{"main":[[{"node":"Scorer ICP (seuil >=60)","type":"main","index":0}]]}},"nodeGroups":[],"authors":"Martin Cuisinier","name":null,"description":null,"autosaved":false,"workflowPublishHistory":[{"createdAt":"2026-08-28T16:48:42.994Z","id":1036,"workflowId":"hxjBRsMmczzERdbP","versionId":"366ccbe0-497f-4f33-84b4-18a961eb8e00","event":"activated","userId":"22728c6c-c299-4889-8494-11ecf44d60f2"},{"createdAt":"2026-08-28T16:48:42.965Z","id":1035,"workflowId":"hxjBRsMmczzERdbP","versionId":"366ccbe0-497f-4f33-84b4-18a961eb8e00","event":"deactivated","userId":"22728c6c-c299-4889-8494-11ecf44d60f2"}]}}
+{
+  "name": "🔗 Prospection ICP - Scraping + Demandes de connexion (Florian Gros)",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "47 15 * * *"
+            }
+          ]
+        }
+      },
+      "id": "trigger-daily",
+      "name": "Déclencheur quotidien 8h",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -2000,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const OR_KEY = \"YOUR_OPENROUTER_API_KEY\";\nconst SYSTEM_PROMPT = \"Tu qualifies des leads LinkedIn pour un service d'acquisition client destine aux createurs de formations en ligne high-ticket et coachs business premium.\\n\\nQualifie OUI si : la personne vend elle-meme sa propre formation en ligne high-ticket (programme structure a prix premium, pas un e-book ou low-ticket) dans la thematique business/marketing digital/entrepreneuriat/generation de revenus, en France ou marche francophone. Role : founder, fondateur, infopreneur, createur de formation, formateur, coach business, expert marketing digital, mentor.\\n\\nQualifie NON si : vend du low-ticket, salarie/employe/stagiaire/assistant/community manager/media buyer/SDR/chef de projet sans pouvoir de decision, e-commerce/SaaS/agence marketing/agence publicitaire/artisan/BTP/industrie, aucune offre de formation identifiable, hors marche francophone.\\n\\nReponds UNIQUEMENT en JSON strict, sans texte autour : {\\\"icp\\\": \\\"oui\\\" ou \\\"non\\\", \\\"raison\\\": \\\"1 phrase courte en francais expliquant pourquoi\\\"}\";\n\nasync function classify(p) {\n  const bio = (p.headline || '') + ((p.currentPosition && p.currentPosition[0] && p.currentPosition[0].description) ? ' | ' + p.currentPosition[0].description : '');\n  try {\n    const resp = await this.helpers.httpRequest({\n      method: 'POST',\n      url: 'https://openrouter.ai/api/v1/chat/completions',\n      headers: { 'Authorization': 'Bearer ' + OR_KEY, 'Content-Type': 'application/json' },\n      body: JSON.stringify({\n        model: 'anthropic/claude-haiku-4.5',\n        messages: [\n          { role: 'system', content: SYSTEM_PROMPT },\n          { role: 'user', content: 'Nom: ' + (p.firstName || '') + ' ' + (p.lastName || '') + '\\nBio: ' + bio }\n        ],\n        temperature: 0.1,\n        max_tokens: 150\n      }),\n      json: true,\n    });\n    const content = (resp.choices && resp.choices[0] && resp.choices[0].message.content) || '';\n    const match = content.match(/\\{[\\s\\S]*\\}/);\n    if (match) {\n      const parsed = JSON.parse(match[0]);\n      return { icp: (parsed.icp || '').toLowerCase().trim() === 'oui' ? 'oui' : 'non', raison: parsed.raison || '' };\n    }\n  } catch (e) {}\n  return { icp: 'non', raison: '' };\n}\n\nconst items = $input.all();\nconst out = [];\nfor (const item of items) {\n  const p = item.json;\n  const result = await classify.call(this, p);\n  if (result.icp !== 'oui') continue;\n  const pos = (p.currentPosition && p.currentPosition[0]) || {};\n  const bio = (p.headline || '') + (pos.description ? ' | ' + pos.description : '');\n  out.push({\n    json: {\n      id: p.id,\n      name: (p.firstName || '') + ' ' + (p.lastName || ''),\n      linkedinUrl: p.linkedinUrl,\n      publicIdentifier: (p.linkedinUrl || '').match(/linkedin\\.com\\/in\\/([^/?]+)/)?.[1] || '',\n      headline: p.headline || '',\n      bio: bio,\n      company: pos.companyName || '',\n      companyLinkedinUrl: pos.companyLinkedinUrl || '',\n      icpMatch: 'oui',\n      raisonIcp: result.raison,\n      targetAccountName: p.targetAccountName,\n      targetAccountId: p.targetAccountId\n    }\n  });\n}\nreturn out;\n",
+        "parameters": {
+          "jsCode": "const OR_KEY = \"YOUR_OPENROUTER_API_KEY\";\nconst SYSTEM_PROMPT = \"Tu qualifies des leads LinkedIn pour un service d'acquisition client destine aux createurs de formations en ligne high-ticket et coachs business premium.\\n\\nQualifie OUI si : la personne vend elle-meme sa propre formation en ligne high-ticket (programme structure a prix premium, pas un e-book ou low-ticket) dans la thematique business/marketing digital/entrepreneuriat/generation de revenus, en France ou marche francophone. Role : founder, fondateur, infopreneur, createur de formation, formateur, coach business, expert marketing digital, mentor.\\n\\nQualifie NON si : vend du low-ticket, salarie/employe/stagiaire/assistant/community manager/media buyer/SDR/chef de projet sans pouvoir de decision, e-commerce/SaaS/agence marketing/agence publicitaire/artisan/BTP/industrie, aucune offre de formation identifiable, hors marche francophone.\\n\\nReponds UNIQUEMENT en JSON strict, sans texte autour : {\\\"icp\\\": \\\"oui\\\" ou \\\"non\\\", \\\"raison\\\": \\\"1 phrase courte en francais expliquant pourquoi\\\"}\";\n\nasync function classify(p) {\n  const bio = (p.headline || '') + ((p.currentPosition && p.currentPosition[0] && p.currentPosition[0].description) ? ' | ' + p.currentPosition[0].description : '');\n  try {\n    const resp = await this.helpers.httpRequest({\n      method: 'POST',\n      url: 'https://openrouter.ai/api/v1/chat/completions',\n      headers: { 'Authorization': 'Bearer ' + OR_KEY, 'Content-Type': 'application/json' },\n      body: JSON.stringify({\n        model: 'anthropic/claude-haiku-4.5',\n        messages: [\n          { role: 'system', content: SYSTEM_PROMPT },\n          { role: 'user', content: 'Nom: ' + (p.firstName || '') + ' ' + (p.lastName || '') + '\\nBio: ' + bio }\n        ],\n        temperature: 0.1,\n        max_tokens: 150\n      }),\n      json: true,\n    });\n    const content = (resp.choices && resp.choices[0] && resp.choices[0].message.content) || '';\n    const match = content.match(/\\{[\\s\\S]*\\}/);\n    if (match) {\n      const parsed = JSON.parse(match[0]);\n      return { icp: (parsed.icp || '').toLowerCase().trim() === 'oui' ? 'oui' : 'non', raison: parsed.raison || '' };\n    }\n  } catch (e) {}\n  return { icp: 'non', raison: '' };\n}\n\nconst items = $input.all();\nconst out = [];\nfor (const item of items) {\n  const p = item.json;\n  const result = await classify.call(this, p);\n  if (result.icp !== 'oui') continue;\n  const pos = (p.currentPosition && p.currentPosition[0]) || {};\n  const bio = (p.headline || '') + (pos.description ? ' | ' + pos.description : '');\n  out.push({\n    json: {\n      id: p.id,\n      name: (p.firstName || '') + ' ' + (p.lastName || ''),\n      linkedinUrl: p.linkedinUrl,\n      publicIdentifier: (p.linkedinUrl || '').match(/linkedin\\.com\\/in\\/([^/?]+)/)?.[1] || '',\n      headline: p.headline || '',\n      bio: bio,\n      location: p.location || '',\n      company: pos.companyName || '',\n      companyLinkedinUrl: pos.companyLinkedinUrl || '',\n      icpMatch: 'oui',\n      raisonIcp: result.raison,\n      targetAccountName: p.targetAccountName,\n      targetAccountId: p.targetAccountId\n    }\n  });\n}\nreturn out;\n"
+        }
+      },
+      "id": "score-profiles",
+      "name": "Scorer ICP (seuil >=60)",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1340,
+        0
+      ]
+    },
+    {
+      "id": "check-effectif-entreprise",
+      "name": "Verifier effectif entreprise (2-10 personnes)",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1180,
+        0
+      ],
+      "parameters": {
+        "jsCode": "const key = \"YOUR_UNIPILE_API_KEY\";\nconst base = \"https://YOUR_UNIPILE_DSN\";\nconst results = [];\n\nfor (const item of $input.all()) {\n  const p = item.json;\n  let employeeCount = null;\n  const companyPublicId = (p.companyLinkedinUrl || '').match(/linkedin\\.com\\/company\\/([^/?]+)/)?.[1] || '';\n\n  if (companyPublicId) {\n    try {\n      const resp = await this.helpers.httpRequest({\n        method: 'GET',\n        url: base + '/api/v1/linkedin/company/' + companyPublicId + '?account_id=' + p.targetAccountId,\n        headers: { 'X-API-KEY': key },\n        json: true\n      });\n      employeeCount = resp.employee_count != null ? resp.employee_count : null;\n    } catch (e) {\n      employeeCount = null;\n    }\n  }\n\n  if (!companyPublicId || employeeCount === null) {\n    results.push({ json: { ...p, employeeCount: null } });\n    continue;\n  }\n\n  if (employeeCount < 2 || employeeCount > 10) continue;\n\n  results.push({ json: { ...p, employeeCount } });\n}\n\nreturn results;\n"
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const key = \"YOUR_UNIPILE_API_KEY\";\nconst base = \"https://YOUR_UNIPILE_DSN\";\nconst TG_TOKEN = \"YOUR_TELEGRAM_BOT_TOKEN\";\nconst TG_CHAT = \"YOUR_TELEGRAM_CHAT_ID\";\n\nasync function sendTelegram(text) {\n  try {\n    await this.helpers.httpRequest({\n      method: 'POST',\n      url: 'https://api.telegram.org/bot' + TG_TOKEN + '/sendMessage',\n      headers: { 'Content-Type': 'application/json' },\n      body: { chat_id: TG_CHAT, text },\n      json: true,\n    });\n  } catch (e) {}\n}\n\nlet sentIds = new Set();\ntry {\n  const resp = await this.helpers.httpRequest({\n    method: 'GET',\n    url: base + '/api/v1/users/invite/sent?account_id=d3yLtuTNQwCJPsSE-ekAew&limit=200',\n    headers: { 'X-API-KEY': key },\n    json: true,\n  });\n  (resp.items || []).forEach(i => { if (i.invited_user_id) sentIds.add(i.invited_user_id); });\n} catch (e) {}\n\nconst staticData = $getWorkflowStaticData('global');\nstaticData.triedIds = staticData.triedIds || {};\nconst now = Date.now();\nconst TWELVE_HOURS = 12 * 3600000;\nfor (const id of Object.keys(staticData.triedIds)) {\n  if (now - staticData.triedIds[id] > TWELVE_HOURS) delete staticData.triedIds[id];\n}\nconst triedRecently = new Set(Object.keys(staticData.triedIds));\n\nconst parisDateStr = new Intl.DateTimeFormat('fr-CA', { timeZone: 'Europe/Paris' }).format(new Date());\nif (staticData.dailyInviteDate !== parisDateStr) {\n  staticData.dailyInviteDate = parisDateStr;\n  staticData.dailyInviteCount = 0;\n}\nconst DAILY_LIMIT = 18;\nconst remainingToday = Math.max(DAILY_LIMIT - (staticData.dailyInviteCount || 0), 0);\n\nconst items = $input.all();\nconst fresh = items.filter(i => !sentIds.has(i.json.id) && !triedRecently.has(i.json.id));\nconst picked = fresh.slice(0, remainingToday);\n\nif (remainingToday === 0) {\n  await sendTelegram.call(this, 'Florian Gros : limite quotidienne de 18 demandes de connexion deja atteinte, aucun envoi ce run.');\n}\n\nconst parisNow = new Date(new Date().toLocaleString('en-US', { timeZone: 'Europe/Paris' }));\nconst endOfWindow = new Date(parisNow);\nendOfWindow.setHours(19, 0, 0, 0);\nconst msRemaining = Math.max(endOfWindow.getTime() - parisNow.getTime(), 0);\nconst n = Math.max(picked.length, 1);\nconst baseIntervalMs = msRemaining / n;\n\nlet cursorMs = 0;\nfor (let idx = 0; idx < picked.length; idx++) {\n  const jitterFactor = 0.8 + Math.random() * 0.4;\n  cursorMs += baseIntervalMs * jitterFactor;\n  picked[idx].json._waitSeconds = Math.min(Math.max(Math.round(cursorMs / 1000), 5), 39600);\n}\nif (picked.length) picked[0].json._runStartMs = Date.now();\nfor (let idx = 1; idx < picked.length; idx++) picked[idx].json._runStartMs = picked[0].json._runStartMs;\n\nreturn picked;\n"
+      },
+      "id": "dedup-unipile-1785414378347",
+      "name": "Dedup vs invitations Unipile",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        700,
+        200
+      ]
+    },
+    {
+      "parameters": {
+        "batchSize": 1,
+        "options": {}
+      },
+      "id": "loop-lead-1785414378347",
+      "name": "Boucle 1 lead a la fois",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        900,
+        200
+      ]
+    },
+    {
+      "parameters": {
+        "amount": "={{ Math.max(Math.round(($json._runStartMs + $json._waitSeconds*1000 - Date.now())/1000), 5) }}",
+        "unit": "seconds"
+      },
+      "id": "wait-lead-1785414378347",
+      "name": "Attente etalee jusqu a 19h",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1100,
+        150
+      ],
+      "webhookId": "72599f53-6859-4de5-9ee0-294602dfca4f"
+    },
+    {
+      "parameters": {
+        "jsCode": "const parisHour = parseInt(new Intl.DateTimeFormat('fr-FR', { timeZone: 'Europe/Paris', hour: 'numeric', hour12: false }).format(new Date()), 10);\nif (parisHour < 8 || parisHour >= 19) {\n  return [];\n}\nreturn [{ json: $input.item.json }];\n"
+      },
+      "id": "window-1785414378347",
+      "name": "Vérifier fenêtre 8h-19h",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1300,
+        150
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const key = \"YOUR_UNIPILE_API_KEY\";\nconst base = \"https://YOUR_UNIPILE_DSN\";\nconst lead = $input.item.json;\nconst accountId = lead.targetAccountId || lead.accountId || 'd3yLtuTNQwCJPsSE-ekAew';\n\nconst RETRYABLE_TYPES = ['errors/rate_limit', 'errors/internal_error'];\nconst MAX_ATTEMPTS = 3;\n\nlet status = '';\nlet sent = false;\nlet resp = null;\n\nfor (let attempt = 1; attempt <= MAX_ATTEMPTS && !sent; attempt++) {\n  resp = await this.helpers.httpRequest({\n    method: 'POST',\n    url: base + '/api/v1/users/invite',\n    headers: { 'X-API-KEY': key, 'Content-Type': 'application/json' },\n    body: { provider_id: lead.id, account_id: accountId },\n    json: true,\n    ignoreHttpStatusErrors: true,\n  });\n\n  if (!resp || resp.status == null || resp.status < 400) {\n    sent = true;\n    status = 'fait';\n    break;\n  }\n\n  const errType = (resp.type || '').toLowerCase();\n  const errDetail = (resp.detail || resp.title || '').toLowerCase();\n  const haystack = errType + ' ' + errDetail;\n\n  // Hard stop: real LinkedIn/Unipile quota or account block.\n  if (haystack.includes('quota') || haystack.includes('limit_reached') || haystack.includes('daily') || haystack.includes('weekly')) {\n    status = 'LIMITE ATTEINTE';\n    break;\n  }\n  if (haystack.includes('account_blocked') || haystack.includes('account_restricted') || haystack.includes('suspended') || haystack.includes('account_disabled')) {\n    status = 'BLOQUE - compte restreint';\n    break;\n  }\n\n  // Benign / already-known cases: no retry needed, just record and move on.\n  if (haystack.includes('already_invited') || haystack.includes('already_connected') || haystack.includes('invitation_already_sent') || haystack.includes('pending_invitation') || haystack.includes('already_invited_recently') || haystack.includes('cannot_resend_yet')) {\n    status = 'deja fait avant';\n    break;\n  }\n  if (haystack.includes('email_required') || haystack.includes('must_send_invitation_request_with_email')) {\n    status = 'email requis';\n    break;\n  }\n  if (haystack.includes('not_found') || errDetail.includes('404')) {\n    status = 'compte introuvable';\n    break;\n  }\n  if (haystack.includes('private') || haystack.includes('restricted_profile')) {\n    status = 'compte prive';\n    break;\n  }\n  if (haystack.includes('invalid_recipient') || haystack.includes('cannot be reached')) {\n    status = 'profil non joignable';\n    break;\n  }\n\n  // Genuinely retryable (rate limit / transient) -> backoff and retry.\n  if (RETRYABLE_TYPES.some(t => errType.includes(t)) && attempt < MAX_ATTEMPTS) {\n    const backoffMs = attempt === 1 ? 15000 : 45000;\n    await new Promise(r => setTimeout(r, backoffMs));\n    continue;\n  }\n\n  // Unrecognized error: record the real type/detail instead of \"unknown\".\n  status = 'erreur ' + resp.status + ' ' + (resp.type || resp.title || 'inconnue');\n  break;\n}\n\nreturn [{\n  json: {\n    ...lead,\n    _inviteSent: sent,\n    _inviteSkippedReason: sent ? null : status,\n  }\n}];"
+      },
+      "id": "send-1785414378347",
+      "name": "Envoyer demande de connexion",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1500,
+        150
+      ],
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "jsCode": "const staticData = $getWorkflowStaticData('global');\nstaticData.triedIds = staticData.triedIds || {};\nconst lead = $('Boucle 1 lead a la fois').item.json;\nif (lead && lead.id) {\n  staticData.triedIds[lead.id] = Date.now();\n}\nif ($input.item.json._inviteSent) {\n  staticData.dailyInviteCount = (staticData.dailyInviteCount || 0) + 1;\n} else {\n  const TG_TOKEN = \"YOUR_TELEGRAM_BOT_TOKEN\";\n  const TG_CHAT = \"YOUR_TELEGRAM_CHAT_ID\";\n  try {\n    await this.helpers.httpRequest({\n      method: 'POST',\n      url: 'https://api.telegram.org/bot' + TG_TOKEN + '/sendMessage',\n      headers: { 'Content-Type': 'application/json' },\n      body: { chat_id: TG_CHAT, text: 'Florian Gros : echec envoi demande de connexion pour ' + (lead.name || lead.linkedinUrl || lead.id) + ' - raison: ' + ($input.item.json._inviteSkippedReason || 'inconnue') },\n      json: true,\n    });\n  } catch (e) {}\n}\nreturn [{ json: $input.item.json }];"
+      },
+      "id": "mark-tried-1785421170819",
+      "name": "Marquer tentative",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2100,
+        150
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "15xewt2PGt-QgDklO6uMWfJhTx1G26D3WvjHcUk0xlpI"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "Leads Florian 2e-3e degre"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Lien profil LKD": "={{ $json.linkedinUrl }}",
+            "nom": "={{ $json.name }}",
+            "bio": "={{ $json.bio }}",
+            "Location": "",
+            "ICP match": "={{ $json.icpMatch }}",
+            "Raison ICP": "={{ $json.raisonIcp }}",
+            "Icebreaker": ""
+          },
+          "matchingColumns": [
+            "Lien profil LKD"
+          ],
+          "schema": [
+            {
+              "id": "Lien profil LKD",
+              "displayName": "Lien profil LKD",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "nom",
+              "displayName": "nom",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "bio",
+              "displayName": "bio",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Location",
+              "displayName": "Location",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "ICP match",
+              "displayName": "ICP match",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Demande de co",
+              "displayName": "Demande de co",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Icebreaker",
+              "displayName": "Icebreaker",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Raison ICP",
+              "displayName": "Raison ICP",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ]
+        },
+        "options": {},
+        "parameters": {
+          "columns": {
+            "value": {
+              "Location": "={{ $json.location }}"
+            }
+          }
+        }
+      },
+      "id": "append-google-sheet",
+      "name": "Ajouter au Google Sheet Florian",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        -1000,
+        0
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "Fe3F00A34M9ebdAG",
+          "name": "Google Sheets account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "id": "filter-open-to-work",
+      "name": "Exclure Open to Work",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1670,
+        0
+      ],
+      "parameters": {
+        "jsCode": "// Exclut tout profil signalant \"Open to Work\" — structure (badge Apify) ou texte (headline/summary/about).\nfunction isOpenToWork(p) {\n  if (p == null) return false;\n  if (p.openToWork === true || p.open_to_work === true || p.isOpenToWork === true) return true;\n  if (Array.isArray(p.badges) && p.badges.some(b => /open.?to.?work/i.test(String(b)))) return true;\n\n  const fields = [p.headline, p.summary, p.about, p.title];\n  const text = fields.filter(Boolean).join(' ').toLowerCase();\n  const patterns = [\n    /open\\s*to\\s*work/i,\n    /#opentowork/i,\n    /ouvert(e)?\\s+aux\\s+opportunit/i,\n    /\\u00e0\\s+l['\\u2019]\\u00e9coute\\s+du\\s+march/i,\n    /en\\s+recherche\\s+d['\\u2019]emploi/i,\n    /disponible\\s+imm\\u00e9diatement/i,\n    /recherche\\s+active(?:ment)?\\s+un\\s+poste/i,\n  ];\n  return patterns.some(re => re.test(text));\n}\n\nconst items = $input.all();\nreturn items.filter(item => !isOpenToWork(item.json));"
+      }
+    },
+    {
+      "id": "c07c841c-3f00-479d-a59b-a15efe7bae4e",
+      "name": "Rechercher leads (Unipile natif)",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1780,
+        0
+      ],
+      "parameters": {
+        "jsCode": "const key = \"YOUR_UNIPILE_API_KEY\";\nconst base = \"https://YOUR_UNIPILE_DSN\";\nconst accountId = \"d3yLtuTNQwCJPsSE-ekAew\";\nconst searchQuery = \"formateur coach business high ticket formation en ligne France\";\nconst targetAccountName = \"Florian Gros\";\n\nfunction parseWorkDurationMonths(exp) {\n  if (!exp || !exp.start) return 0;\n  const start = new Date(exp.start);\n  const end = exp.end ? new Date(exp.end) : new Date();\n  if (isNaN(start.getTime())) return 0;\n  const months = (end.getFullYear() - start.getFullYear()) * 12 + (end.getMonth() - start.getMonth());\n  return Math.max(months, 0);\n}\nfunction durationLabel(months) {\n  const yr = Math.floor(months / 12);\n  const mo = months % 12;\n  let s = '';\n  if (yr > 0) s += yr + ' yr ';\n  if (mo > 0) s += mo + ' mo';\n  return s.trim();\n}\n\n// Persistent pagination: advance through search result pages across daily runs\n// instead of always re-fetching page 1 (which returned the same leads every time).\nconst staticData = $getWorkflowStaticData('global');\nconst searchCursor = staticData._searchCursor || null;\n\nlet searchResults = [];\nlet nextCursor = null;\ntry {\n  const url = base + '/api/v1/linkedin/search?account_id=' + accountId + (searchCursor ? '&cursor=' + encodeURIComponent(searchCursor) : '');\n  const resp = await this.helpers.httpRequest({\n    method: 'POST',\n    url,\n    headers: { 'X-API-KEY': key, 'Content-Type': 'application/json' },\n    body: { api: 'classic', category: 'people', keywords: searchQuery },\n    json: true,\n  });\n  searchResults = (resp.items || []).filter(i => i.type === 'PEOPLE').slice(0, 40);\n  nextCursor = resp.cursor || null;\n  // If a page returns nothing (end of results), loop back to the first page next time.\n  if (searchResults.length === 0 && searchCursor) {\n    staticData._searchCursor = null;\n  } else {\n    staticData._searchCursor = nextCursor;\n  }\n} catch (e) {\n  // On a search error (e.g. stale/invalid cursor), reset to page 1 for the next run.\n  staticData._searchCursor = null;\n  return [];\n}\n\nconst out = [];\nfor (const person of searchResults) {\n  let profile = null;\n  try {\n    profile = await this.helpers.httpRequest({\n      method: 'GET',\n      url: base + '/api/v1/users/' + encodeURIComponent(person.id) + '?account_id=' + accountId + '&linkedin_sections=experience',\n      headers: { 'X-API-KEY': key },\n      json: true,\n    });\n  } catch (e) {\n    continue;\n  }\n  if (!profile) continue;\n\n  const exp = (profile.work_experience && profile.work_experience[0]) || {};\n  const months = parseWorkDurationMonths(exp);\n\n  out.push({\n    json: {\n      id: profile.provider_id,\n      firstName: profile.first_name || '',\n      lastName: profile.last_name || '',\n      linkedinUrl: 'https://www.linkedin.com/in/' + (profile.public_identifier || ''),\n      headline: profile.headline || '',\n      followerCount: profile.follower_count || 0,\n      currentPosition: [{\n        position: exp.position || '',\n        description: exp.description || '',\n        duration: durationLabel(months),\n        employmentType: exp.status || '',\n        companyName: exp.company || '',\n        companyLinkedinUrl: exp.company_id ? ('https://www.linkedin.com/company/' + exp.company_id) : '',\n      }],\n      targetAccountName: targetAccountName,\n      targetAccountId: accountId,\n    }\n  });\n}\nreturn out;",
+        "parameters": {
+          "jsCode": "const key = \"YOUR_UNIPILE_API_KEY\";\nconst base = \"https://YOUR_UNIPILE_DSN\";\nconst accountId = \"d3yLtuTNQwCJPsSE-ekAew\";\nconst searchQuery = \"formateur coach business high ticket formation en ligne France\";\nconst targetAccountName = \"Florian Gros\";\n\nfunction parseWorkDurationMonths(exp) {\n  if (!exp || !exp.start) return 0;\n  const start = new Date(exp.start);\n  const end = exp.end ? new Date(exp.end) : new Date();\n  if (isNaN(start.getTime())) return 0;\n  const months = (end.getFullYear() - start.getFullYear()) * 12 + (end.getMonth() - start.getMonth());\n  return Math.max(months, 0);\n}\nfunction durationLabel(months) {\n  const yr = Math.floor(months / 12);\n  const mo = months % 12;\n  let s = '';\n  if (yr > 0) s += yr + ' yr ';\n  if (mo > 0) s += mo + ' mo';\n  return s.trim();\n}\n\nlet searchResults = [];\ntry {\n  const resp = await this.helpers.httpRequest({\n    method: 'POST',\n    url: base + '/api/v1/linkedin/search?account_id=' + accountId,\n    headers: { 'X-API-KEY': key, 'Content-Type': 'application/json' },\n    body: { api: 'classic', category: 'people', keywords: searchQuery },\n    json: true,\n  });\n  searchResults = (resp.items || []).filter(i => i.type === 'PEOPLE').slice(0, 40);\n} catch (e) {\n  return [];\n}\n\nconst out = [];\nfor (const person of searchResults) {\n  let profile = null;\n  try {\n    profile = await this.helpers.httpRequest({\n      method: 'GET',\n      url: base + '/api/v1/users/' + encodeURIComponent(person.id) + '?account_id=' + accountId + '&linkedin_sections=experience',\n      headers: { 'X-API-KEY': key },\n      json: true,\n    });\n  } catch (e) {\n    continue;\n  }\n  if (!profile) continue;\n\n  const exp = (profile.work_experience && profile.work_experience[0]) || {};\n  const months = parseWorkDurationMonths(exp);\n\n  out.push({\n    json: {\n      id: profile.provider_id,\n      firstName: profile.first_name || '',\n      lastName: profile.last_name || '',\n      linkedinUrl: 'https://www.linkedin.com/in/' + (profile.public_identifier || ''),\n      headline: profile.headline || '',\n      location: profile.location || (profile.primary_locale && profile.primary_locale.country) || '',\n      followerCount: profile.follower_count || 0,\n      currentPosition: [{\n        position: exp.position || '',\n        description: exp.description || '',\n        duration: durationLabel(months),\n        employmentType: exp.status || '',\n        companyName: exp.company || '',\n        companyLinkedinUrl: exp.company_id ? ('https://www.linkedin.com/company/' + exp.company_id) : '',\n      }],\n      targetAccountName: targetAccountName,\n      targetAccountId: accountId,\n    }\n  });\n}\nreturn out;\n"
+        }
+      }
+    },
+    {
+      "id": "ab37523a-38b8-49d3-ab42-4f2f15d6049d",
+      "name": "Marquer Demande de co",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        1800,
+        150
+      ],
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "15xewt2PGt-QgDklO6uMWfJhTx1G26D3WvjHcUk0xlpI"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "Leads Florian 2e-3e degre"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Lien profil LKD": "={{ $json.linkedinUrl }}",
+            "Demande de co": "={{ $json._inviteSent ? 'fait' : ($json._inviteSkippedReason || 'erreur') }}"
+          },
+          "matchingColumns": [
+            "Lien profil LKD"
+          ],
+          "schema": [
+            {
+              "id": "Lien profil LKD",
+              "displayName": "Lien profil LKD",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "nom",
+              "displayName": "nom",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "bio",
+              "displayName": "bio",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Location",
+              "displayName": "Location",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "ICP match",
+              "displayName": "ICP match",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Demande de co",
+              "displayName": "Demande de co",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Icebreaker",
+              "displayName": "Icebreaker",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Raison ICP",
+              "displayName": "Raison ICP",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ]
+        },
+        "options": {}
+      },
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "Fe3F00A34M9ebdAG",
+          "name": "Google Sheets account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Scorer ICP (seuil >=60)": {
+      "main": [
+        [
+          {
+            "node": "Verifier effectif entreprise (2-10 personnes)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Verifier effectif entreprise (2-10 personnes)": {
+      "main": [
+        [
+          {
+            "node": "Ajouter au Google Sheet Florian",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Dedup vs invitations Unipile": {
+      "main": [
+        [
+          {
+            "node": "Boucle 1 lead a la fois",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Boucle 1 lead a la fois": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Attente etalee jusqu a 19h",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Marquer tentative": {
+      "main": [
+        [
+          {
+            "node": "Boucle 1 lead a la fois",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Attente etalee jusqu a 19h": {
+      "main": [
+        [
+          {
+            "node": "Vérifier fenêtre 8h-19h",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Vérifier fenêtre 8h-19h": {
+      "main": [
+        [
+          {
+            "node": "Envoyer demande de connexion",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Exclure Open to Work": {
+      "main": [
+        [
+          {
+            "node": "Scorer ICP (seuil >=60)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ajouter au Google Sheet Florian": {
+      "main": [
+        [
+          {
+            "node": "Dedup vs invitations Unipile",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Déclencheur quotidien 8h": {
+      "main": [
+        [
+          {
+            "node": "Rechercher leads (Unipile natif)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Rechercher leads (Unipile natif)": {
+      "main": [
+        [
+          {
+            "node": "Exclure Open to Work",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Envoyer demande de connexion": {
+      "main": [
+        [
+          {
+            "node": "Marquer Demande de co",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Marquer Demande de co": {
+      "main": [
+        [
+          {
+            "node": "Marquer tentative",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "errorWorkflow": "xqvf2o0KvOMAScEk",
+    "availableInMCP": true
+  }
+}
