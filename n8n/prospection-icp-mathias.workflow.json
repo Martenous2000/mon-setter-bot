@@ -1,0 +1,573 @@
+{
+  "name": "🔗 Prospection ICP - Scraping + Demandes de connexion (Mathias Chow)",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "2 8 * * *"
+            }
+          ]
+        }
+      },
+      "id": "trigger-daily",
+      "name": "Déclencheur quotidien 8h",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -2000,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const OR_KEY = \"YOUR_OPENROUTER_API_KEY\";\nconst SYSTEM_PROMPT = \"Tu es un expert en qualification de leads LinkedIn B2B pour une offre d'automatisation IA (Client Acquisition OS) destinee specifiquement a des independants et micro-equipes (1 a 4 personnes) exercant comme consultants, formateurs ou coachs dans les secteurs IA, tech, digital ou marketing, en France (francophones uniquement).\\\\n\\\\nQualifie OUI uniquement si la personne est independante, fondatrice ou dirigeante d'une structure de 1 a 4 personnes maximum, active en tant que consultant/formateur/coach dans l'IA, la tech, le digital ou le marketing.\\\\n\\\\nQualifie NON si : simple salarie sans pouvoir de decision, etudiant, structure de plus de 4 personnes, hors sujet (pas IA/tech/digital/marketing), profil visiblement en recherche d'emploi, activite hors du champ consultant/formateur/coach.\\\\n\\\\nReponds UNIQUEMENT en JSON strict, sans texte autour : {\\\\\\\"icp\\\\\\\": \\\\\\\"oui\\\\\\\" ou \\\\\\\"non\\\\\\\", \\\\\\\"raison\\\\\\\": \\\\\\\"1 phrase courte en francais expliquant pourquoi\\\\\\\"}\";\n\nasync function classify(p) {\n  const bio = (p.headline || '') + ((p.currentPosition && p.currentPosition[0] && p.currentPosition[0].description) ? ' | ' + p.currentPosition[0].description : '');\n  try {\n    const resp = await this.helpers.httpRequest({\n      method: 'POST',\n      url: 'https://openrouter.ai/api/v1/chat/completions',\n      headers: { 'Authorization': 'Bearer ' + OR_KEY, 'Content-Type': 'application/json' },\n      body: JSON.stringify({\n        model: 'anthropic/claude-haiku-4.5',\n        messages: [\n          { role: 'system', content: SYSTEM_PROMPT },\n          { role: 'user', content: 'Name: ' + (p.firstName || '') + ' ' + (p.lastName || '') + '\\nBio: ' + bio }\n        ],\n        temperature: 0.1,\n        max_tokens: 150\n      }),\n      json: true,\n    });\n    const content = (resp.choices && resp.choices[0] && resp.choices[0].message.content) || '';\n    const match = content.match(/\\{[\\s\\S]*\\}/);\n    if (match) {\n      const parsed = JSON.parse(match[0]);\n      return { icp: (parsed.icp || '').toLowerCase().trim() === 'oui' ? 'oui' : 'non', raison: parsed.raison || '' };\n    }\n  } catch (e) {}\n  return { icp: 'non', raison: '' };\n}\n\nconst items = $input.all();\nconst out = [];\nfor (const item of items) {\n  const p = item.json;\n  const countryCode = (p.location && p.location.countryCode || '').toUpperCase();\n  if (countryCode && countryCode !== 'FR') continue;\n  const result = await classify.call(this, p);\n  if (result.icp !== 'oui') continue;\n  const pos = (p.currentPosition && p.currentPosition[0]) || {};\n  const bio = (p.headline || '') + (pos.description ? ' | ' + pos.description : '');\n  out.push({\n    json: {\n      id: p.id,\n      name: (p.firstName || '') + ' ' + (p.lastName || ''),\n      linkedinUrl: p.linkedinUrl,\n      publicIdentifier: (p.linkedinUrl || '').match(/linkedin\\.com\\/in\\/([^/?]+)/)?.[1] || '',\n      headline: p.headline || '',\n      bio: bio,\n      company: pos.companyName || '',\n      companyLinkedinUrl: pos.companyLinkedinUrl || '',\n      icpMatch: 'oui',\n      raisonIcp: result.raison,\n      targetAccountName: p.targetAccountName,\n      targetAccountId: p.targetAccountId\n    }\n  });\n}\nreturn out;\n",
+        "parameters": {
+          "jsCode": "const OR_KEY = \"YOUR_OPENROUTER_API_KEY\";\nconst SYSTEM_PROMPT = \"Tu es un expert en qualification de leads LinkedIn B2B pour une offre d'automatisation IA (Client Acquisition OS) destinee specifiquement a des independants et micro-equipes (1 a 4 personnes) exercant comme consultants, formateurs ou coachs dans les secteurs IA, tech, digital ou marketing, en France (francophones uniquement).\\\\n\\\\nQualifie OUI uniquement si la personne est independante, fondatrice ou dirigeante d'une structure de 1 a 4 personnes maximum, active en tant que consultant/formateur/coach dans l'IA, la tech, le digital ou le marketing.\\\\n\\\\nQualifie NON si : simple salarie sans pouvoir de decision, etudiant, structure de plus de 4 personnes, hors sujet (pas IA/tech/digital/marketing), profil visiblement en recherche d'emploi, activite hors du champ consultant/formateur/coach.\\\\n\\\\nReponds UNIQUEMENT en JSON strict, sans texte autour : {\\\\\\\"icp\\\\\\\": \\\\\\\"oui\\\\\\\" ou \\\\\\\"non\\\\\\\", \\\\\\\"raison\\\\\\\": \\\\\\\"1 phrase courte en francais expliquant pourquoi\\\\\\\"}\";\n\nasync function classify(p) {\n  const bio = (p.headline || '') + ((p.currentPosition && p.currentPosition[0] && p.currentPosition[0].description) ? ' | ' + p.currentPosition[0].description : '');\n  try {\n    const resp = await this.helpers.httpRequest({\n      method: 'POST',\n      url: 'https://openrouter.ai/api/v1/chat/completions',\n      headers: { 'Authorization': 'Bearer ' + OR_KEY, 'Content-Type': 'application/json' },\n      body: JSON.stringify({\n        model: 'anthropic/claude-haiku-4.5',\n        messages: [\n          { role: 'system', content: SYSTEM_PROMPT },\n          { role: 'user', content: 'Name: ' + (p.firstName || '') + ' ' + (p.lastName || '') + '\\nBio: ' + bio }\n        ],\n        temperature: 0.1,\n        max_tokens: 150\n      }),\n      json: true,\n    });\n    const content = (resp.choices && resp.choices[0] && resp.choices[0].message.content) || '';\n    const match = content.match(/\\{[\\s\\S]*\\}/);\n    if (match) {\n      const parsed = JSON.parse(match[0]);\n      return { icp: (parsed.icp || '').toLowerCase().trim() === 'oui' ? 'oui' : 'non', raison: parsed.raison || '' };\n    }\n  } catch (e) {}\n  return { icp: 'non', raison: '' };\n}\n\nconst items = $input.all();\nconst out = [];\nfor (const item of items) {\n  const p = item.json;\n  const countryCode = (p.location && p.location.countryCode || '').toUpperCase();\n  if (countryCode && countryCode !== 'FR') continue;\n  const result = await classify.call(this, p);\n  if (result.icp !== 'oui') continue;\n  const pos = (p.currentPosition && p.currentPosition[0]) || {};\n  const bio = (p.headline || '') + (pos.description ? ' | ' + pos.description : '');\n  out.push({\n    json: {\n      id: p.id,\n      name: (p.firstName || '') + ' ' + (p.lastName || ''),\n      linkedinUrl: p.linkedinUrl,\n      publicIdentifier: (p.linkedinUrl || '').match(/linkedin\\.com\\/in\\/([^/?]+)/)?.[1] || '',\n      headline: p.headline || '',\n      bio: bio,\n      company: pos.companyName || '',\n      companyLinkedinUrl: pos.companyLinkedinUrl || '',\n      icpMatch: 'oui',\n      raisonIcp: result.raison,\n      targetAccountName: p.targetAccountName,\n      targetAccountId: p.targetAccountId\n    }\n  });\n}\nreturn out;\n"
+        }
+      },
+      "id": "score-profiles",
+      "name": "Scorer ICP (seuil >=60)",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1340,
+        0
+      ]
+    },
+    {
+      "id": "check-revenue-proxy",
+      "name": "Verifier effectif entreprise (1-4 personnes)",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1180,
+        0
+      ],
+      "parameters": {
+        "jsCode": "const key = \"YOUR_UNIPILE_API_KEY\";\nconst base = \"https://YOUR_UNIPILE_DSN\";\nconst results = [];\n\nfor (const item of $input.all()) {\n  const p = item.json;\n  let employeeCount = null;\n  const companyPublicId = (p.companyLinkedinUrl || '').match(/linkedin\\.com\\/company\\/([^/?]+)/)?.[1] || '';\n\n  if (companyPublicId) {\n    try {\n      const resp = await this.helpers.httpRequest({\n        method: 'GET',\n        url: base + '/api/v1/linkedin/company/' + companyPublicId + '?account_id=' + p.targetAccountId,\n        headers: { 'X-API-KEY': key },\n        json: true\n      });\n      employeeCount = resp.employee_count != null ? resp.employee_count : null;\n    } catch (e) {\n      employeeCount = null;\n    }\n  }\n\n  if (!companyPublicId || employeeCount === null) {\n    results.push({ json: { ...p, employeeCount: null } });\n    continue;\n  }\n\n  if (employeeCount < 1 || employeeCount > 4) continue;\n\n  results.push({ json: { ...p, employeeCount } });\n}\n\nreturn results;\n"
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const key = \"YOUR_UNIPILE_API_KEY\";\nconst base = \"https://YOUR_UNIPILE_DSN\";\nconst accountId = '6oH8b0a4QK2d9u9QOiL4Sg';\nconst TG_TOKEN = \"YOUR_TELEGRAM_BOT_TOKEN\";\nconst TG_CHAT = \"YOUR_TELEGRAM_CHAT_ID\";\n\nasync function sendTelegram(text) {\n  try {\n    await this.helpers.httpRequest({\n      method: 'POST',\n      url: 'https://api.telegram.org/bot' + TG_TOKEN + '/sendMessage',\n      headers: { 'Content-Type': 'application/json' },\n      body: { chat_id: TG_CHAT, text },\n      json: true,\n    });\n  } catch (e) {}\n}\n\nlet sentIds = new Set();\ntry {\n  const resp = await this.helpers.httpRequest({\n    method: 'GET',\n    url: base + '/api/v1/users/invite/sent?account_id=' + accountId + '&limit=200',\n    headers: { 'X-API-KEY': key },\n    json: true,\n  });\n  (resp.items || []).forEach(i => { if (i.invited_user_id) sentIds.add(i.invited_user_id); });\n} catch (e) {}\n\nconst staticData = $getWorkflowStaticData('global');\nstaticData.triedIds = staticData.triedIds || {};\nconst now = Date.now();\nconst TWELVE_HOURS = 12 * 3600000;\nfor (const id of Object.keys(staticData.triedIds)) {\n  if (now - staticData.triedIds[id] > TWELVE_HOURS) delete staticData.triedIds[id];\n}\nconst triedRecently = new Set(Object.keys(staticData.triedIds));\n\nconst nyDateStr = new Intl.DateTimeFormat('fr-CA', { timeZone: 'America/New_York' }).format(new Date());\nif (staticData.dailyInviteDate !== nyDateStr) {\n  staticData.dailyInviteDate = nyDateStr;\n  staticData.dailyInviteCount = 0;\n}\nconst DAILY_LIMIT = 18;\nconst remainingToday = Math.max(DAILY_LIMIT - (staticData.dailyInviteCount || 0), 0);\n\nconst items = $input.all();\nconst fresh = items.filter(i => !sentIds.has(i.json.id) && !triedRecently.has(i.json.id));\nconst picked = fresh.slice(0, remainingToday);\n\nif (remainingToday === 0) {\n  await sendTelegram.call(this, 'Mathias Chow : limite quotidienne de 18 demandes de connexion deja atteinte, aucun envoi ce run.');\n}\n\nconst nyNow = new Date(new Date().toLocaleString('en-US', { timeZone: 'America/New_York' }));\nconst endOfWindow = new Date(nyNow);\nendOfWindow.setHours(23, 0, 0, 0);\nconst msRemaining = Math.max(endOfWindow.getTime() - nyNow.getTime(), 0);\nconst n = Math.max(picked.length, 1);\nconst baseIntervalMs = msRemaining / n;\n\nlet cursorMs = 0;\nfor (let idx = 0; idx < picked.length; idx++) {\n  const jitterFactor = 0.8 + Math.random() * 0.4;\n  cursorMs += baseIntervalMs * jitterFactor;\n  picked[idx].json._waitSeconds = Math.min(Math.max(Math.round(cursorMs / 1000), 20), 39600);\n}\nif (picked.length) picked[0].json._runStartMs = Date.now();\nfor (let idx = 1; idx < picked.length; idx++) picked[idx].json._runStartMs = picked[0].json._runStartMs;\n\nreturn picked;\n"
+      },
+      "id": "dedup-unipile-enzo",
+      "name": "Dedup vs invitations Unipile",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        700,
+        200
+      ]
+    },
+    {
+      "parameters": {
+        "batchSize": 1,
+        "options": {}
+      },
+      "id": "loop-lead-enzo",
+      "name": "Boucle 1 lead a la fois",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        900,
+        200
+      ]
+    },
+    {
+      "parameters": {
+        "amount": "={{ Math.max(Math.round(($json._runStartMs + $json._waitSeconds*1000 - Date.now())/1000), 5) }}",
+        "unit": "seconds"
+      },
+      "id": "wait-lead-enzo",
+      "name": "Attente etalee jusqu a 19h",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1100,
+        150
+      ],
+      "webhookId": "7f6503bc-f0e3-4f27-93e6-5e179a44fbc6"
+    },
+    {
+      "parameters": {
+        "jsCode": "const nyHour = parseInt(new Intl.DateTimeFormat('en-US', { timeZone: 'America/New_York', hour: 'numeric', hour12: false }).format(new Date()), 10);\nif (nyHour < 8 || nyHour >= 23) {\n  return [];\n}\nreturn [{ json: $input.item.json }];\n"
+      },
+      "id": "window-enzo",
+      "name": "Vérifier fenêtre 8h-19h (New York)",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1300,
+        150
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const key = \"YOUR_UNIPILE_API_KEY\";\nconst base = \"https://YOUR_UNIPILE_DSN\";\nconst lead = $input.item.json;\nconst accountId = lead.targetAccountId || lead.accountId || '6oH8b0a4QK2d9u9QOiL4Sg';\n\nconst RETRYABLE_TYPES = ['errors/rate_limit', 'errors/internal_error'];\nconst MAX_ATTEMPTS = 3;\n\nlet status = '';\nlet sent = false;\nlet resp = null;\n\nfor (let attempt = 1; attempt <= MAX_ATTEMPTS && !sent; attempt++) {\n  resp = await this.helpers.httpRequest({\n    method: 'POST',\n    url: base + '/api/v1/users/invite',\n    headers: { 'X-API-KEY': key, 'Content-Type': 'application/json' },\n    body: { provider_id: lead.id, account_id: accountId },\n    json: true,\n    ignoreHttpStatusErrors: true,\n  });\n\n  if (!resp || resp.status == null || resp.status < 400) {\n    sent = true;\n    status = 'fait';\n    break;\n  }\n\n  const errType = (resp.type || '').toLowerCase();\n  const errDetail = (resp.detail || resp.title || '').toLowerCase();\n  const haystack = errType + ' ' + errDetail;\n\n  // Hard stop: real LinkedIn/Unipile quota or account block.\n  if (haystack.includes('quota') || haystack.includes('limit_reached') || haystack.includes('daily') || haystack.includes('weekly')) {\n    status = 'LIMITE ATTEINTE';\n    break;\n  }\n  if (haystack.includes('account_blocked') || haystack.includes('account_restricted') || haystack.includes('suspended') || haystack.includes('account_disabled')) {\n    status = 'BLOQUE - compte restreint';\n    break;\n  }\n\n  // Benign / already-known cases: no retry needed, just record and move on.\n  if (haystack.includes('already_invited') || haystack.includes('already_connected') || haystack.includes('invitation_already_sent') || haystack.includes('pending_invitation') || haystack.includes('already_invited_recently') || haystack.includes('cannot_resend_yet')) {\n    status = 'deja fait avant';\n    break;\n  }\n  if (haystack.includes('email_required') || haystack.includes('must_send_invitation_request_with_email')) {\n    status = 'email requis';\n    break;\n  }\n  if (haystack.includes('not_found') || errDetail.includes('404')) {\n    status = 'compte introuvable';\n    break;\n  }\n  if (haystack.includes('private') || haystack.includes('restricted_profile')) {\n    status = 'compte prive';\n    break;\n  }\n  if (haystack.includes('invalid_recipient') || haystack.includes('cannot be reached')) {\n    status = 'profil non joignable';\n    break;\n  }\n\n  // Genuinely retryable (rate limit / transient) -> backoff and retry.\n  if (RETRYABLE_TYPES.some(t => errType.includes(t)) && attempt < MAX_ATTEMPTS) {\n    const backoffMs = attempt === 1 ? 15000 : 45000;\n    await new Promise(r => setTimeout(r, backoffMs));\n    continue;\n  }\n\n  // Unrecognized error: record the real type/detail instead of \"unknown\".\n  status = 'erreur ' + resp.status + ' ' + (resp.type || resp.title || 'inconnue');\n  break;\n}\n\nreturn [{\n  json: {\n    ...lead,\n    _inviteSent: sent,\n    _inviteSkippedReason: sent ? null : status,\n  }\n}];"
+      },
+      "id": "send-enzo",
+      "name": "Envoyer demande de connexion",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1500,
+        150
+      ],
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "jsCode": "const staticData = $getWorkflowStaticData('global');\nstaticData.triedIds = staticData.triedIds || {};\nconst lead = $('Boucle 1 lead a la fois').item.json;\nif (lead && lead.id) {\n  staticData.triedIds[lead.id] = Date.now();\n}\nif ($input.item.json._inviteSent) {\n  staticData.dailyInviteCount = (staticData.dailyInviteCount || 0) + 1;\n} else {\n  const TG_TOKEN = \"YOUR_TELEGRAM_BOT_TOKEN\";\n  const TG_CHAT = \"YOUR_TELEGRAM_CHAT_ID\";\n  try {\n    await this.helpers.httpRequest({\n      method: 'POST',\n      url: 'https://api.telegram.org/bot' + TG_TOKEN + '/sendMessage',\n      headers: { 'Content-Type': 'application/json' },\n      body: { chat_id: TG_CHAT, text: 'Mathias Chow : echec envoi demande de connexion pour ' + (lead.name || lead.linkedinUrl || lead.id) + ' - raison: ' + ($input.item.json._inviteSkippedReason || 'inconnue') },\n      json: true,\n    });\n  } catch (e) {}\n}\nreturn [{ json: $input.item.json }];"
+      },
+      "id": "mark-tried-enzo",
+      "name": "Marquer tentative",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2100,
+        150
+      ]
+    },
+    {
+      "id": "filter-open-to-work",
+      "name": "Exclure Open to Work",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1670,
+        0
+      ],
+      "parameters": {
+        "jsCode": "// Exclut tout profil signalant \"Open to Work\" — structure (badge Apify) ou texte (headline/summary/about).\nfunction isOpenToWork(p) {\n  if (p == null) return false;\n  if (p.openToWork === true || p.open_to_work === true || p.isOpenToWork === true) return true;\n  if (Array.isArray(p.badges) && p.badges.some(b => /open.?to.?work/i.test(String(b)))) return true;\n\n  const fields = [p.headline, p.summary, p.about, p.title];\n  const text = fields.filter(Boolean).join(' ').toLowerCase();\n  const patterns = [\n    /open\\s*to\\s*work/i,\n    /#opentowork/i,\n    /ouvert(e)?\\s+aux\\s+opportunit/i,\n    /\\u00e0\\s+l['\\u2019]\\u00e9coute\\s+du\\s+march/i,\n    /en\\s+recherche\\s+d['\\u2019]emploi/i,\n    /disponible\\s+imm\\u00e9diatement/i,\n    /recherche\\s+active(?:ment)?\\s+un\\s+poste/i,\n  ];\n  return patterns.some(re => re.test(text));\n}\n\nconst items = $input.all();\nreturn items.filter(item => !isOpenToWork(item.json));"
+      }
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "11BjwdFnvTkg3AKCXeCzBoyq-GdEJv6G3tNT_9g6L7sE"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "Leads Mathias 2e-3e degre"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Lien profil LKD": "={{ $json.linkedinUrl }}",
+            "nom": "={{ $json.name }}",
+            "bio": "={{ $json.bio }}",
+            "Location": "",
+            "ICP match": "={{ $json.icpMatch }}",
+            "Raison ICP": "={{ $json.raisonIcp }}",
+            "Icebreaker": ""
+          },
+          "matchingColumns": [
+            "Lien profil LKD"
+          ],
+          "schema": [
+            {
+              "id": "Lien profil LKD",
+              "displayName": "Lien profil LKD",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "nom",
+              "displayName": "nom",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "bio",
+              "displayName": "bio",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Location",
+              "displayName": "Location",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "ICP match",
+              "displayName": "ICP match",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Demande de co",
+              "displayName": "Demande de co",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Icebreaker",
+              "displayName": "Icebreaker",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Raison ICP",
+              "displayName": "Raison ICP",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ]
+        },
+        "options": {},
+        "parameters": {
+          "columns": {
+            "value": {
+              "Location": "={{ $json.location }}"
+            }
+          }
+        }
+      },
+      "id": "append-google-sheet",
+      "name": "Ajouter au Google Sheet Enzo",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        -1000,
+        0
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "Fe3F00A34M9ebdAG",
+          "name": "Google Sheets account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "id": "f307ce33-9f35-454d-a467-d5ed4c334a1f",
+      "name": "Rechercher leads (Unipile natif)",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1780,
+        0
+      ],
+      "parameters": {
+        "jsCode": "const key = \"YOUR_UNIPILE_API_KEY\";\nconst base = \"https://YOUR_UNIPILE_DSN\";\nconst accountId = \"6oH8b0a4QK2d9u9QOiL4Sg\";\nconst searchQuery = \"consultant formateur coach intelligence artificielle automatisation IA independant\";\nconst targetAccountName = \"Mathias Chow\";\n\nfunction parseWorkDurationMonths(exp) {\n  if (!exp || !exp.start) return 0;\n  const start = new Date(exp.start);\n  const end = exp.end ? new Date(exp.end) : new Date();\n  if (isNaN(start.getTime())) return 0;\n  const months = (end.getFullYear() - start.getFullYear()) * 12 + (end.getMonth() - start.getMonth());\n  return Math.max(months, 0);\n}\nfunction durationLabel(months) {\n  const yr = Math.floor(months / 12);\n  const mo = months % 12;\n  let s = '';\n  if (yr > 0) s += yr + ' yr ';\n  if (mo > 0) s += mo + ' mo';\n  return s.trim();\n}\n\n// Persistent pagination: advance through search result pages across daily runs\n// instead of always re-fetching page 1 (which returned the same leads every time).\nconst staticData = $getWorkflowStaticData('global');\nconst searchCursor = staticData._searchCursor || null;\n\nlet searchResults = [];\nlet nextCursor = null;\ntry {\n  const url = base + '/api/v1/linkedin/search?account_id=' + accountId + (searchCursor ? '&cursor=' + encodeURIComponent(searchCursor) : '');\n  const resp = await this.helpers.httpRequest({\n    method: 'POST',\n    url,\n    headers: { 'X-API-KEY': key, 'Content-Type': 'application/json' },\n    body: { api: 'classic', category: 'people', keywords: searchQuery },\n    json: true,\n  });\n  searchResults = (resp.items || []).filter(i => i.type === 'PEOPLE').slice(0, 40);\n  nextCursor = resp.cursor || null;\n  // If a page returns nothing (end of results), loop back to the first page next time.\n  if (searchResults.length === 0 && searchCursor) {\n    staticData._searchCursor = null;\n  } else {\n    staticData._searchCursor = nextCursor;\n  }\n} catch (e) {\n  // On a search error (e.g. stale/invalid cursor), reset to page 1 for the next run.\n  staticData._searchCursor = null;\n  return [];\n}\n\nconst out = [];\nfor (const person of searchResults) {\n  let profile = null;\n  try {\n    profile = await this.helpers.httpRequest({\n      method: 'GET',\n      url: base + '/api/v1/users/' + encodeURIComponent(person.id) + '?account_id=' + accountId + '&linkedin_sections=experience',\n      headers: { 'X-API-KEY': key },\n      json: true,\n    });\n  } catch (e) {\n    continue;\n  }\n  if (!profile) continue;\n\n  const exp = (profile.work_experience && profile.work_experience[0]) || {};\n  const months = parseWorkDurationMonths(exp);\n\n  out.push({\n    json: {\n      id: profile.provider_id,\n      firstName: profile.first_name || '',\n      lastName: profile.last_name || '',\n      linkedinUrl: 'https://www.linkedin.com/in/' + (profile.public_identifier || ''),\n      headline: profile.headline || '',\n      followerCount: profile.follower_count || 0,\n      currentPosition: [{\n        position: exp.position || '',\n        description: exp.description || '',\n        duration: durationLabel(months),\n        employmentType: exp.status || '',\n        companyName: exp.company || '',\n        companyLinkedinUrl: exp.company_id ? ('https://www.linkedin.com/company/' + exp.company_id) : '',\n      }],\n      targetAccountName: targetAccountName,\n      targetAccountId: accountId,\n    }\n  });\n}\nreturn out;",
+        "parameters": {
+          "jsCode": "const key = \"YOUR_UNIPILE_API_KEY\";\nconst base = \"https://YOUR_UNIPILE_DSN\";\nconst accountId = \"6oH8b0a4QK2d9u9QOiL4Sg\";\nconst searchQuery = \"consultant formateur coach intelligence artificielle automatisation IA independant\";\nconst targetAccountName = \"Mathias Chow\";\n\nfunction parseWorkDurationMonths(exp) {\n  if (!exp || !exp.start) return 0;\n  const start = new Date(exp.start);\n  const end = exp.end ? new Date(exp.end) : new Date();\n  if (isNaN(start.getTime())) return 0;\n  const months = (end.getFullYear() - start.getFullYear()) * 12 + (end.getMonth() - start.getMonth());\n  return Math.max(months, 0);\n}\nfunction durationLabel(months) {\n  const yr = Math.floor(months / 12);\n  const mo = months % 12;\n  let s = '';\n  if (yr > 0) s += yr + ' yr ';\n  if (mo > 0) s += mo + ' mo';\n  return s.trim();\n}\n\nlet searchResults = [];\ntry {\n  const resp = await this.helpers.httpRequest({\n    method: 'POST',\n    url: base + '/api/v1/linkedin/search?account_id=' + accountId,\n    headers: { 'X-API-KEY': key, 'Content-Type': 'application/json' },\n    body: { api: 'classic', category: 'people', keywords: searchQuery },\n    json: true,\n  });\n  searchResults = (resp.items || []).filter(i => i.type === 'PEOPLE').slice(0, 40);\n} catch (e) {\n  return [];\n}\n\nconst out = [];\nfor (const person of searchResults) {\n  let profile = null;\n  try {\n    profile = await this.helpers.httpRequest({\n      method: 'GET',\n      url: base + '/api/v1/users/' + encodeURIComponent(person.id) + '?account_id=' + accountId + '&linkedin_sections=experience',\n      headers: { 'X-API-KEY': key },\n      json: true,\n    });\n  } catch (e) {\n    continue;\n  }\n  if (!profile) continue;\n\n  const exp = (profile.work_experience && profile.work_experience[0]) || {};\n  const months = parseWorkDurationMonths(exp);\n\n  out.push({\n    json: {\n      id: profile.provider_id,\n      firstName: profile.first_name || '',\n      lastName: profile.last_name || '',\n      linkedinUrl: 'https://www.linkedin.com/in/' + (profile.public_identifier || ''),\n      headline: profile.headline || '',\n      followerCount: profile.follower_count || 0,\n      location: { text: profile.location || '', countryCode: (profile.primary_locale && profile.primary_locale.country) || '' },\n      currentPosition: [{\n        position: exp.position || '',\n        description: exp.description || '',\n        duration: durationLabel(months),\n        employmentType: exp.status || '',\n        companyName: exp.company || '',\n        companyLinkedinUrl: exp.company_id ? ('https://www.linkedin.com/company/' + exp.company_id) : '',\n      }],\n      targetAccountName: targetAccountName,\n      targetAccountId: accountId,\n    }\n  });\n}\nreturn out;\n"
+        }
+      }
+    },
+    {
+      "id": "09e18873-d841-4806-9b5f-3ac8e0a60990",
+      "name": "Marquer Demande de co",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        1800,
+        150
+      ],
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "11BjwdFnvTkg3AKCXeCzBoyq-GdEJv6G3tNT_9g6L7sE"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "Leads Mathias 2e-3e degre"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Lien profil LKD": "={{ $json.linkedinUrl }}",
+            "Demande de co": "={{ $json._inviteSent ? 'fait' : ($json._inviteSkippedReason || 'erreur') }}"
+          },
+          "matchingColumns": [
+            "Lien profil LKD"
+          ],
+          "schema": [
+            {
+              "id": "Lien profil LKD",
+              "displayName": "Lien profil LKD",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "nom",
+              "displayName": "nom",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "bio",
+              "displayName": "bio",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Location",
+              "displayName": "Location",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "ICP match",
+              "displayName": "ICP match",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Demande de co",
+              "displayName": "Demande de co",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Icebreaker",
+              "displayName": "Icebreaker",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Raison ICP",
+              "displayName": "Raison ICP",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ]
+        },
+        "options": {}
+      },
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "Fe3F00A34M9ebdAG",
+          "name": "Google Sheets account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Scorer ICP (seuil >=60)": {
+      "main": [
+        [
+          {
+            "node": "Verifier effectif entreprise (1-4 personnes)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Verifier effectif entreprise (1-4 personnes)": {
+      "main": [
+        [
+          {
+            "node": "Ajouter au Google Sheet Enzo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Dedup vs invitations Unipile": {
+      "main": [
+        [
+          {
+            "node": "Boucle 1 lead a la fois",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Boucle 1 lead a la fois": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Attente etalee jusqu a 19h",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Marquer tentative": {
+      "main": [
+        [
+          {
+            "node": "Boucle 1 lead a la fois",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Attente etalee jusqu a 19h": {
+      "main": [
+        [
+          {
+            "node": "Vérifier fenêtre 8h-19h (New York)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Vérifier fenêtre 8h-19h (New York)": {
+      "main": [
+        [
+          {
+            "node": "Envoyer demande de connexion",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Exclure Open to Work": {
+      "main": [
+        [
+          {
+            "node": "Scorer ICP (seuil >=60)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ajouter au Google Sheet Enzo": {
+      "main": [
+        [
+          {
+            "node": "Dedup vs invitations Unipile",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Déclencheur quotidien 8h": {
+      "main": [
+        [
+          {
+            "node": "Rechercher leads (Unipile natif)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Rechercher leads (Unipile natif)": {
+      "main": [
+        [
+          {
+            "node": "Exclure Open to Work",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Envoyer demande de connexion": {
+      "main": [
+        [
+          {
+            "node": "Marquer Demande de co",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Marquer Demande de co": {
+      "main": [
+        [
+          {
+            "node": "Marquer tentative",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": true
+  }
+}
