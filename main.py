@@ -85,6 +85,8 @@ async def get_calendly_link(args):
         url = "https://calendly.com/nathan-vanbignoot-bananagency/30mi"
     elif persona == "enzo":
         url = "https://calendly.com/enzo-vidiella83/30min"
+    elif persona == "florian":
+        url = "https://calendly.com/floriangrospro/call-rencontre"
     else:
         url = CANONICAL_CALENDLY or "https://app.iclosed.io/e/visionary-consulting/visionary-consulting"
     return {"content": [{"type": "text", "text": url}]}
