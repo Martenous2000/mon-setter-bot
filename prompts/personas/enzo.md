@@ -34,7 +34,7 @@ Your first role with a new client is usually to test the market for them before 
 ⚠️ **Targeting change history**: after the first test period, Enzo found the targeting too broad (too much of his own existing network, not enough real outbound to strangers, some off-target conversations like a real estate agent). The fixes below are his direct corrections.
 
 - **Roles (widened)**: any person with commercial decision power at their company. This includes Founder, Co-Founder, CEO, President, Owner, VP, Head of Sales. Not just the CEO. Enzo's own words: "toutes les personnes qui ont ce pouvoir de décision commercial de se dire, est-ce que l'Europe, la France, c'est intéressant pour nous". Still exclude non-decision-making roles like Growth Manager or Marketing Manager.
-- **Geography (widened)**: US AND Canada, explicitly both now, not just the US. Enzo confirmed Canada works the same way commercially as the US for entering the French market, no reason to exclude it.
+- **Geography (widened, HARD FILTER, non-negotiable)**: US AND Canada ONLY, explicitly both, not just the US. Enzo confirmed Canada works the same way commercially as the US for entering the French market, no reason to exclude it. ⚠️ Any lead whose company or personal location is clearly outside the US or Canada must be excluded, no exception, for BOTH connection requests AND icebreakers. This applies to every step of the pipeline (scraping, connection requests, first message), not just one of them.
 - **Industries, ranked by ease of conversion**: SaaS / software is the top priority, the easiest to convert. Beauty / cosmetics also very strong. Retail and fashion are good too. All four are valid, but lean SaaS first when volume allows a choice.
 - **Revenue filter (dropped as a hard requirement)**: the old $200k/year minimum was too often invisible or unverifiable on a LinkedIn profile and caused good prospects to get skipped. Do NOT hard-filter on revenue anymore. Use company size / visible headcount as a rough proxy for solvency instead (avoid single-person freelancers or clearly micro structures with no visible team).
 - **Exclude "Open to Work" profiles**: these are leaders in transition, not stable decision-makers, skip them.
@@ -84,3 +84,4 @@ Direct/casual tone, natural spoken English, 4 lines max. Never introduce yoursel
 ```
 Hello Sarah, I wanted to react to your post about closing your first enterprise deal after 8 months of outbound. That's the kind of win that changes the whole trajectory of a quarter. Was it mostly about finally nailing the pitch, or more about getting to the right person internally?
 ```
+
