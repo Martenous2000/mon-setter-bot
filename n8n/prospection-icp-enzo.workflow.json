@@ -7,7 +7,7 @@
           "interval": [
             {
               "field": "cronExpression",
-              "expression": "30 21 * * *"
+              "expression": "47 15 * * *"
             }
           ]
         }
@@ -23,7 +23,10 @@
     },
     {
       "parameters": {
-        "jsCode": "// Scoring ICP Enzo sur 100 pts — ne garde que score >= 60\nfunction parseDurationMonths(duration) {\n  if (!duration) return 0;\n  let months = 0;\n  const yrMatch = duration.match(/(\\d+)\\s*yr/);\n  const moMatch = duration.match(/(\\d+)\\s*mo/);\n  if (yrMatch) months += parseInt(yrMatch[1], 10) * 12;\n  if (moMatch) months += parseInt(moMatch[1], 10);\n  return months;\n}\n\nfunction scoreProfile(p) {\n  const pos = (p.currentPosition && p.currentPosition[0]) || {};\n  const headline = (p.headline || p.summary || '').toLowerCase();\n  const posTitle = (pos.position || '').toLowerCase();\n  const desc = (pos.description || '').toLowerCase();\n  const months = parseDurationMonths(pos.duration);\n\n  // S1: fondateur/CEO + anciennete\n  let s1 = 0;\n  const isFounder = /founder|ceo|owner|president|co-founder/.test(posTitle) || /founder|ceo|owner/.test(headline);\n  if (isFounder) s1 += 15;\n  if (months >= 12) s1 += 15;\n  else if (months >= 6) s1 += 7;\n\n  // S2: secteur cible (SaaS, beauty, retail, fashion)\n  let s2 = 0;\n  const sectorKeywords = /saas|software|beauty|cosmetic|retail|fashion|apparel|ecommerce|e-commerce|dtc|d2c/;\n  if (sectorKeywords.test(headline) || sectorKeywords.test(desc)) s2 += 20;\n\n  // S3: signal d'achat fort — recrutement actif poste commercial/directeur Europe\n  let s3 = 0;\n  if (/hiring|we're hiring|job opening|now hiring/.test(desc)) s3 += 10;\n  if (/europe sales|country manager europe|head of sales europe|eu expansion|expanding to europe|international expansion/.test(desc) || /europe sales|country manager europe/.test(headline)) s3 += 20;\n  if (p.followerCount && p.followerCount > 1000) s3 += 5;\n\n  // S4: signal d'expansion / nouveau marche (pas besoin d'un signal explicite France)\n  let s4 = 0;\n  if (/expand|expansion|new market|scaling|growth/.test(desc)) s4 += 15;\n\n  const total = s1 + s2 + s3 + s4;\n  return { total, s1, s2, s3, s4, months, isFounder };\n}\n\nconst items = $input.all();\nconst out = [];\nfor (const item of items) {\n  const p = item.json;\n  const countryCode = (p.location && p.location.countryCode || '').toUpperCase();\n  if (countryCode !== 'US' && countryCode !== 'CA') continue;\n  const score = scoreProfile(p);\n  if (score.total < 60) continue;\n  const pos = (p.currentPosition && p.currentPosition[0]) || {};\n  out.push({\n    json: {\n      id: p.id,\n      name: (p.firstName || '') + ' ' + (p.lastName || ''),\n      linkedinUrl: p.linkedinUrl,\n      publicIdentifier: (p.linkedinUrl || '').match(/linkedin\\.com\\/in\\/([^/?]+)/)?.[1] || '',\n      headline: p.headline || p.summary || '',\n      company: pos.companyName || '',\n      companyLinkedinUrl: pos.companyLinkedinUrl || '',\n      score: score.total,\n      targetAccountName: p.targetAccountName,\n      targetAccountId: p.targetAccountId\n    }\n  });\n}\nreturn out;"
+        "jsCode": "const OR_KEY = \"YOUR_OPENROUTER_API_KEY\";\nconst SYSTEM_PROMPT = \"You qualify LinkedIn leads for a service helping US/Canadian companies enter the French/European market.\\n\\nQualify YES only if the person has commercial decision power (Founder, Co-Founder, CEO, President, Owner, VP, Head of Sales) at a company based in the US or Canada, in SaaS/software, beauty/cosmetics, retail, or fashion.\\n\\nQualify NO if: non-decision-making role (Growth Manager, Marketing Manager, etc.), clearly micro/freelance structure with no visible team, company outside US/Canada, profile marked Open to Work, industry outside SaaS/beauty/retail/fashion.\\n\\nReply ONLY in strict JSON, no surrounding text: {\\\"icp\\\": \\\"oui\\\" or \\\"non\\\", \\\"raison\\\": \\\"1 short sentence in French explaining why\\\"}\";\n\nasync function classify(p) {\n  const bio = (p.headline || '') + ((p.currentPosition && p.currentPosition[0] && p.currentPosition[0].description) ? ' | ' + p.currentPosition[0].description : '');\n  try {\n    const resp = await this.helpers.httpRequest({\n      method: 'POST',\n      url: 'https://openrouter.ai/api/v1/chat/completions',\n      headers: { 'Authorization': 'Bearer ' + OR_KEY, 'Content-Type': 'application/json' },\n      body: JSON.stringify({\n        model: 'anthropic/claude-haiku-4.5',\n        messages: [\n          { role: 'system', content: SYSTEM_PROMPT },\n          { role: 'user', content: 'Name: ' + (p.firstName || '') + ' ' + (p.lastName || '') + '\\nBio: ' + bio }\n        ],\n        temperature: 0.1,\n        max_tokens: 150\n      }),\n      json: true,\n    });\n    const content = (resp.choices && resp.choices[0] && resp.choices[0].message.content) || '';\n    const match = content.match(/\\{[\\s\\S]*\\}/);\n    if (match) {\n      const parsed = JSON.parse(match[0]);\n      return { icp: (parsed.icp || '').toLowerCase().trim() === 'oui' ? 'oui' : 'non', raison: parsed.raison || '' };\n    }\n  } catch (e) {}\n  return { icp: 'non', raison: '' };\n}\n\nconst items = $input.all();\nconst out = [];\nfor (const item of items) {\n  const p = item.json;\n  const countryCode = (p.location && p.location.countryCode || '').toUpperCase();\n  if (countryCode !== 'US' && countryCode !== 'CA') continue;\n  const result = await classify.call(this, p);\n  if (result.icp !== 'oui') continue;\n  const pos = (p.currentPosition && p.currentPosition[0]) || {};\n  const bio = (p.headline || '') + (pos.description ? ' | ' + pos.description : '');\n  out.push({\n    json: {\n      id: p.id,\n      name: (p.firstName || '') + ' ' + (p.lastName || ''),\n      linkedinUrl: p.linkedinUrl,\n      publicIdentifier: (p.linkedinUrl || '').match(/linkedin\\.com\\/in\\/([^/?]+)/)?.[1] || '',\n      headline: p.headline || '',\n      bio: bio,\n      company: pos.companyName || '',\n      companyLinkedinUrl: pos.companyLinkedinUrl || '',\n      icpMatch: 'oui',\n      raisonIcp: result.raison,\n      targetAccountName: p.targetAccountName,\n      targetAccountId: p.targetAccountId\n    }\n  });\n}\nreturn out;\n",
+        "parameters": {
+          "jsCode": "const OR_KEY = \"YOUR_OPENROUTER_API_KEY\";\nconst SYSTEM_PROMPT = \"You qualify LinkedIn leads for a service helping US/Canadian companies enter the French/European market.\\n\\nQualify YES only if the person has commercial decision power (Founder, Co-Founder, CEO, President, Owner, VP, Head of Sales) at a company based in the US or Canada, in SaaS/software, beauty/cosmetics, retail, or fashion.\\n\\nQualify NO if: non-decision-making role (Growth Manager, Marketing Manager, etc.), clearly micro/freelance structure with no visible team, company outside US/Canada, profile marked Open to Work, industry outside SaaS/beauty/retail/fashion.\\n\\nReply ONLY in strict JSON, no surrounding text: {\\\"icp\\\": \\\"oui\\\" or \\\"non\\\", \\\"raison\\\": \\\"1 short sentence in French explaining why\\\"}\";\n\nasync function classify(p) {\n  const bio = (p.headline || '') + ((p.currentPosition && p.currentPosition[0] && p.currentPosition[0].description) ? ' | ' + p.currentPosition[0].description : '');\n  try {\n    const resp = await this.helpers.httpRequest({\n      method: 'POST',\n      url: 'https://openrouter.ai/api/v1/chat/completions',\n      headers: { 'Authorization': 'Bearer ' + OR_KEY, 'Content-Type': 'application/json' },\n      body: JSON.stringify({\n        model: 'anthropic/claude-haiku-4.5',\n        messages: [\n          { role: 'system', content: SYSTEM_PROMPT },\n          { role: 'user', content: 'Name: ' + (p.firstName || '') + ' ' + (p.lastName || '') + '\\nBio: ' + bio }\n        ],\n        temperature: 0.1,\n        max_tokens: 150\n      }),\n      json: true,\n    });\n    const content = (resp.choices && resp.choices[0] && resp.choices[0].message.content) || '';\n    const match = content.match(/\\{[\\s\\S]*\\}/);\n    if (match) {\n      const parsed = JSON.parse(match[0]);\n      return { icp: (parsed.icp || '').toLowerCase().trim() === 'oui' ? 'oui' : 'non', raison: parsed.raison || '' };\n    }\n  } catch (e) {}\n  return { icp: 'non', raison: '' };\n}\n\nconst items = $input.all();\nconst out = [];\nfor (const item of items) {\n  const p = item.json;\n  const countryCode = (p.location && p.location.countryCode || '').toUpperCase();\n  if (countryCode !== 'US' && countryCode !== 'CA') continue;\n  const result = await classify.call(this, p);\n  if (result.icp !== 'oui') continue;\n  const pos = (p.currentPosition && p.currentPosition[0]) || {};\n  const bio = (p.headline || '') + (pos.description ? ' | ' + pos.description : '');\n  out.push({\n    json: {\n      id: p.id,\n      name: (p.firstName || '') + ' ' + (p.lastName || ''),\n      linkedinUrl: p.linkedinUrl,\n      publicIdentifier: (p.linkedinUrl || '').match(/linkedin\\.com\\/in\\/([^/?]+)/)?.[1] || '',\n      headline: p.headline || '',\n      bio: bio,\n      location: (p.location && (p.location.text || p.location.countryCode)) || '',\n      company: pos.companyName || '',\n      companyLinkedinUrl: pos.companyLinkedinUrl || '',\n      icpMatch: 'oui',\n      raisonIcp: result.raison,\n      targetAccountName: p.targetAccountName,\n      targetAccountId: p.targetAccountId\n    }\n  });\n}\nreturn out;\n"
+        }
       },
       "id": "score-profiles",
       "name": "Scorer ICP (seuil >=60)",
@@ -44,12 +47,12 @@
         0
       ],
       "parameters": {
-        "jsCode": "const key = \"LLmbsW7R.CaJenIxJtjn0BNeeE7bjC5hzZySPBnCtCfJAYlHEg2E=\";\nconst base = \"https://api59.unipile.com:18979\";\nconst results = [];\n\nfor (const item of $input.all()) {\n  const p = item.json;\n  let employeeCount = null;\n  const companyPublicId = (p.companyLinkedinUrl || '').match(/linkedin\\.com\\/company\\/([^/?]+)/)?.[1] || '';\n\n  if (companyPublicId) {\n    try {\n      const resp = await this.helpers.httpRequest({\n        method: 'GET',\n        url: base + '/api/v1/linkedin/company/' + companyPublicId + '?account_id=' + p.targetAccountId,\n        headers: { 'X-API-KEY': key },\n        json: true\n      });\n      employeeCount = resp.employee_count != null ? resp.employee_count : null;\n    } catch (e) {\n      employeeCount = null;\n    }\n  }\n\n  if (employeeCount === null || employeeCount < 2) continue;\n\n  let sizeBonus = 0;\n  if (employeeCount >= 10) sizeBonus = 15;\n  else if (employeeCount >= 2) sizeBonus = 8;\n\n  results.push({ json: { ...p, employeeCount, score: (p.score || 0) + sizeBonus } });\n}\n\nreturn results;"
+        "jsCode": "const key = \"YOUR_UNIPILE_API_KEY\";\nconst base = \"https://YOUR_UNIPILE_DSN\";\nconst results = [];\n\nfor (const item of $input.all()) {\n  const p = item.json;\n  let employeeCount = null;\n  const companyPublicId = (p.companyLinkedinUrl || '').match(/linkedin\\.com\\/company\\/([^/?]+)/)?.[1] || '';\n\n  if (companyPublicId) {\n    try {\n      const resp = await this.helpers.httpRequest({\n        method: 'GET',\n        url: base + '/api/v1/linkedin/company/' + companyPublicId + '?account_id=' + p.targetAccountId,\n        headers: { 'X-API-KEY': key },\n        json: true\n      });\n      employeeCount = resp.employee_count != null ? resp.employee_count : null;\n    } catch (e) {\n      employeeCount = null;\n    }\n  }\n\n  if (!companyPublicId || employeeCount === null) {\n    results.push({ json: { ...p, employeeCount: null } });\n    continue;\n  }\n\n  if (employeeCount < 2) continue;\n\n  results.push({ json: { ...p, employeeCount } });\n}\n\nreturn results;\n"
       }
     },
     {
       "parameters": {
-        "jsCode": "const key = \"LLmbsW7R.CaJenIxJtjn0BNeeE7bjC5hzZySPBnCtCfJAYlHEg2E=\";\nconst base = \"https://api59.unipile.com:18979\";\nconst accountId = 'rK6EsaFyRYG4xxssJ5X6vQ';\n\nlet sentIds = new Set();\ntry {\n  const resp = await this.helpers.httpRequest({\n    method: 'GET',\n    url: base + '/api/v1/users/invite/sent?account_id=' + accountId + '&limit=200',\n    headers: { 'X-API-KEY': key },\n    json: true,\n  });\n  (resp.items || []).forEach(i => { if (i.invited_user_id) sentIds.add(i.invited_user_id); });\n} catch (e) {}\n\nconst staticData = $getWorkflowStaticData('global');\nstaticData.triedIds = staticData.triedIds || {};\nconst now = Date.now();\nconst TWELVE_HOURS = 12 * 3600000;\nfor (const id of Object.keys(staticData.triedIds)) {\n  if (now - staticData.triedIds[id] > TWELVE_HOURS) delete staticData.triedIds[id];\n}\nconst triedRecently = new Set(Object.keys(staticData.triedIds));\n\nconst items = $input.all();\nconst fresh = items.filter(i => !sentIds.has(i.json.id) && !triedRecently.has(i.json.id));\nfresh.sort((a, b) => (b.json.score || 0) - (a.json.score || 0));\nconst picked = fresh.slice(0, 16);\n\nconst nyNow = new Date(new Date().toLocaleString('en-US', { timeZone: 'America/New_York' }));\nconst endOfWindow = new Date(nyNow);\nendOfWindow.setHours(23, 0, 0, 0);\nconst msRemaining = Math.max(endOfWindow.getTime() - nyNow.getTime(), 0);\nconst n = Math.max(picked.length, 1);\nconst baseIntervalMs = msRemaining / n;\n\nlet cursorMs = 0;\nfor (let idx = 0; idx < picked.length; idx++) {\n  const jitterFactor = 0.8 + Math.random() * 0.4;\n  cursorMs += baseIntervalMs * jitterFactor;\n  picked[idx].json._waitSeconds = Math.min(Math.max(Math.round(cursorMs / 1000), 20), 39600);\n}\nif (picked.length) picked[0].json._runStartMs = Date.now();\nfor (let idx = 1; idx < picked.length; idx++) picked[idx].json._runStartMs = picked[0].json._runStartMs;\n\nreturn picked;\n"
+        "jsCode": "const key = \"YOUR_UNIPILE_API_KEY\";\nconst base = \"https://YOUR_UNIPILE_DSN\";\nconst accountId = 'rK6EsaFyRYG4xxssJ5X6vQ';\nconst TG_TOKEN = \"YOUR_TELEGRAM_BOT_TOKEN\";\nconst TG_CHAT = \"YOUR_TELEGRAM_CHAT_ID\";\n\nasync function sendTelegram(text) {\n  try {\n    await this.helpers.httpRequest({\n      method: 'POST',\n      url: 'https://api.telegram.org/bot' + TG_TOKEN + '/sendMessage',\n      headers: { 'Content-Type': 'application/json' },\n      body: { chat_id: TG_CHAT, text },\n      json: true,\n    });\n  } catch (e) {}\n}\n\nlet sentIds = new Set();\ntry {\n  const resp = await this.helpers.httpRequest({\n    method: 'GET',\n    url: base + '/api/v1/users/invite/sent?account_id=' + accountId + '&limit=200',\n    headers: { 'X-API-KEY': key },\n    json: true,\n  });\n  (resp.items || []).forEach(i => { if (i.invited_user_id) sentIds.add(i.invited_user_id); });\n} catch (e) {}\n\nconst staticData = $getWorkflowStaticData('global');\nstaticData.triedIds = staticData.triedIds || {};\nconst now = Date.now();\nconst TWELVE_HOURS = 12 * 3600000;\nfor (const id of Object.keys(staticData.triedIds)) {\n  if (now - staticData.triedIds[id] > TWELVE_HOURS) delete staticData.triedIds[id];\n}\nconst triedRecently = new Set(Object.keys(staticData.triedIds));\n\nconst nyDateStr = new Intl.DateTimeFormat('fr-CA', { timeZone: 'America/New_York' }).format(new Date());\nif (staticData.dailyInviteDate !== nyDateStr) {\n  staticData.dailyInviteDate = nyDateStr;\n  staticData.dailyInviteCount = 0;\n}\nconst DAILY_LIMIT = 18;\nconst remainingToday = Math.max(DAILY_LIMIT - (staticData.dailyInviteCount || 0), 0);\n\nconst items = $input.all();\nconst fresh = items.filter(i => !sentIds.has(i.json.id) && !triedRecently.has(i.json.id));\nconst picked = fresh.slice(0, remainingToday);\n\nif (remainingToday === 0) {\n  await sendTelegram.call(this, 'Enzo Vidiella : limite quotidienne de 18 demandes de connexion deja atteinte, aucun envoi ce run.');\n}\n\nconst nyNow = new Date(new Date().toLocaleString('en-US', { timeZone: 'America/New_York' }));\nconst endOfWindow = new Date(nyNow);\nendOfWindow.setHours(23, 0, 0, 0);\nconst msRemaining = Math.max(endOfWindow.getTime() - nyNow.getTime(), 0);\nconst n = Math.max(picked.length, 1);\nconst baseIntervalMs = msRemaining / n;\n\nlet cursorMs = 0;\nfor (let idx = 0; idx < picked.length; idx++) {\n  const jitterFactor = 0.8 + Math.random() * 0.4;\n  cursorMs += baseIntervalMs * jitterFactor;\n  picked[idx].json._waitSeconds = Math.min(Math.max(Math.round(cursorMs / 1000), 20), 39600);\n}\nif (picked.length) picked[0].json._runStartMs = Date.now();\nfor (let idx = 1; idx < picked.length; idx++) picked[idx].json._runStartMs = picked[0].json._runStartMs;\n\nreturn picked;\n"
       },
       "id": "dedup-unipile-enzo",
       "name": "Dedup vs invitations Unipile",
@@ -104,7 +107,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const key = \"LLmbsW7R.CaJenIxJtjn0BNeeE7bjC5hzZySPBnCtCfJAYlHEg2E=\";\nconst base = \"https://api59.unipile.com:18979\";\nconst lead = $input.item.json;\nconst providerId = $json.id;\nconst accountId = 'rK6EsaFyRYG4xxssJ5X6vQ';\n\nconst RETRYABLE_STATUS = [422, 429, 500];\nconst MAX_ATTEMPTS = 3;\n\nlet lastError = null;\nlet sent = false;\n\nfor (let attempt = 1; attempt <= MAX_ATTEMPTS && !sent; attempt++) {\n  try {\n    await this.helpers.httpRequest({\n      method: 'POST',\n      url: base + '/api/v1/users/invite',\n      headers: { 'X-API-KEY': key, 'Content-Type': 'application/json' },\n      body: { provider_id: providerId, account_id: accountId },\n      json: true,\n    });\n    sent = true;\n  } catch (e) {\n    lastError = e;\n    const status = e.response?.statusCode || e.statusCode || e.status || 0;\n    const quotaLikely = RETRYABLE_STATUS.includes(status);\n    if (!quotaLikely || attempt === MAX_ATTEMPTS) break;\n    const backoffMs = attempt === 1 ? 15000 : 45000;\n    await new Promise(r => setTimeout(r, backoffMs));\n  }\n}\n\nreturn [{\n  json: {\n    ...lead,\n    _inviteSent: sent,\n    _inviteSkippedReason: sent ? null : ('quota_or_error_status_' + (lastError?.response?.statusCode || lastError?.statusCode || 'unknown')),\n  }\n}];"
+        "jsCode": "const key = \"YOUR_UNIPILE_API_KEY\";\nconst base = \"https://YOUR_UNIPILE_DSN\";\nconst lead = $input.item.json;\nconst accountId = lead.targetAccountId || lead.accountId || 'rK6EsaFyRYG4xxssJ5X6vQ';\n\nconst RETRYABLE_TYPES = ['errors/rate_limit', 'errors/internal_error'];\nconst MAX_ATTEMPTS = 3;\n\nlet status = '';\nlet sent = false;\nlet resp = null;\n\nfor (let attempt = 1; attempt <= MAX_ATTEMPTS && !sent; attempt++) {\n  resp = await this.helpers.httpRequest({\n    method: 'POST',\n    url: base + '/api/v1/users/invite',\n    headers: { 'X-API-KEY': key, 'Content-Type': 'application/json' },\n    body: { provider_id: lead.id, account_id: accountId },\n    json: true,\n    ignoreHttpStatusErrors: true,\n  });\n\n  if (!resp || resp.status == null || resp.status < 400) {\n    sent = true;\n    status = 'fait';\n    break;\n  }\n\n  const errType = (resp.type || '').toLowerCase();\n  const errDetail = (resp.detail || resp.title || '').toLowerCase();\n  const haystack = errType + ' ' + errDetail;\n\n  // Hard stop: real LinkedIn/Unipile quota or account block.\n  if (haystack.includes('quota') || haystack.includes('limit_reached') || haystack.includes('daily') || haystack.includes('weekly')) {\n    status = 'LIMITE ATTEINTE';\n    break;\n  }\n  if (haystack.includes('account_blocked') || haystack.includes('account_restricted') || haystack.includes('suspended') || haystack.includes('account_disabled')) {\n    status = 'BLOQUE - compte restreint';\n    break;\n  }\n\n  // Benign / already-known cases: no retry needed, just record and move on.\n  if (haystack.includes('already_invited') || haystack.includes('already_connected') || haystack.includes('invitation_already_sent') || haystack.includes('pending_invitation') || haystack.includes('already_invited_recently') || haystack.includes('cannot_resend_yet')) {\n    status = 'deja fait avant';\n    break;\n  }\n  if (haystack.includes('email_required') || haystack.includes('must_send_invitation_request_with_email')) {\n    status = 'email requis';\n    break;\n  }\n  if (haystack.includes('not_found') || errDetail.includes('404')) {\n    status = 'compte introuvable';\n    break;\n  }\n  if (haystack.includes('private') || haystack.includes('restricted_profile')) {\n    status = 'compte prive';\n    break;\n  }\n  if (haystack.includes('invalid_recipient') || haystack.includes('cannot be reached')) {\n    status = 'profil non joignable';\n    break;\n  }\n\n  // Genuinely retryable (rate limit / transient) -> backoff and retry.\n  if (RETRYABLE_TYPES.some(t => errType.includes(t)) && attempt < MAX_ATTEMPTS) {\n    const backoffMs = attempt === 1 ? 15000 : 45000;\n    await new Promise(r => setTimeout(r, backoffMs));\n    continue;\n  }\n\n  // Unrecognized error: record the real type/detail instead of \"unknown\".\n  status = 'erreur ' + resp.status + ' ' + (resp.type || resp.title || 'inconnue');\n  break;\n}\n\nreturn [{\n  json: {\n    ...lead,\n    _inviteSent: sent,\n    _inviteSkippedReason: sent ? null : status,\n  }\n}];"
       },
       "id": "send-enzo",
       "name": "Envoyer demande de connexion",
@@ -119,7 +122,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const staticData = $getWorkflowStaticData('global');\nstaticData.triedIds = staticData.triedIds || {};\nconst lead = $('Boucle 1 lead a la fois').item.json;\nif (lead && lead.id) {\n  staticData.triedIds[lead.id] = Date.now();\n}\nreturn [{ json: $input.item.json }];"
+        "jsCode": "const staticData = $getWorkflowStaticData('global');\nstaticData.triedIds = staticData.triedIds || {};\nconst lead = $('Boucle 1 lead a la fois').item.json;\nif (lead && lead.id) {\n  staticData.triedIds[lead.id] = Date.now();\n}\nif ($input.item.json._inviteSent) {\n  staticData.dailyInviteCount = (staticData.dailyInviteCount || 0) + 1;\n} else {\n  const TG_TOKEN = \"YOUR_TELEGRAM_BOT_TOKEN\";\n  const TG_CHAT = \"YOUR_TELEGRAM_CHAT_ID\";\n  try {\n    await this.helpers.httpRequest({\n      method: 'POST',\n      url: 'https://api.telegram.org/bot' + TG_TOKEN + '/sendMessage',\n      headers: { 'Content-Type': 'application/json' },\n      body: { chat_id: TG_CHAT, text: 'Enzo Vidiella : echec envoi demande de connexion pour ' + (lead.name || lead.linkedinUrl || lead.id) + ' - raison: ' + ($input.item.json._inviteSkippedReason || 'inconnue') },\n      json: true,\n    });\n  } catch (e) {}\n}\nreturn [{ json: $input.item.json }];"
       },
       "id": "mark-tried-enzo",
       "name": "Marquer tentative",
@@ -153,18 +156,114 @@
         },
         "sheetName": {
           "__rl": true,
-          "mode": "id",
-          "value": "480593185"
+          "mode": "name",
+          "value": "Leads Enzo 2e-3e degre"
         },
         "columns": {
-          "mappingMode": "autoMapInputData",
-          "value": {},
-          "schema": [],
+          "mappingMode": "defineBelow",
+          "value": {
+            "Lien profil LKD": "={{ $json.linkedinUrl }}",
+            "nom": "={{ $json.name }}",
+            "bio": "={{ $json.bio }}",
+            "Location": "",
+            "ICP match": "={{ $json.icpMatch }}",
+            "Raison ICP": "={{ $json.raisonIcp }}",
+            "Icebreaker": ""
+          },
           "matchingColumns": [
-            "id"
+            "Lien profil LKD"
+          ],
+          "schema": [
+            {
+              "id": "Lien profil LKD",
+              "displayName": "Lien profil LKD",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "nom",
+              "displayName": "nom",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "bio",
+              "displayName": "bio",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Location",
+              "displayName": "Location",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "ICP match",
+              "displayName": "ICP match",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Demande de co",
+              "displayName": "Demande de co",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Icebreaker",
+              "displayName": "Icebreaker",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Raison ICP",
+              "displayName": "Raison ICP",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
           ]
         },
-        "options": {}
+        "options": {},
+        "parameters": {
+          "columns": {
+            "value": {
+              "Location": "={{ $json.location }}"
+            }
+          }
+        }
       },
       "id": "append-google-sheet",
       "name": "Ajouter au Google Sheet Enzo",
@@ -192,7 +291,132 @@
         0
       ],
       "parameters": {
-        "jsCode": "const key = \"LLmbsW7R.CaJenIxJtjn0BNeeE7bjC5hzZySPBnCtCfJAYlHEg2E=\";\nconst base = \"https://api59.unipile.com:18979\";\nconst accountId = \"rK6EsaFyRYG4xxssJ5X6vQ\";\nconst searchQuery = \"founder CEO SaaS beauty retail fashion brand\";\nconst targetAccountName = \"Enzo Vidiella\";\n\nfunction parseWorkDurationMonths(exp) {\n  if (!exp || !exp.start) return 0;\n  const start = new Date(exp.start);\n  const end = exp.end ? new Date(exp.end) : new Date();\n  if (isNaN(start.getTime())) return 0;\n  const months = (end.getFullYear() - start.getFullYear()) * 12 + (end.getMonth() - start.getMonth());\n  return Math.max(months, 0);\n}\nfunction durationLabel(months) {\n  const yr = Math.floor(months / 12);\n  const mo = months % 12;\n  let s = '';\n  if (yr > 0) s += yr + ' yr ';\n  if (mo > 0) s += mo + ' mo';\n  return s.trim();\n}\n\nlet searchResults = [];\ntry {\n  const resp = await this.helpers.httpRequest({\n    method: 'POST',\n    url: base + '/api/v1/linkedin/search?account_id=' + accountId,\n    headers: { 'X-API-KEY': key, 'Content-Type': 'application/json' },\n    body: { api: 'classic', category: 'people', keywords: searchQuery },\n    json: true,\n  });\n  searchResults = (resp.items || []).filter(i => i.type === 'PEOPLE').slice(0, 40);\n} catch (e) {\n  return [];\n}\n\nconst out = [];\nfor (const person of searchResults) {\n  let profile = null;\n  try {\n    profile = await this.helpers.httpRequest({\n      method: 'GET',\n      url: base + '/api/v1/users/' + encodeURIComponent(person.id) + '?account_id=' + accountId + '&linkedin_sections=experience',\n      headers: { 'X-API-KEY': key },\n      json: true,\n    });\n  } catch (e) {\n    continue;\n  }\n  if (!profile) continue;\n\n  const exp = (profile.work_experience && profile.work_experience[0]) || {};\n  const months = parseWorkDurationMonths(exp);\n\n  out.push({\n    json: {\n      id: profile.provider_id,\n      firstName: profile.first_name || '',\n      lastName: profile.last_name || '',\n      linkedinUrl: 'https://www.linkedin.com/in/' + (profile.public_identifier || ''),\n      headline: profile.headline || '',\n      followerCount: profile.follower_count || 0,\n      location: { countryCode: (profile.primary_locale && profile.primary_locale.country) || '' },\n      currentPosition: [{\n        position: exp.position || '',\n        description: exp.description || '',\n        duration: durationLabel(months),\n        employmentType: exp.status || '',\n        companyName: exp.company || '',\n        companyLinkedinUrl: exp.company_id ? ('https://www.linkedin.com/company/' + exp.company_id) : '',\n      }],\n      targetAccountName: targetAccountName,\n      targetAccountId: accountId,\n    }\n  });\n}\nreturn out;\n"
+        "jsCode": "const key = \"YOUR_UNIPILE_API_KEY\";\nconst base = \"https://YOUR_UNIPILE_DSN\";\nconst accountId = \"rK6EsaFyRYG4xxssJ5X6vQ\";\nconst searchQuery = \"founder CEO SaaS beauty retail fashion brand\";\nconst targetAccountName = \"Enzo Vidiella\";\n\nfunction parseWorkDurationMonths(exp) {\n  if (!exp || !exp.start) return 0;\n  const start = new Date(exp.start);\n  const end = exp.end ? new Date(exp.end) : new Date();\n  if (isNaN(start.getTime())) return 0;\n  const months = (end.getFullYear() - start.getFullYear()) * 12 + (end.getMonth() - start.getMonth());\n  return Math.max(months, 0);\n}\nfunction durationLabel(months) {\n  const yr = Math.floor(months / 12);\n  const mo = months % 12;\n  let s = '';\n  if (yr > 0) s += yr + ' yr ';\n  if (mo > 0) s += mo + ' mo';\n  return s.trim();\n}\n\n// Persistent pagination: advance through search result pages across daily runs\n// instead of always re-fetching page 1 (which returned the same leads every time).\nconst staticData = $getWorkflowStaticData('global');\nconst searchCursor = staticData._searchCursor || null;\n\nlet searchResults = [];\nlet nextCursor = null;\ntry {\n  const url = base + '/api/v1/linkedin/search?account_id=' + accountId + (searchCursor ? '&cursor=' + encodeURIComponent(searchCursor) : '');\n  const resp = await this.helpers.httpRequest({\n    method: 'POST',\n    url,\n    headers: { 'X-API-KEY': key, 'Content-Type': 'application/json' },\n    body: { api: 'classic', category: 'people', keywords: searchQuery },\n    json: true,\n  });\n  searchResults = (resp.items || []).filter(i => i.type === 'PEOPLE').slice(0, 40);\n  nextCursor = resp.cursor || null;\n  // If a page returns nothing (end of results), loop back to the first page next time.\n  if (searchResults.length === 0 && searchCursor) {\n    staticData._searchCursor = null;\n  } else {\n    staticData._searchCursor = nextCursor;\n  }\n} catch (e) {\n  // On a search error (e.g. stale/invalid cursor), reset to page 1 for the next run.\n  staticData._searchCursor = null;\n  return [];\n}\n\nconst out = [];\nfor (const person of searchResults) {\n  let profile = null;\n  try {\n    profile = await this.helpers.httpRequest({\n      method: 'GET',\n      url: base + '/api/v1/users/' + encodeURIComponent(person.id) + '?account_id=' + accountId + '&linkedin_sections=experience',\n      headers: { 'X-API-KEY': key },\n      json: true,\n    });\n  } catch (e) {\n    continue;\n  }\n  if (!profile) continue;\n\n  const exp = (profile.work_experience && profile.work_experience[0]) || {};\n  const months = parseWorkDurationMonths(exp);\n\n  out.push({\n    json: {\n      id: profile.provider_id,\n      firstName: profile.first_name || '',\n      lastName: profile.last_name || '',\n      linkedinUrl: 'https://www.linkedin.com/in/' + (profile.public_identifier || ''),\n      headline: profile.headline || '',\n      followerCount: profile.follower_count || 0,\n      currentPosition: [{\n        position: exp.position || '',\n        description: exp.description || '',\n        duration: durationLabel(months),\n        employmentType: exp.status || '',\n        companyName: exp.company || '',\n        companyLinkedinUrl: exp.company_id ? ('https://www.linkedin.com/company/' + exp.company_id) : '',\n      }],\n      targetAccountName: targetAccountName,\n      targetAccountId: accountId,\n    }\n  });\n}\nreturn out;",
+        "parameters": {
+          "jsCode": "const key = \"YOUR_UNIPILE_API_KEY\";\nconst base = \"https://YOUR_UNIPILE_DSN\";\nconst accountId = \"rK6EsaFyRYG4xxssJ5X6vQ\";\nconst searchQuery = \"founder CEO SaaS beauty retail fashion brand\";\nconst targetAccountName = \"Enzo Vidiella\";\n\nfunction parseWorkDurationMonths(exp) {\n  if (!exp || !exp.start) return 0;\n  const start = new Date(exp.start);\n  const end = exp.end ? new Date(exp.end) : new Date();\n  if (isNaN(start.getTime())) return 0;\n  const months = (end.getFullYear() - start.getFullYear()) * 12 + (end.getMonth() - start.getMonth());\n  return Math.max(months, 0);\n}\nfunction durationLabel(months) {\n  const yr = Math.floor(months / 12);\n  const mo = months % 12;\n  let s = '';\n  if (yr > 0) s += yr + ' yr ';\n  if (mo > 0) s += mo + ' mo';\n  return s.trim();\n}\n\nlet searchResults = [];\ntry {\n  const resp = await this.helpers.httpRequest({\n    method: 'POST',\n    url: base + '/api/v1/linkedin/search?account_id=' + accountId,\n    headers: { 'X-API-KEY': key, 'Content-Type': 'application/json' },\n    body: { api: 'classic', category: 'people', keywords: searchQuery },\n    json: true,\n  });\n  searchResults = (resp.items || []).filter(i => i.type === 'PEOPLE').slice(0, 40);\n} catch (e) {\n  return [];\n}\n\nconst out = [];\nfor (const person of searchResults) {\n  let profile = null;\n  try {\n    profile = await this.helpers.httpRequest({\n      method: 'GET',\n      url: base + '/api/v1/users/' + encodeURIComponent(person.id) + '?account_id=' + accountId + '&linkedin_sections=experience',\n      headers: { 'X-API-KEY': key },\n      json: true,\n    });\n  } catch (e) {\n    continue;\n  }\n  if (!profile) continue;\n\n  const exp = (profile.work_experience && profile.work_experience[0]) || {};\n  const months = parseWorkDurationMonths(exp);\n\n  out.push({\n    json: {\n      id: profile.provider_id,\n      firstName: profile.first_name || '',\n      lastName: profile.last_name || '',\n      linkedinUrl: 'https://www.linkedin.com/in/' + (profile.public_identifier || ''),\n      headline: profile.headline || '',\n      followerCount: profile.follower_count || 0,\n      location: { text: profile.location || '', countryCode: (profile.primary_locale && profile.primary_locale.country) || '' },\n      currentPosition: [{\n        position: exp.position || '',\n        description: exp.description || '',\n        duration: durationLabel(months),\n        employmentType: exp.status || '',\n        companyName: exp.company || '',\n        companyLinkedinUrl: exp.company_id ? ('https://www.linkedin.com/company/' + exp.company_id) : '',\n      }],\n      targetAccountName: targetAccountName,\n      targetAccountId: accountId,\n    }\n  });\n}\nreturn out;\n"
+        }
+      }
+    },
+    {
+      "id": "09e18873-d841-4806-9b5f-3ac8e0a60990",
+      "name": "Marquer Demande de co",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        1800,
+        150
+      ],
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "1hMnsXCz7mu53vKPISPLglEK9fteyRWN9jZfcQTlbZ_A"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "Leads Enzo 2e-3e degre"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Lien profil LKD": "={{ $json.linkedinUrl }}",
+            "Demande de co": "={{ $json._inviteSent ? 'fait' : ($json._inviteSkippedReason || 'erreur') }}"
+          },
+          "matchingColumns": [
+            "Lien profil LKD"
+          ],
+          "schema": [
+            {
+              "id": "Lien profil LKD",
+              "displayName": "Lien profil LKD",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "nom",
+              "displayName": "nom",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "bio",
+              "displayName": "bio",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Location",
+              "displayName": "Location",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "ICP match",
+              "displayName": "ICP match",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Demande de co",
+              "displayName": "Demande de co",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Icebreaker",
+              "displayName": "Icebreaker",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Raison ICP",
+              "displayName": "Raison ICP",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ]
+        },
+        "options": {}
+      },
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "Fe3F00A34M9ebdAG",
+          "name": "Google Sheets account"
+        }
       }
     }
   ],
@@ -236,17 +460,6 @@
         [
           {
             "node": "Attente etalee jusqu a 19h",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Envoyer demande de connexion": {
-      "main": [
-        [
-          {
-            "node": "Marquer tentative",
             "type": "main",
             "index": 0
           }
@@ -324,6 +537,28 @@
         [
           {
             "node": "Exclure Open to Work",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Envoyer demande de connexion": {
+      "main": [
+        [
+          {
+            "node": "Marquer Demande de co",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Marquer Demande de co": {
+      "main": [
+        [
+          {
+            "node": "Marquer tentative",
             "type": "main",
             "index": 0
           }
