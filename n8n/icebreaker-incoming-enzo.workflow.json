@@ -513,6 +513,51 @@
         500
       ],
       "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const providerId = $('Parse Invitations').first().json.providerId;\nconst accountId = $('Parse Invitations').first().json.accountId;\nlet cursor = null;\nlet hasMessages = false;\nlet pages = 0;\ndo {\n  const url = 'https://YOUR_UNIPILE_DSN/api/v1/chats?account_id=' + accountId + '&limit=100' + (cursor ? '&cursor=' + encodeURIComponent(cursor) : '');\n  const resp = await this.helpers.httpRequest({ method: 'GET', url, headers: { 'X-API-KEY': 'YOUR_UNIPILE_API_KEY' }, json: true });\n  const chats = resp.items || [];\n  for (const chat of chats) {\n    const attendeeId = String(chat.attendee_provider_id || '');\n    if (attendeeId === providerId) { hasMessages = true; break; }\n    const attendees = chat.attendees || [];\n    for (const a of attendees) { if (String(a.provider_id || '') === providerId) { hasMessages = true; break; } }\n    if (hasMessages) break;\n  }\n  cursor = resp.cursor || null;\n  pages++;\n} while (cursor && !hasMessages && pages < 20);\nreturn [{ json: { ...$('Parse Invitations').first().json, shouldContinue: !hasMessages } }];"
+      },
+      "id": "check-existing-chat-antidoublon",
+      "name": "Check Existing Chat (anti-doublon)",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2800,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": ""
+          },
+          "conditions": [
+            {
+              "id": "cond-no-msg",
+              "leftValue": "={{ $json.shouldContinue }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "if-no-messages-antidoublon",
+      "name": "IF No Messages Yet (anti-doublon)",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        2800,
+        450
+      ]
     }
   ],
   "connections": {
@@ -661,7 +706,7 @@
       "main": [
         [
           {
-            "node": "Generate Icebreaker (GitHub persona)",
+            "node": "Check Existing Chat (anti-doublon)",
             "type": "main",
             "index": 0
           }
@@ -714,6 +759,35 @@
     },
     "Decline Invitation": {
       "main": [
+        [
+          {
+            "node": "Loop Invitations",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Existing Chat (anti-doublon)": {
+      "main": [
+        [
+          {
+            "node": "IF No Messages Yet (anti-doublon)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF No Messages Yet (anti-doublon)": {
+      "main": [
+        [
+          {
+            "node": "Generate Icebreaker (GitHub persona)",
+            "type": "main",
+            "index": 0
+          }
+        ],
         [
           {
             "node": "Loop Invitations",
