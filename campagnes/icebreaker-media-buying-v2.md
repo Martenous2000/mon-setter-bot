@@ -1,7 +1,7 @@
 # Icebreaker Media Buying V2 - 3 temps
 
 ## Contexte
-Version V2 de l'icebreaker media buying. Meme structure que la V1 (3 temps), 3eme temps identique tel que redonne par l'utilisateur. A envoyer manuellement, un contact a la fois - PAS d'envoi automatise en boucle (risque de ban LinkedIn sur les comptes Martin/Keanu/Jules/Jean-Pierre).
+Version V2 : reprend la structure habituelle de l'icebreaker (accroche sur le post recent + presentation de l'offre agence de prospection IA), mais remplace la 3eme phrase (call to action) par la proposition de partenariat media buying. A envoyer manuellement, un contact a la fois - PAS d'envoi automatise en boucle (risque de ban LinkedIn sur les comptes Martin/Keanu/Jules/Jean-Pierre/Thomas).
 
 ## Repartition des comptes (round-robin manuel)
 - Round 1 : compte Martin
@@ -10,45 +10,46 @@ Version V2 de l'icebreaker media buying. Meme structure que la V1 (3 temps), 3em
 - Round 4 : compte Jean-Pierre
 - Des qu'un contact repond ou genere un lead, on s'arrete sur ce fil (pas de relance automatique).
 
-## Message 1 (accroche)
+## Structure du message (3 temps)
 
+### Temps 1 (accroche sur le post recent)
 ```
 Salut [Prenom],
 
-Je vois que tu es [expertise/positionnement Meta Ads du contact], ca tombe bien parce que j'ai un deal qui pourrait t'interesser.
+Je suis tombe sur ton dernier post sur [theme post], je te contacte parce que j'ai un deal qui pourrait t'interesser.
 ```
 
-## Message 2 (offre)
-
+### Temps 2 (offre - inchange par rapport a l'icebreaker habituel)
 ```
-Je gere une agence de prospection IA sur LinkedIn : setup complet et IA conversationnelle qui prend les rendez-vous automatiquement. Normalement je facture ca 3000€ de setup, avec un forfait recurrent ensuite.
+Je gere une agence de prospection IA sur LinkedIn, setup complet plus IA conversationnelle qui prend des rendez-vous automatiquement. Normalement je facture 3000€ de setup, plus un forfait recurrent ensuite.
 
-Voici le deal que je te propose. Je t'installe mon systeme gratuitement, le setup a 3000€ offert, et tu l'utilises pour trouver TES clients a toi. En echange, tu me fais tourner une campagne pub a hauteur du meme montant pour mon activite. On ne part pas de zero non plus : je fais deja tourner des Ads en interne, donc c'est un canal en plus pour moi, pas un pari dans le vide.
+Le deal que je propose : je t'installe mon systeme gratuitement (le setup a 3000€ offert), tu l'utilises pour trouver TES clients a toi. En echange, tu me fais tourner une campagne pub a hauteur du meme montant pour mon activite a moi. On ne part pas de zero non plus, je fais deja tourner des Ads en interne, donc c'est un canal en plus pour moi, pas un pari dans le vide.
 
-Zero echange d'argent. Chacun couvre ses frais reels, moi les tokens IA et le scraping, toi le budget pub, et chacun repart avec des leads dans son domaine.
+Zero echange d'argent. Chacun couvre ses frais reels, moi les tokens IA et le scraping, toi le budget pub. Chacun repart avec des leads dans son domaine.
 ```
 
-## Message 3 (call to action)
-
+### Temps 3 (NOUVEAU - proposition de partenariat media buying, remplace l'ancien CTA)
 ```
 Je recherche un partenariat a faire avec un(e) media buyer, si jamais t'es disponible on peut en discuter quelques minutes au telephone demain ?
 ```
 
-## Exemple rempli (Anthony Berger - 2eme contact du tableau)
+## Exemple rempli (Sonia Attou - 1er contact du tableau, compte Martin)
 
 ```
-Salut Anthony,
+Salut Sonia,
 
-Je vois que tu aides les prestataires et infopreneurs a generer des clients avec Meta Ads, ca tombe bien parce que j'ai un deal qui pourrait t'interesser.
+Je suis tombee sur ton dernier post, je te contacte parce que j'ai un deal qui pourrait t'interesser.
 
-Je gere une agence de prospection IA sur LinkedIn : setup complet et IA conversationnelle qui prend les rendez-vous automatiquement. Normalement je facture ca 3000€ de setup, avec un forfait recurrent ensuite.
+Je gere une agence de prospection IA sur LinkedIn, setup complet plus IA conversationnelle qui prend des rendez-vous automatiquement. Normalement je facture 3000€ de setup, plus un forfait recurrent ensuite.
 
-Voici le deal que je te propose. Je t'installe mon systeme gratuitement, le setup a 3000€ offert, et tu l'utilises pour trouver TES clients a toi. En echange, tu me fais tourner une campagne pub a hauteur du meme montant pour mon activite. On ne part pas de zero non plus : je fais deja tourner des Ads en interne, donc c'est un canal en plus pour moi, pas un pari dans le vide.
+Le deal que je propose : je t'installe mon systeme gratuitement (le setup a 3000€ offert), tu l'utilises pour trouver TES clients a toi. En echange, tu me fais tourner une campagne pub a hauteur du meme montant pour mon activite a moi. On ne part pas de zero non plus, je fais deja tourner des Ads en interne, donc c'est un canal en plus pour moi, pas un pari dans le vide.
 
-Zero echange d'argent. Chacun couvre ses frais reels, moi les tokens IA et le scraping, toi le budget pub, et chacun repart avec des leads dans son domaine.
+Zero echange d'argent. Chacun couvre ses frais reels, moi les tokens IA et le scraping, toi le budget pub. Chacun repart avec des leads dans son domaine.
 
 Je recherche un partenariat a faire avec un(e) media buyer, si jamais t'es disponible on peut en discuter quelques minutes au telephone demain ?
 ```
+
+Note : le theme du post exact de Sonia n'a pas ete verifie au moment de la generation - a personnaliser avant envoi reel avec le sujet precis de son dernier post LinkedIn.
 
 ## Liste des 34 contacts (media buyers Meta Ads, 1er degre, hors e-commerce)
 
@@ -93,4 +94,5 @@ Je recherche un partenariat a faire avec un(e) media buyer, si jamais t'es dispo
 Envoi manuel uniquement, contact par contact. Ne pas automatiser l'envoi en boucle sur intervalle fixe (40-70s) avec rotation de comptes : ce pattern est detecte par LinkedIn comme automatisation et expose les comptes a une restriction ou un ban.
 
 ## Changelog vs V1
-Le 3eme temps (call to action) est identique a la V1. Aucun changement de fond sur le message - creation de ce fichier V2 pour respecter le versioning demande.
+V1 : template generique avec CTA "ca te dit qu'on en discute 15 minutes ?" + lien profil LinkedIn.
+V2 : structure identique a l'icebreaker habituel (accroche post recent + offre), mais le CTA final devient une proposition de partenariat media buying explicite : "Je recherche un partenariat a faire avec un(e) media buyer, si jamais t'es disponible on peut en discuter quelques minutes au telephone demain ?"
