@@ -695,8 +695,8 @@ async def webapp_hitl():
     return WEBAPP_HITL_HTML
 
 
-UNIPILE_DSN = "https://api59.unipile.com:18979"
-UNIPILE_ACCOUNT_KEY = "LLmbsW7R.CaJenIxJtjn0BNeeE7bjC5hzZySPBnCtCfJAYlHEg2E="
+UNIPILE_DSN = "https://api25.unipile.com:15533"
+UNIPILE_ACCOUNT_KEY = "PO2/OM2m.YyJI9+EMh58AUmfj9bJddy/P8R6eFOO341Jkx1qzuGc="
 TELEGRAM_VALIDATION_CHAT_ID = "8723535937"
 
 # Un bot Telegram dédié par compte (validation human-in-the-loop) — même mapping que les routers n8n.
