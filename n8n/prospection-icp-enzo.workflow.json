@@ -7,7 +7,7 @@
           "interval": [
             {
               "field": "cronExpression",
-              "expression": "48 13 * * *",
+              "expression": "2 8 * * *",
               "triggerAtHour": 8,
               "triggerAtMinute": 2
             }
