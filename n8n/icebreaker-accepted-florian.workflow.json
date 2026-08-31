@@ -21,7 +21,7 @@
     {
       "parameters": {
         "mode": "runOnceForAllItems",
-        "jsCode": "let body = $input.first().json.body || $input.first().json;\nif (body && typeof body === 'object') {\n  const bodyKeys = Object.keys(body);\n  const jsonKey = bodyKeys.find(k => k.startsWith('{'));\n  if (jsonKey) {\n    const raw = Object.entries(body).map(([k, v]) => k + '=' + v).join('&');\n    try { body = JSON.parse(raw); } catch (e) {\n      const extract = (field) => { const re = new RegExp('\"' + field + '\":\"([^\"]*)\"'); const m = raw.match(re); return m ? m[1] : ''; };\n      body = { account_id: extract('account_id'), user_provider_id: extract('user_provider_id'), user_full_name: extract('user_full_name'), user_public_identifier: extract('user_public_identifier'), user_profile_url: extract('user_profile_url') };\n    }\n  }\n}\nconst data = body.data || body.object || body;\nlet accountId = body.account_id || data.account_id || '';\nconst providerId = String(data.user_provider_id || data.provider_id || data.id || '');\nlet name = data.user_full_name || data.name || data.display_name || '';\nconst publicId = data.user_public_identifier || data.public_identifier || '';\nlet profileUrl = data.user_profile_url || data.public_profile_url || data.profile_url || '';\nif (!profileUrl && publicId) profileUrl = 'https://www.linkedin.com/in/' + publicId;\nif (!profileUrl && providerId) profileUrl = 'https://www.linkedin.com/in/' + providerId;\nlet prenom = '';\nif (name) prenom = name.split(/\\s+/)[0] || '';\nif (prenom) prenom = prenom.charAt(0).toUpperCase() + prenom.slice(1).toLowerCase();\nif (!accountId) accountId = 'd3yLtuTNQwCJPsSE-ekAew';\nif (!providerId) throw new Error('Donnees webhook incompletes: providerId manquant');\nreturn [{ json: { accountId, providerId, name, prenom, publicId, profileUrl } }];"
+        "jsCode": "let body = $input.first().json.body || $input.first().json;\nif (body && typeof body === 'object') {\n  const bodyKeys = Object.keys(body);\n  const jsonKey = bodyKeys.find(k => k.startsWith('{'));\n  if (jsonKey) {\n    const raw = Object.entries(body).map(([k, v]) => k + '=' + v).join('&');\n    try { body = JSON.parse(raw); } catch (e) {\n      const extract = (field) => { const re = new RegExp('\"' + field + '\":\"([^\"]*)\"'); const m = raw.match(re); return m ? m[1] : ''; };\n      body = { account_id: extract('account_id'), user_provider_id: extract('user_provider_id'), user_full_name: extract('user_full_name'), user_public_identifier: extract('user_public_identifier'), user_profile_url: extract('user_profile_url') };\n    }\n  }\n}\nconst data = body.data || body.object || body;\nlet accountId = body.account_id || data.account_id || '';\nconst providerId = String(data.user_provider_id || data.provider_id || data.id || '');\nlet name = data.user_full_name || data.name || data.display_name || '';\nconst publicId = data.user_public_identifier || data.public_identifier || '';\nlet profileUrl = data.user_profile_url || data.public_profile_url || data.profile_url || '';\nif (!profileUrl && publicId) profileUrl = 'https://www.linkedin.com/in/' + publicId;\nif (!profileUrl && providerId) profileUrl = 'https://www.linkedin.com/in/' + providerId;\nlet prenom = '';\nif (name) prenom = name.split(/\\s+/)[0] || '';\nif (prenom) prenom = prenom.charAt(0).toUpperCase() + prenom.slice(1).toLowerCase();\nif (!accountId) accountId = 'H1RIy3SDSUa5u5OaX-8a8g';\nif (!providerId) throw new Error('Donnees webhook incompletes: providerId manquant');\nreturn [{ json: { accountId, providerId, name, prenom, publicId, profileUrl } }];"
       },
       "id": "jp-002",
       "name": "Extract Contact Info",
@@ -80,7 +80,7 @@
     {
       "parameters": {
         "method": "GET",
-        "url": "=https://YOUR_UNIPILE_DSN/api/v1/users/{{ $json.publicId || $json.providerId }}?account_id=d3yLtuTNQwCJPsSE-ekAew",
+        "url": "=https://YOUR_UNIPILE_DSN/api/v1/users/{{ $json.publicId || $json.providerId }}?account_id=H1RIy3SDSUa5u5OaX-8a8g",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
@@ -105,7 +105,7 @@
     {
       "parameters": {
         "method": "GET",
-        "url": "=https://YOUR_UNIPILE_DSN/api/v1/users/{{ $json.provider_id || $('Extract Contact Info').item.json.providerId }}/posts?account_id=d3yLtuTNQwCJPsSE-ekAew&limit=10&is_company=false",
+        "url": "=https://YOUR_UNIPILE_DSN/api/v1/users/{{ $json.provider_id || $('Extract Contact Info').item.json.providerId }}/posts?account_id=H1RIy3SDSUa5u5OaX-8a8g&limit=10&is_company=false",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
