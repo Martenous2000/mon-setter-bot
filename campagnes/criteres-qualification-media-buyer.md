@@ -1,17 +1,25 @@
-# Criteres de qualification media buyer - MAJ
+# Criteres de qualification media buyer - reference unique consolidee
 
-## Criteres d'exclusion (a filtrer systematiquement)
+## Exclusions cumulatives (a filtrer systematiquement)
 
-En plus de l'exclusion e-commerce deja en place :
+1. **E-commerce** : exclure tout profil dont l'activite principale sert des marques e-commerce/DTC/Shopify.
 
-1. **Freelances solo debutants** : moins de 2 ans d'experience visible ou pas de portfolio clients. Ils n'ont souvent pas de budget pub personnel a investir dans la campagne - le deal ne les interesse pas.
+2. **Freelances solo debutants** : moins de 2 ans d'experience visible ou pas de portfolio clients. Ils n'ont generalement pas de budget pub personnel a investir dans le deal.
 
-2. **Media buyers in-house** : quelqu'un qui gere les Ads pour UNE seule boite (son employeur). Il n'a pas de clients a trouver pour lui-meme, le systeme ne lui sert a rien. Cibler uniquement des profils en agence ou freelance qui cherchent activement de nouveaux clients (mots-cles favorables : fondateur, co-fondateur, agence, +X clients accompagnes, freelance).
+3. **Media buyers in-house** : quelqu'un qui gere les Ads pour UNE seule boite (son employeur). Pas de clients a trouver pour lui-meme, le systeme ne lui sert a rien. Cibler uniquement des profils en agence ou freelance qui cherchent activement de nouveaux clients.
 
-3. **Hors marche francophone** : l'offre est calee sur le marche francais/francophone. Exclure les profils anglophones dont l'activite ne cible pas ce marche.
+4. **Hors marche francophone** : l'offre est calee sur le marche francais/francophone. Exclure les profils anglophones dont l'activite ne cible pas ce marche. Marche francophone entendu au sens large (France, Belgique, Suisse, Quebec, Afrique francophone, Maurice...).
+
+5. **Pas de photo de profil** : exclure les profils sans photo (signal de faux compte, profil peu actif ou peu credible pour un partenariat).
 
 ## Signaux positifs a rechercher
 - Mentions "fondateur", "co-fondateur", "agence"
 - Chiffres clients ("+X clients accompagnes", "+X ans d'experience")
 - Budget publicitaire gere chiffre (signe de volume/experience)
 - Localisation France ou pays francophone
+- Photo de profil presente
+
+## Changelog
+- Version initiale : exclusion e-commerce.
+- V2 : ajout freelances debutants, in-house, hors francophone.
+- V3 (version actuelle) : ajout exclusion profils sans photo de profil.
