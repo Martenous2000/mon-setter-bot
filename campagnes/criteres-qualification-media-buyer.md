@@ -8,7 +8,7 @@
 
 3. **Media buyers in-house** : quelqu'un qui gere les Ads pour UNE seule boite (son employeur). Pas de clients a trouver pour lui-meme, le systeme ne lui sert a rien. Cibler uniquement des profils en agence ou freelance qui cherchent activement de nouveaux clients.
 
-4. **Hors marche francophone** : l'offre est calee sur le marche francais/francophone. Exclure les profils anglophones dont l'activite ne cible pas ce marche. Marche francophone entendu au sens large (France, Belgique, Suisse, Quebec, Afrique francophone, Maurice...).
+4. **Localisation restreinte** : UNIQUEMENT France, Suisse, Luxembourg, Belgique. Exclure tous les autres pays, y compris les pays francophones hors de cette liste (Afrique francophone, Quebec/Canada, Maurice, etc.) et les profils anglophones hors marche.
 
 5. **Pas de photo de profil** : exclure les profils sans photo (signal de faux compte, profil peu actif ou peu credible pour un partenariat).
 
@@ -16,10 +16,11 @@
 - Mentions "fondateur", "co-fondateur", "agence"
 - Chiffres clients ("+X clients accompagnes", "+X ans d'experience")
 - Budget publicitaire gere chiffre (signe de volume/experience)
-- Localisation France ou pays francophone
+- Localisation France, Suisse, Luxembourg ou Belgique uniquement
 - Photo de profil presente
 
 ## Changelog
 - Version initiale : exclusion e-commerce.
-- V2 : ajout freelances debutants, in-house, hors francophone.
-- V3 (version actuelle) : ajout exclusion profils sans photo de profil.
+- V2 : ajout freelances debutants, in-house, hors francophone (large).
+- V3 : ajout exclusion profils sans photo de profil.
+- V4 (version actuelle) : localisation resserree a France, Suisse, Luxembourg, Belgique uniquement (exclusion de l'Afrique francophone, Quebec, Maurice etc. precedemment inclus).
