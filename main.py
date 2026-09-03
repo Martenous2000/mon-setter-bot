@@ -1215,6 +1215,8 @@ async def relance(req: RelanceRequest):
 # redeploy trigger 7: suspend l'envoi d'icebreaker sur le compte florian
 # redeploy trigger 8: renforce filtre geo US/Canada uniquement pour Enzo (connexions et icebreakers)
 # redeploy trigger 9: force le rechargement pour nouveau persona sarah-amouyal
+# redeploy trigger 10: ajoute secteur manufacture (usinage, chaudronnerie, electricite industrielle, etc.) pour Franck
+
 
 
 
