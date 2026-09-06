@@ -1218,6 +1218,8 @@ async def relance(req: RelanceRequest):
 # redeploy trigger 10: ajoute secteur manufacture (usinage, chaudronnerie, electricite industrielle, etc.) pour Franck
 # redeploy trigger 11: force le rechargement du dossier prompts/skills (nouveau skill setting-agence-ia)
 # redeploy trigger 12: force le rechargement pour nouveau persona sebastien-min (onboarding client valide 03/09)
+# redeploy trigger 13: cree persona lorenzo, ajoute au groupe anti-doublon Martin/JP/Jules/Theo/Thomas
+
 
 
 
