@@ -1220,6 +1220,8 @@ async def relance(req: RelanceRequest):
 # redeploy trigger 12: force le rechargement pour nouveau persona sebastien-min (onboarding client valide 03/09)
 # redeploy trigger 13: cree persona lorenzo, ajoute au groupe anti-doublon Martin/JP/Jules/Theo/Thomas
 # redeploy trigger 14: cree persona baptiste-hoguet (incubation coachs/infopreneurs US high-ticket)
+# redeploy trigger 15: baptiste-hoguet adapte devise et langue selon le prospect (dollar/euro, anglais/francais)
+
 
 
 
