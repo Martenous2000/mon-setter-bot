@@ -25,12 +25,31 @@ These 3 accounts (Talel, Baptiste Hoguet, Maël Rousmans) share the EXACT same o
 
 **Social proof**: 45 coaches coached, $2M generated, 93% success rate.
 
-## Target (ICP)
-Anglophone profiles whose LinkedIn title mentions coach, mentor, trainer, consultant, or infopreneur. Independent activity clearly visible, posting content regularly, between 500 and 5000 LinkedIn connections.
+## Target (ICP) — updated 2026-09-20, corrected after a live connection-request audit
 
-## Anti-target
+⚠️ **Why this changed**: an audit of sent connection requests found that ~2/3 were going to direct competitors, other coaches whose own pitch is "helping coaches / course creators scale" (examples flagged: Zipursky, Jandali, Diana YK Chan, Jeremy Pogue, Kamila Brown Washington, Paul Orlando, Sara Loureiro, Ivan Ho, Lauren Najar, Kaeli Sweigard, Leah Gervais, Hailey Rowe, Michelle McCartney, Adam Flores). They sell essentially the same offer as Evo, not the offer's actual customer. The rules below replace the previous simpler ICP.
+
+**Include**: verticalized coaches and course creators, NOT coaches who coach other coaches. Priority niches: health/fitness, career coaching, personal finance, real estate, parenting, relationships, and business coaches verticalized into a specific trade/profession (contractors, dentists, lawyers, restaurant owners). These are genuine prospects, not competitors.
+
+**Money/proof signal required**: the profile must show an existing money signal, phrases like "$100K+", "high ticket", "clients served", numeric revenue or client-count claims. They already have proof their offer sells; what they're missing is a systematized acquisition machine, that's the actual pain this offer solves.
+
+**Audience size window**: between 2,000 and 15,000 LinkedIn followers.
+- Below 2,000: no real proof of traction yet, too early for this offer.
+- Above 15,000: they likely already have a team and their own acquisition system or incubator, no longer the target.
+
+Independent activity clearly visible, posting content regularly. Between 500 and 5000 LinkedIn connections (secondary signal, less discriminant than the follower window above).
+
+## Anti-target — updated 2026-09-20
+
+⚠️ **Hard title exclusions** (reject on sight, do not evaluate further if the headline contains any of these): "for coaches", "course creators", "online business manager", "sales coach", "lead gen", "fractional" (fractional CFO/CMO/COO etc).
+
+**Explicitly excluded categories** (confirmed from the audit):
+- **Competitors selling the same offer**: anyone whose own pitch is "helping coaches / course creators scale" or generic business coaching sold to other coaches, not the profile of an actual Evo customer.
+- **Service providers / vendors, not buyers**: sales coaches, closers, lead gen specialists, fractional CFO/CMO. These are potential suppliers to Evo, never prospects (examples flagged in the audit: Chad Aleo, Jay Lee, Chris Kenney, John Young, Jeremy McAlister, Essama AG Atangana).
+- **Wrong language for a US campaign**: francophone profiles showing up in the English/US pipeline are a geo/language filter leak, must be excluded (examples flagged: Cynthia Eliezer, Hanae Kettam, Claire Delpech, Loïc Monlouis, Muriel Touati, Miriam W.) — this does not apply to the separate francophone exception described above under Language, which only covers leads specifically sourced in French from the account owner's own 1st-degree network, not general US-campaign scraping.
+- **Too senior/corporate**: ex-C-level profiles from large companies (example flagged: Susy Martins, ex-Chief People Officer of two unicorns) — they don't buy an incubator program.
 - Employees with no independent activity
-- Profiles with fewer than 500 connections
+- Profiles with fewer than 500 connections, or outside the 2,000–15,000 follower window above
 - SaaS, e-commerce, or crypto profiles
 
 ## Message pain angle
@@ -56,3 +75,4 @@ Fixed structure, 4 lines max:
 
 ## Goal / conversion
 Goal: **call**. Calendly link: ⚠️ **TO CONFIRM WITH TALEL** — not provided yet, do not invent one. Ask Talel for his own booking link (same pattern as Baptiste's: https://calendly.com/hogbat08/evo-consulting-gratuit) before activating any conversation that reaches the booking step.
+
