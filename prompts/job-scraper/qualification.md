@@ -19,6 +19,7 @@ Tu reçois en entrée :
 - Ne disqualifie jamais une offre seulement parce que c'est un CDI / poste permanent. Un recrutement permanent en cours est une fenêtre d'opportunité, pas un obstacle : l'angle devient "pendant que ce recrutement se finalise".
 - Ne traite pas l'absence de signal francophone/européen explicite comme éliminatoire. C'est un bonus s'il est présent, jamais un filtre dur, sauf si le persona du compte l'exige explicitement (ex. filtre géographique dur documenté dans son persona).
 - N'invente aucun signal qui n'est pas présent dans les données fournies.
+- Ne traite jamais une offre publiée par un cabinet de recrutement / agence de placement pour le compte d'un client anonyme comme si l'entreprise qui recrute était la cible (ex. formulations "recrute pour son client", "on behalf of our client", entreprise `company` identifiée comme cabinet de recrutement/agence RH dans son `summary` ou son `industry`). Dans ce cas, l'entreprise finale n'est généralement pas identifiable depuis l'offre : positionne `disqualifying_reason` sur ce point plutôt que de qualifier le cabinet de recrutement lui-même comme prospect.
 
 ## Ce que tu dois évaluer, dans l'ordre
 
