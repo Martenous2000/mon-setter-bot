@@ -231,7 +231,7 @@
         "queryParameters": { "parameters": [{ "name": "account_id", "value": "={{ $json.unipile_account_id }}" }] },
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={{ JSON.stringify({ api: \"classic\", category: \"people\", company: [$json.company.id], role: $json.decision_maker_roles }) }}",
+        "jsonBody": "={{ JSON.stringify({ api: \"classic\", category: \"people\", company: [$json.company.id], keywords: ($json.decision_maker_roles || []).join(' ') }) }}",
         "options": { "timeout": 30000 }
       },
       "id": "unipile-search-people",
@@ -240,7 +240,7 @@
       "typeVersion": 4.2,
       "position": [2420, -160],
       "credentials": { "httpHeaderAuth": { "id": "unipile-api-key", "name": "Unipile API Key (X-API-KEY)" } },
-      "notes": "decision_maker_roles vient de la config du compte (job_scraper_config), aligné sur l'ICP du persona, pas hardcodé. Priorité confirmée par l'utilisateur : décideur business (Founder/CEO/Head of Sales) avant hiring_team."
+      "notes": "decision_maker_roles vient de la config du compte (job_scraper_config), aligné sur l'ICP du persona, pas hardcodé. Priorité confirmée par l'utilisateur : décideur business (Founder/CEO/Head of Sales) avant hiring_team. IMPORTANT (validé en test réel) : le paramètre advanced_keywords.title avec syntaxe booléenne OR renvoie 0 résultat côté Unipile Classic people search. Utiliser keywords (plein texte simple) à la place, comme câblé ici."
     },
     {
       "parameters": {
