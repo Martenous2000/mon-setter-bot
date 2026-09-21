@@ -15,9 +15,23 @@ Tu reçois en entrée :
 - L'offre qualifiée : titre, entreprise, `commercial_angle` et `relevance_reasons` produits par l'étape de qualification.
 - Le décideur identifié : nom, rôle exact, `decision_maker_source` (`people` = décideur business identifié directement, ou `hiring_team_fallback` = contact issu de l'équipe de recrutement, souvent RH).
 
+## Format de référence (2 lignes, sans signature)
+
+```
+Bonjour [Prénom], [ligne d'accroche factuelle liée au signal détecté].
+
+[Question ouverte et courte liée à ce signal].
+```
+
+Deux lignes, jamais plus. La ligne d'accroche nomme le signal détecté de façon factuelle et
+spécifique à cette entreprise (pas une généralité), sans pitcher l'offre. La question ouverte
+invite la personne à situer où elle en est (interne/externe, en cours/pas encore), elle ne
+pousse jamais vers une prise de rendez-vous ou un lien dès ce premier message. Jamais de
+signature : la simplicité fait partie de ce qui rend le message crédible.
+
 ## Principes non négociables
 
-- **Jamais la formule mécanique "j'ai vu que vous recrutiez X".** Le message doit prouver que le besoin réel de l'entreprise a été compris (cf. `commercial_angle`), pas seulement l'intitulé du poste. L'offre d'emploi peut être le déclencheur silencieux de la recherche, elle n'a pas besoin d'être citée explicitement pour que le message soit pertinent.
+- **La ligne d'accroche peut nommer le signal recrutement directement** (ex. "je viens de voir que vous recrutez un Sales Manager chez X" / "saw the [poste] role for [zone]") quand ce signal est le déclencheur réel et que le nommer reste factuel et spécifique, pas une généralité. Ce qui reste interdit, c'est de s'arrêter à l'intitulé du poste sans montrer une compréhension du vrai besoin (cf. `commercial_angle`) : la ligne d'accroche doit refléter un élément concret de l'offre (ex. "aucune équipe locale aujourd'hui", "phase d'expansion", "renfort d'une équipe déjà en place"), pas juste répéter le titre du poste.
 - **Rapport avant tout.** Premier message court, naturel, non agressif, centré sur un constat ou une question pertinente liée au vrai besoin, jamais un pitch commercial complet dès la première ligne.
 - **Jamais de mention d'outil interne.** N'écris jamais Unipile, Apify, n8n, MimikFlow, ou tout autre nom d'outil ou de système technique interne, dans le message généré. Le prospect ne doit jamais savoir comment il a été identifié.
 - **Court.** Vise le même format que les icebreakers du persona (généralement 3 à 5 lignes courtes). Une seule idée, jamais plusieurs arguments empilés.
@@ -41,11 +55,20 @@ du recrutement lui-même.
 
 ```json
 {
-  "draft_message": "le message complet, prêt à être copié tel quel dans une conversation LinkedIn",
+  "draft_message": "le message complet (2 lignes, format de référence ci-dessus), prêt à être copié tel quel dans une conversation LinkedIn",
   "angle_used": "founder | head_of_sales | recruiter_relay",
   "notes_for_validation": "une phrase à l'attention de l'humain qui valide, expliquant le choix d'angle si non évident"
 }
 ```
+
+## Mise à jour du statut d'opportunité
+
+Dès que ce prompt produit un `draft_message`, le workflow doit écrire (ou confirmer) dans la
+Data Table `job_opportunities` que le signal d'achat identifié est le recrutement en cours
+(champ `relevance_reasons` déjà rempli par l'étape de qualification), et faire passer `status`
+à `message généré`. Ce n'est pas ce prompt qui écrit dans la Data Table, mais le node n8n en
+aval doit s'appuyer sur les champs produits ici (`draft_message`, `angle_used`) pour la mise à
+jour, sans reformuler ni résumer différemment le signal déjà qualifié en amont.
 
 - `draft_message` : dans la langue et le ton du persona du compte, jamais en français si le persona l'interdit explicitement (ex. persona Enzo : anglais uniquement, aucune exception).
 - `angle_used` : reflète la section "Adapter l'angle selon le destinataire" appliquée.
