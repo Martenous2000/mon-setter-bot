@@ -1,0 +1,365 @@
+{
+  "name": "job-scraper-opportunities",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "hoursInterval": 6
+            }
+          ]
+        }
+      },
+      "id": "schedule-trigger",
+      "name": "Toutes les 6h",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [0, 0],
+      "notes": "Fréquence à arbitrer avec l'utilisateur avant activation en production. Voir job-scraper-opportunities.README.md."
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "tableId": "job_scraper_config",
+        "filters": {
+          "conditions": [
+            { "keyName": "active", "condition": "eq", "keyValue": true }
+          ]
+        }
+      },
+      "id": "get-active-accounts",
+      "name": "Lire comptes actifs (job_scraper_config)",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [220, 0],
+      "notes": "Data Table à créer manuellement dans n8n. Colonnes : account_label, unipile_account_id, persona_key, target_geographies (json array), target_languages (json array), keywords_rotation (json array), active (bool), decision_maker_roles (json array). Répartit la charge sur tous les comptes actifs plutôt que de concentrer sur les comptes à fort volume d'envoi."
+    },
+    {
+      "parameters": {
+        "batchSize": 1,
+        "options": {}
+      },
+      "id": "split-accounts",
+      "name": "Un compte à la fois",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [440, 0]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Sélectionne le prochain mot-clé de la rotation pour ce compte, en tournant sur les runs successifs.\n// Le compte de rotation est stocké côté Data Table (colonne rotation_index) pour persister entre les runs\n// -- simplifié ici : on prend un index basé sur le timestamp du run pour répartir naturellement.\nconst account = $input.item.json;\nconst keywords = account.keywords_rotation || [\"Business Developer\", \"Sales Manager\", \"Head of Sales\"];\nconst idx = Math.floor(Date.now() / (1000 * 60 * 60 * 6)) % keywords.length;\nreturn { json: { ...account, current_keyword: keywords[idx] } };"
+      },
+      "id": "pick-keyword",
+      "name": "Choisir mot-clé de rotation",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [660, 0]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.UNIPILE_DSN }}/api/v1/linkedin/search",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "accept", "value": "application/json" },
+            { "name": "content-type", "value": "application/json" }
+          ]
+        },
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            { "name": "account_id", "value": "={{ $json.unipile_account_id }}" },
+            { "name": "limit", "value": "50" }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ api: \"classic\", category: \"jobs\", keywords: $json.current_keyword, date_posted: 2, sort_by: \"date\", location: $json.target_geographies }) }}",
+        "options": { "timeout": 30000 }
+      },
+      "id": "unipile-search-jobs",
+      "name": "Unipile: recherche offres (jobs)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [880, -80],
+      "credentials": { "httpHeaderAuth": { "id": "unipile-api-key", "name": "Unipile API Key (X-API-KEY)" } },
+      "notes": "category=jobs, api=classic. Classic Jobs: 50 résultats/page max. La réponse liste NE contient PAS la description complète (voir node 'Unipile: détail offre'). date_posted en nombre de jours, pas une string."
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.APIFY_ACTOR_RUN_URL }}",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ keywords: $json.current_keyword, location: $json.target_geographies }) }}",
+        "options": { "timeout": 60000 }
+      },
+      "id": "apify-fallback-jobs",
+      "name": "[FALLBACK DÉSACTIVÉ] Apify: scraping offres",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "disabled": true,
+      "position": [880, 120],
+      "notes": "DÉSACTIVÉ PAR DÉFAUT. À activer manuellement si, sur plusieurs runs consécutifs pour un compte donné : (a) le node 'Unipile: recherche offres' renvoie 0 ou très peu de résultats alors que le compte est actif et les mots-clés larges, (b) erreur 403 subscription_required/feature_not_subscribed, ou (c) erreur 401 disconnected_account/expired_credentials sur ce compte spécifiquement. Voir job-scraper-opportunities.README.md pour l'arbitrage complet. Nécessite APIFY_API_TOKEN et un acteur Apify de scraping LinkedIn Jobs/jobboards à choisir sur le marketplace avant activation -- non fourni par défaut."
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "tableId": "job_opportunities",
+        "filters": {
+          "conditions": [
+            { "keyName": "unipile_job_id", "condition": "eq", "keyValue": "={{ $json.id }}" },
+            { "keyName": "account_label", "condition": "eq", "keyValue": "={{ $json.account_label }}" }
+          ]
+        }
+      },
+      "id": "dedup-lookup",
+      "name": "Dédoublonnage (lookup job_opportunities)",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [1100, -80]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": { "caseSensitive": true, "leftValue": "", "typeValidation": "strict" },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.status }}",
+              "rightValue": "envoyé",
+              "operator": { "type": "string", "operation": "notEquals" }
+            }
+          ],
+          "combinator": "and"
+        }
+      },
+      "id": "filter-not-terminal",
+      "name": "Pas déjà terminal ?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [1320, -80],
+      "notes": "Skip si déjà envoyé/répondu/perdu pour ce job_id+account_label. Sinon (nouvelle offre ou statut intermédiaire), on continue le pipeline."
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "={{ $env.UNIPILE_DSN }}/api/v1/linkedin/jobs/{{ $json.id }}",
+        "sendHeaders": true,
+        "headerParameters": { "parameters": [{ "name": "accept", "value": "application/json" }] },
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            { "name": "service", "value": "CLASSIC" },
+            { "name": "account_id", "value": "={{ $json.unipile_account_id }}" }
+          ]
+        },
+        "options": { "timeout": 20000 }
+      },
+      "id": "unipile-job-detail",
+      "name": "Unipile: détail offre (description + hiring_team)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1540, -80],
+      "credentials": { "httpHeaderAuth": { "id": "unipile-api-key", "name": "Unipile API Key (X-API-KEY)" } },
+      "notes": "Renvoie description (texte complet), hiring_team (contacts liés au poste, souvent RH), seniority, skills, salary, workplace. Utilisé en étape 4 du plan."
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.UNIPILE_DSN }}/api/v1/linkedin/search",
+        "sendHeaders": true,
+        "headerParameters": { "parameters": [{ "name": "accept", "value": "application/json" }, { "name": "content-type", "value": "application/json" }] },
+        "sendQuery": true,
+        "queryParameters": { "parameters": [{ "name": "account_id", "value": "={{ $json.unipile_account_id }}" }] },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ api: \"classic\", category: \"companies\", keywords: $json.company.name, has_job_offers: true }) }}",
+        "options": { "timeout": 30000 }
+      },
+      "id": "unipile-enrich-company",
+      "name": "Unipile: enrichissement entreprise",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1760, -80],
+      "credentials": { "httpHeaderAuth": { "id": "unipile-api-key", "name": "Unipile API Key (X-API-KEY)" } },
+      "notes": "Classic company search. Si le compte a Sales Navigator, enrichir le jsonBody avec api: 'sales_navigator' et recent_activities: ['funding_events','senior_leadership_changes'], technologies, headcount_growth. Si 403 subscription_required : dégrader silencieusement (continuer sans ces signaux), ne jamais faire échouer le run pour ça."
+    },
+    {
+      "parameters": {
+        "resource": "message",
+        "model": "={{ $env.CLAUDE_MODEL || 'claude-sonnet-4-6' }}",
+        "prompt": "={{ $env.QUALIFICATION_PROMPT }}\n\n--- PERSONA DU COMPTE ---\n{{ $env['PERSONA_' + $json.persona_key] }}\n\n--- OFFRE ---\nTitre: {{ $json.title }}\nEntreprise: {{ $json.company.name }}\nDescription: {{ $json.description }}\nLocalisation: {{ $json.location }}\nPubliée le: {{ $json.posted_at }}\nSéniorité: {{ $json.seniority }}\n\n--- ENRICHISSEMENT ENTREPRISE ---\n{{ JSON.stringify($json.company_enrichment || {}) }}",
+        "options": { "maxTokens": 1024 }
+      },
+      "id": "llm-qualification",
+      "name": "LLM: qualification (prompts/job-scraper/qualification.md)",
+      "type": "n8n-nodes-base.anthropic",
+      "typeVersion": 1,
+      "position": [1980, -80],
+      "credentials": { "anthropicApi": { "id": "anthropic-api-key", "name": "Anthropic API Key" } },
+      "notes": "Charge prompts/job-scraper/qualification.md (contenu chargé via HTTP raw GitHub en amont du workflow ou copié dans une variable d'environnement QUALIFICATION_PROMPT -- voir README pour la méthode retenue). Sortie JSON stricte : score, relevance_reasons, commercial_angle, european_signal, disqualifying_reason."
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": { "caseSensitive": true, "leftValue": "", "typeValidation": "strict" },
+          "conditions": [
+            { "leftValue": "={{ $json.score }}", "rightValue": 50, "operator": { "type": "number", "operation": "gte" } }
+          ],
+          "combinator": "and"
+        }
+      },
+      "id": "score-threshold",
+      "name": "Score >= 50 ?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [2200, -80],
+      "notes": "Seuil par défaut à confirmer avec l'utilisateur avant activation. Sous ce seuil : écriture Data Table en statut 'qualifié' avec score, mais pas de recherche décideur ni de message généré, pour économiser le quota Unipile people."
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.UNIPILE_DSN }}/api/v1/linkedin/search",
+        "sendHeaders": true,
+        "headerParameters": { "parameters": [{ "name": "accept", "value": "application/json" }, { "name": "content-type", "value": "application/json" }] },
+        "sendQuery": true,
+        "queryParameters": { "parameters": [{ "name": "account_id", "value": "={{ $json.unipile_account_id }}" }] },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ api: \"classic\", category: \"people\", company: [$json.company.id], role: $json.decision_maker_roles }) }}",
+        "options": { "timeout": 30000 }
+      },
+      "id": "unipile-search-people",
+      "name": "Unipile: recherche décideur (people)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [2420, -160],
+      "credentials": { "httpHeaderAuth": { "id": "unipile-api-key", "name": "Unipile API Key (X-API-KEY)" } },
+      "notes": "decision_maker_roles vient de la config du compte (job_scraper_config), aligné sur l'ICP du persona, pas hardcodé. Priorité confirmée par l'utilisateur : décideur business (Founder/CEO/Head of Sales) avant hiring_team."
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": { "caseSensitive": true, "leftValue": "", "typeValidation": "strict" },
+          "conditions": [
+            { "leftValue": "={{ $json.items.length }}", "rightValue": 0, "operator": { "type": "number", "operation": "gt" } }
+          ],
+          "combinator": "and"
+        }
+      },
+      "id": "has-people-result",
+      "name": "Décideur business trouvé ?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [2640, -160],
+      "notes": "Si vrai : decision_maker_source = 'people'. Si faux : fallback sur hiring_team de l'étape détail offre (decision_maker_source = 'hiring_team_fallback'). Si ni l'un ni l'autre : statut reste 'qualifié', pas de message généré sans destinataire."
+    },
+    {
+      "parameters": {
+        "jsCode": "// Branche 'true' (décideur business trouvé) : mappe le premier résultat people.\nconst item = $json.items[0];\nreturn { json: { ...($('Décideur business trouvé ?').item.json), decision_maker_name: item.name, decision_maker_profile_url: item.profile_url || item.public_profile_url, decision_maker_role: item.headline || item.current_position, decision_maker_source: 'people' } };"
+      },
+      "id": "map-decision-maker-people",
+      "name": "Mapper décideur (people)",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [2860, -220]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Branche 'false' (pas de décideur business trouvé) : fallback sur hiring_team de l'offre.\nconst source = $json;\nconst team = (source.hiring_team || [])[0];\nif (!team) {\n  return { json: { ...source, decision_maker_source: 'none', skip_message: true } };\n}\nreturn { json: { ...source, decision_maker_name: team.name, decision_maker_profile_url: team.profile_url, decision_maker_role: 'Recruteur / équipe RH (hiring_team)', decision_maker_source: 'hiring_team_fallback' } };"
+      },
+      "id": "map-decision-maker-hiring-team",
+      "name": "Mapper décideur (hiring_team fallback)",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [2860, 60],
+      "notes": "Si hiring_team est vide aussi : skip_message=true, la ligne reste en statut 'qualifié' sans décideur, pas de message généré sans destinataire (voir IF en aval)."
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": { "caseSensitive": true, "leftValue": "", "typeValidation": "strict" },
+          "conditions": [
+            { "leftValue": "={{ $json.skip_message }}", "rightValue": true, "operator": { "type": "boolean", "operation": "notEquals" } }
+          ],
+          "combinator": "and"
+        }
+      },
+      "id": "has-any-decision-maker",
+      "name": "Un décideur (people ou fallback) ?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [3080, -80]
+    },
+    {
+      "parameters": {
+        "resource": "message",
+        "model": "={{ $env.CLAUDE_MODEL || 'claude-sonnet-4-6' }}",
+        "prompt": "={{ $env.MESSAGE_GENERATION_PROMPT }}\n\n--- PERSONA DU COMPTE ---\n{{ $env['PERSONA_' + $json.persona_key] }}\n\n--- PRINCIPES DE SETTING ---\n{{ $env.PRINCIPES_SETTING }}\n\n--- OPPORTUNITÉ QUALIFIÉE ---\nAngle commercial: {{ $json.commercial_angle }}\nRaisons: {{ JSON.stringify($json.relevance_reasons) }}\n\n--- DÉCIDEUR ---\nNom: {{ $json.decision_maker_name }}\nRôle: {{ $json.decision_maker_role }}\nSource: {{ $json.decision_maker_source }}",
+        "options": { "maxTokens": 512 }
+      },
+      "id": "llm-message-generation",
+      "name": "LLM: génération message (prompts/job-scraper/message-generation.md)",
+      "type": "n8n-nodes-base.anthropic",
+      "typeVersion": 1,
+      "position": [3300, -80],
+      "credentials": { "anthropicApi": { "id": "anthropic-api-key", "name": "Anthropic API Key" } },
+      "notes": "Charge le persona du compte ET prompts/principes.md en plus de message-generation.md, comme le fait le brain Python pour les conversations classiques. Sortie JSON stricte : draft_message, angle_used, notes_for_validation. Interdiction stricte de mentionner tout outil interne dans draft_message."
+    },
+    {
+      "parameters": {
+        "operation": "upsert",
+        "tableId": "job_opportunities",
+        "matchingColumns": ["unipile_job_id", "account_label"],
+        "dataToSend": "autoMapInputData"
+      },
+      "id": "write-opportunity",
+      "name": "Écrire opportunité (job_opportunities)",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [3520, -80],
+      "notes": "Upsert sur (unipile_job_id, account_label). Statut final de ce chemin : 'en attente de validation'. Colonnes attendues : voir job-scraper-opportunities.README.md."
+    },
+    {
+      "parameters": {
+        "resource": "message",
+        "chatId": "={{ $env.TELEGRAM_ALERT_CHAT_ID }}",
+        "text": "=🎯 Nouvelle opportunité — {{ $json.company_name }}\nPoste : {{ $json.job_title }}\nScore : {{ $json.score }}/100\nDécideur : {{ $json.decision_maker_name }} ({{ $json.decision_maker_role }})\nAngle : {{ $json.commercial_angle }}\n\nBrouillon :\n{{ $json.draft_message }}\n\nStatut : en attente de validation dans la table job_opportunities."
+      },
+      "id": "telegram-notify",
+      "name": "Notifier Telegram (validation)",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [3740, -80],
+      "credentials": { "telegramApi": { "id": "telegram-alert-bot", "name": "Telegram Alert Bot" } },
+      "notes": "Réutilise TELEGRAM_ALERT_BOT_TOKEN / TELEGRAM_ALERT_CHAT_ID déjà configurés dans config.py du brain. Chat ID fourni par l'utilisateur : 8723535937. Aucun envoi LinkedIn automatique en aval de ce node."
+    }
+  ],
+  "connections": {
+    "Toutes les 6h": { "main": [[{ "node": "Lire comptes actifs (job_scraper_config)", "type": "main", "index": 0 }]] },
+    "Lire comptes actifs (job_scraper_config)": { "main": [[{ "node": "Un compte à la fois", "type": "main", "index": 0 }]] },
+    "Un compte à la fois": { "main": [[{ "node": "Choisir mot-clé de rotation", "type": "main", "index": 0 }]] },
+    "Choisir mot-clé de rotation": { "main": [[{ "node": "Unipile: recherche offres (jobs)", "type": "main", "index": 0 }, { "node": "[FALLBACK DÉSACTIVÉ] Apify: scraping offres", "type": "main", "index": 0 }]] },
+    "Unipile: recherche offres (jobs)": { "main": [[{ "node": "Dédoublonnage (lookup job_opportunities)", "type": "main", "index": 0 }]] },
+    "Dédoublonnage (lookup job_opportunities)": { "main": [[{ "node": "Pas déjà terminal ?", "type": "main", "index": 0 }]] },
+    "Pas déjà terminal ?": { "main": [[{ "node": "Unipile: détail offre (description + hiring_team)", "type": "main", "index": 0 }]] },
+    "Unipile: détail offre (description + hiring_team)": { "main": [[{ "node": "Unipile: enrichissement entreprise", "type": "main", "index": 0 }]] },
+    "Unipile: enrichissement entreprise": { "main": [[{ "node": "LLM: qualification (prompts/job-scraper/qualification.md)", "type": "main", "index": 0 }]] },
+    "LLM: qualification (prompts/job-scraper/qualification.md)": { "main": [[{ "node": "Score >= 50 ?", "type": "main", "index": 0 }]] },
+    "Score >= 50 ?": { "main": [[{ "node": "Unipile: recherche décideur (people)", "type": "main", "index": 0 }], [{ "node": "Écrire opportunité (job_opportunities)", "type": "main", "index": 0 }]] },
+    "Unipile: recherche décideur (people)": { "main": [[{ "node": "Décideur business trouvé ?", "type": "main", "index": 0 }]] },
+    "Décideur business trouvé ?": { "main": [[{ "node": "Mapper décideur (people)", "type": "main", "index": 0 }], [{ "node": "Mapper décideur (hiring_team fallback)", "type": "main", "index": 0 }]] },
+    "Mapper décideur (people)": { "main": [[{ "node": "Un décideur (people ou fallback) ?", "type": "main", "index": 0 }]] },
+    "Mapper décideur (hiring_team fallback)": { "main": [[{ "node": "Un décideur (people ou fallback) ?", "type": "main", "index": 0 }]] },
+    "Un décideur (people ou fallback) ?": { "main": [[{ "node": "LLM: génération message (prompts/job-scraper/message-generation.md)", "type": "main", "index": 0 }], [{ "node": "Écrire opportunité (job_opportunities)", "type": "main", "index": 0 }]] },
+    "LLM: génération message (prompts/job-scraper/message-generation.md)": { "main": [[{ "node": "Écrire opportunité (job_opportunities)", "type": "main", "index": 0 }]] },
+    "Écrire opportunité (job_opportunities)": { "main": [[{ "node": "Notifier Telegram (validation)", "type": "main", "index": 0 }]] }
+  },
+  "active": false,
+  "settings": { "executionOrder": "v1" }
+}
