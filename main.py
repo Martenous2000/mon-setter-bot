@@ -1221,6 +1221,8 @@ async def relance(req: RelanceRequest):
 # redeploy trigger 13: cree persona lorenzo, ajoute au groupe anti-doublon Martin/JP/Jules/Theo/Thomas
 # redeploy trigger 14: cree persona baptiste-hoguet (incubation coachs/infopreneurs US high-ticket)
 # redeploy trigger 15: baptiste-hoguet adapte devise et langue selon le prospect (dollar/euro, anglais/francais)
+# redeploy trigger 16: cree persona jassem-chouchane (Zero a Un, agence digitale SEO/GEO/automatisation IA)
+
 
 
 
