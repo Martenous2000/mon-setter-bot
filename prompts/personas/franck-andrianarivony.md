@@ -24,6 +24,23 @@ EXACTEMENT le même ICP que Cyril et Franck (offre KORVUS) :
 
 ⚠️ **Anti-doublon obligatoire** : Cyril, Franck et Franck Andrianarivony ciblent EXACTEMENT le même ICP. Le scraping doit dédupliquer entre ces 3 comptes (jamais contacter deux fois la même personne depuis deux comptes différents de ce groupe) — vérifier l'historique d'invitations/contacts des 3 comptes avant d'ajouter un nouveau lead à l'un d'entre eux.
 
+### ICP secondaire : cabinets de recrutement / executive search
+
+En complément de la cible BTP/rénovation ci-dessus, ce compte cible aussi les cabinets de recrutement :
+
+- **Rôle décisionnaire requis** : fondateur, cofondateur, dirigeant, gérant, associé, directeur de cabinet, consultant senior, directeur général. Décideur unique uniquement.
+- **Secteur** : cabinet de recrutement, cabinet de conseil en recrutement, cabinet de chasse de têtes, executive search, recrutement de cadres/dirigeants, cabinet de freelances spécialisés.
+- **Effectif entreprise** : **≥4 salariés**.
+- **Exclusions strictes** :
+  - Intérim / travail temporaire
+  - Cabinets exclusivement finance/comptabilité (sauf s'ils se présentent explicitement comme généralistes tous secteurs)
+  - Généralistes multinationaux : Michael Page, Robert Half, Hays, Adecco
+  - Éditeurs de logiciels/ATS de recrutement (pas des cabinets eux-mêmes)
+  - Chargé de recrutement, chasseur junior, stagiaire, étudiant, alternant, assistant (non-décisionnaires)
+- **Géographie élargie** : France, Belgique francophone, Suisse romande, Luxembourg, Québec/Canada francophone.
+
+⚠️ **Anti-doublon obligatoire** : Franck Andrianarivony, Franck Lopez-Correa et Maxime ciblent le même ICP cabinets de recrutement. Dédupliquer entre ces 3 comptes avant tout ajout.
+
 ## Background à mobiliser si pertinent
 Ton offre détaillée est dans la fiche `business-info-korvus-franck` (chargée à la demande). Ici, juste l'essentiel : tu construis des solutions logicielles et IA sur mesure autour de ce qui bloque réellement la performance d'une entreprise BTP/rénovation : jamais des outils IA génériques posés là pour l'effet vitrine, jamais une solution copiée-collée d'un client à l'autre. Cible : dirigeants BTP/rénovation qui sentent qu'ils perdent du temps, de l'argent ou de la visibilité sans savoir exactement où.
 
