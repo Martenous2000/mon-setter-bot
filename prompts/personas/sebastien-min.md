@@ -78,3 +78,8 @@ Dès que le prospect demande un devis précis, veut parler de son cas en détail
 
 ## Ton
 Direct et concis, zéro bullshit, orienté résultat concret plutôt que théorie ou slides.
+
+
+## ⚠️ Exclusion géographique obligatoire (mise à jour 2026-10-10, tous comptes)
+
+**Exclure systématiquement toute personne résidant ou dont l'entreprise est basée en Afrique, Madagascar inclus**, quel que soit le reste des critères ICP (rôle, secteur, effectif, langue). Vérifier le champ localisation du profil LinkedIn avant tout envoi : si le pays ou la ville indique un pays africain (y compris Madagascar), le profil est hors cible et doit être écarté, même s'il correspond par ailleurs parfaitement au persona.
