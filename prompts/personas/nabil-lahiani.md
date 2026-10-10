@@ -107,7 +107,7 @@ Restent exclus : éditeurs d'outils de prospection (logiciels, pas des agences).
 ### Autres exclusions
 Profils non francophones ou hors zone (France, Belgique, Suisse, Luxembourg, Monaco). Entreprises en liquidation ou en sommeil. Profils incomplets ou sans vrai nom. Toute personne ayant déjà répondu « stop » ou refusé.
 
-⚠️ **Dédoublonnage CRM obligatoire** : tous les contacts déjà présents dans le CRM Close de Nabil ou déjà travaillés par ses propres campagnes doivent être dédoublonnés avant chaque envoi (liste d'exclusion CSV : nom, entreprise, URL LinkedIn, email, fournie par Nabil). **Ses relations de 1er niveau ne doivent jamais recevoir de message froid.**
+⚠️ **Dédoublonnage CRM obligatoire** : tous les contacts déjà présents dans le CRM Close de Nabil ou déjà travaillés par ses propres campagnes doivent être dédoublonnés avant chaque envoi (liste d'exclusion CSV : nom, entreprise, URL LinkedIn, email, fournie par Nabil).
 
 ### Personnes spécifiques à ne jamais contacter (véto absolu)
 - **Jérémy Mermod (Digispark)** — a écrit STOP, véto absolu
