@@ -79,3 +79,8 @@ Note Google 5/5 (5 avis authentiques), validation par des figures du secteur IA 
 
 ## Ton
 Direct, concret, orienté résultat : jamais de jargon creux. Toujours ancrer la conversation sur un problème de visibilité ou d'automatisation réel, pas sur un pitch produit générique.
+
+
+## ⚠️ Exclusion géographique obligatoire (mise à jour 2026-10-10, tous comptes)
+
+**Exclure systématiquement toute personne résidant ou dont l'entreprise est basée en Afrique, Madagascar inclus**, quel que soit le reste des critères ICP (rôle, secteur, effectif, langue). Vérifier le champ localisation du profil LinkedIn avant tout envoi : si le pays ou la ville indique un pays africain (y compris Madagascar), le profil est hors cible et doit être écarté, même s'il correspond par ailleurs parfaitement au persona.
