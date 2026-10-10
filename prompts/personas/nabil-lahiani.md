@@ -55,32 +55,33 @@ Garantie contractuelle de 90 jours sur chaque offre :
 
 **Formule à utiliser en DM** : « RDV qualifiés garantis par contrat en 90 jours, le risque est chez nous, pas chez toi. »
 
-## ICP : ce compte cible
+## ICP : ce compte cible — mis à jour 2026-10-10 (prompt ciblage précisé)
 
-### Rôle cible
-Décideurs uniquement : Fondateur / Fondatrice, Co-fondateur, CEO, PDG, Gérant, Dirigeant, Directeur général, Associé / Partner, Coach business, Consultant(e), Formateur / Formatrice à son compte, Infopreneur.
-En second rang (structures de 10 salariés et plus seulement) : Directeur commercial, Head of Sales, Responsable commercial.
+### Marché
+France, Belgique, Suisse, Luxembourg, Monaco.
 
-### Secteurs cibles
-Prestataires de services B2B à panier moyen élevé :
-1. Agences : marketing, communication, publicité, web, design, production vidéo/média
-2. Conseil et consulting B2B (stratégie, organisation, finance, IT)
-3. Coaching business et formation professionnelle
-4. Infopreneurs / e-learning B2B
-5. ESN et services IT
-6. Immobilier et investissement (conseil, programmes, gestion de patrimoine)
+### Persona
+Fondateur, co-fondateur, fondatrice, dirigeant, CEO, associé gérant d'une agence, cabinet ou structure de services B2B.
 
-Point commun : ils vendent une prestation B2B de plusieurs milliers d'euros et vivent surtout de recommandation.
+### Secteurs
+Agence de prospection / growth / lead gen, agence IA ou automatisation B2B, agence conseil ou coaching B2B, ESN / agence web B2B, infopreneur avec programme B2B existant, cabinet de conseil commercial ou marketing.
 
-### Géographie
-France entière + francophonie européenne : Belgique (francophone), Suisse romande, Luxembourg, Monaco. Profils francophones uniquement (profil LinkedIn rédigé en français).
+### Critères observables LinkedIn (proxy budget 3-4k€/mois)
+- Taille : **2 à 15 salariés** affichés (structure installée, pas solo)
+- Ancienneté : **18 mois minimum** sur la page entreprise
+- Le fondateur est le décideur direct, visible dans le titre (Fondateur / CEO, pas Manager ou Responsable)
+- L'entreprise a des clients actifs visibles (témoignages, portfolio, ou activité LinkedIn régulière)
+- Secteur B2B uniquement, ticket moyen de l'offre du prospect estimé à **1 000 €+ par client**
 
-### Taille d'entreprise
-TPE/PME de 1 à 50 salariés (cœur de cible), jusqu'à 200 maximum. Un solo est dans la cible s'il a une offre structurée qui se vend déjà.
+### Anti-cible
+- Solopreneurs sans aucun collaborateur
+- Structures lancées il y a moins de 18 mois
+- Agences de prospection concurrentes directes (risque de copie du système)
+- B2C
+- Structures de +20 personnes (cycle de décision trop long)
+- Profils sans pouvoir budgétaire direct
 
-**Critères business obligatoires** : activité lancée avec des clients existants, offre B2B à plusieurs milliers d'euros, capacité à investir au moins 4 000 €, bande passante pour absorber de nouveaux clients.
-
-### Signaux LinkedIn (par ordre de priorité)
+### Signaux LinkedIn (par ordre de priorité, conservés de l'ancienne version)
 1. Activité récente : poste ou commente régulièrement (30 derniers jours)
 2. Prise de poste ou création d'entreprise récente (moins de 12 mois)
 3. Interagit avec des contenus sur la prospection, la génération de leads, le closing, le cold email (ex. audiences d'Alec Henry, Matis Clouet, Margo Cunego)
@@ -91,14 +92,13 @@ TPE/PME de 1 à 50 salariés (cœur de cible), jusqu'à 200 maximum. Un solo est
 
 ## Anti-cible
 
+⚠️ Voir la section "ICP : ce compte cible" ci-dessus (mise à jour 2026-10-10) pour les critères de taille (2-15 salariés, hors cible sous 2 et au-dessus de 20), d'ancienneté (18 mois minimum) et de secteur. Les points ci-dessous complètent ces critères, sans les contredire.
+
 ### Secteurs à exclure
 Confrères et concurrents : agences de prospection / lead gen / outbound / growth, éditeurs d'outils de prospection. Recrutement, RH, staffing, chasseurs de têtes. MLM / marketing de réseau, affiliation, dropshipping, e-commerce B2C pur, trading / crypto. Closers et setters indépendants. Associations, secteur public, grands groupes.
 
 ### Rôles à exclure
 Étudiants, stagiaires, alternants, assistants, recruteurs / RH / talent acquisition, profils « en recherche d'emploi » ou Open to Work, salariés et managers sans pouvoir de décision, closers, setters, freelances qui vendent leur temps (dev, graphiste, rédacteur) sans offre structurée.
-
-### Taille minimale
-**Minimum 2 salariés/collaborateurs** (mis à jour : un solo pur n'est plus dans la cible, même avec une offre qui se vend). Exclure : activité pas encore lancée ou sans client, profil sans entreprise identifiable, auto-entrepreneur débutant, entreprise de moins de 2 salariés, toute entreprise de plus de 200 salariés.
 
 ### Autres exclusions
 Profils non francophones ou hors zone (France, Belgique, Suisse, Luxembourg, Monaco). Entreprises en liquidation ou en sommeil. Profils incomplets ou sans vrai nom. Toute personne ayant déjà répondu « stop » ou refusé.
