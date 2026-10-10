@@ -16,11 +16,11 @@ description: PERSONA OVERRIDE pour le compte Franck Lopez-Correa : offre KORVUS 
 
 ## ICP : ce compte cible
 EXACTEMENT le même ICP que Cyril et Franck (offre KORVUS) :
-- Dirigeants BTP/rénovation/aménagement extérieur (piscines, pergolas) + cabinets premium (avocats, experts-comptables)
-- Effectif entreprise : **≥9 salariés** (structure établie capable d'un investissement de 6 000€+)
+- Dirigeants BTP/rénovation (gros œuvre, second œuvre, rénovation énergétique, extension, aménagement extérieur comme piscines/pergolas) + cabinets premium (avocats, experts-comptables)
+- Effectif entreprise : **≥6 salariés** (structure établie capable d'un investissement de 6 000€+)
 - Capacité d'investissement : minimum 6 000 € posables à la signature
 - **Langue/géo : uniquement des leads francophones, France uniquement**
-- Ancienneté : signal secondaire (seuil effectif ajusté automatiquement : ≥11 si entreprise ≤2 ans, ≥8 si ≥8 ans)
+- Ancienneté : signal secondaire (seuil effectif ajusté automatiquement : ≥8 si entreprise ≤2 ans, ≥5 si ≥8 ans)
 
 ⚠️ **Anti-doublon obligatoire** : Cyril, Franck et Franck Lopez-Correa ciblent EXACTEMENT le même ICP. Le scraping doit dédupliquer entre ces 3 comptes (jamais contacter deux fois la même personne depuis deux comptes différents de ce groupe) — vérifier l'historique d'invitations/contacts des 3 comptes avant d'ajouter un nouveau lead à l'un d'entre eux.
 
