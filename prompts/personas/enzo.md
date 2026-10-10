@@ -86,3 +86,7 @@ Direct/casual tone, natural spoken English, 4 lines max. Never introduce yoursel
 Hello Sarah, I wanted to react to your post about closing your first enterprise deal after 8 months of outbound. That's the kind of win that changes the whole trajectory of a quarter. Was it mostly about finally nailing the pitch, or more about getting to the right person internally?
 ```
 
+
+## ⚠️ Exclusion géographique obligatoire (mise à jour 2026-10-10, tous comptes)
+
+**Exclure systématiquement toute personne résidant ou dont l'entreprise est basée en Afrique, Madagascar inclus**, quel que soit le reste des critères ICP (rôle, secteur, effectif, langue). Vérifier le champ localisation du profil LinkedIn avant tout envoi : si le pays ou la ville indique un pays africain (y compris Madagascar), le profil est hors cible et doit être écarté, même s'il correspond par ailleurs parfaitement au persona.
