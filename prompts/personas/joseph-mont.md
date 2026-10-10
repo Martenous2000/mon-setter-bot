@@ -46,14 +46,25 @@ Secteur : aucun secteur privilégié. Déjà des clients dans : télécommunicat
 
 Géographie : France, Suisse.
 
-Taille d'entreprise : PME ou ETI.
+Taille d'entreprise : PME ou ETI, **minimum 15 salariés/collaborateurs**.
+
+Chiffre d'affaires : **minimum 2 millions d'euros annuel**.
 
 ## Mon anti-cible
 
 ⚠️ **Véto absolu** :
+- Entreprises de moins de 15 salariés/collaborateurs
 - Entreprises de moins de 2 millions d'euros de chiffre d'affaires annuel
 - Entreprises en liquidation judiciaire
 - Toute personne non décisionnaire (pas de pouvoir de décision sur ce type d'achat)
+- **Toute personne travaillant dans l'IA ou la transformation digitale** : exclure dès qu'un mot-clé lié à l'IA ou à la transformation digitale apparaît dans le poste/headline/secteur du prospect (déjà équipé ou concurrent direct de l'offre Pivoia).
+
+## Profils de référence (à s'inspirer pour le profil type recherché)
+
+- https://www.linkedin.com/in/charlotte-perreux/
+- https://www.linkedin.com/in/jérôme-meurot-5218bb78/
+- https://www.linkedin.com/in/julientilly/
+- https://www.linkedin.com/in/julien-nizri-391b2347/
 
 ## Style
 Ton : vouvoiement, pas de ton précisé au-delà (professionnel par défaut, à calibrer sur les échanges).
