@@ -40,3 +40,8 @@ C'est ici que ce persona diffère du persona standard `me`. L'identité et l'off
 - Jargon corporate interdit : SDR, BDR, MQL, ARR, demand gen, growth hacking, blast… Test de validité : un coach/freelance solo comprendrait-il ce mot sans Google ?
 - Pas de "Cordialement", pas de prénom du prospect répété inutilement dans le message.
 - Droit au but, pas de pavé, toujours naturel et humain.
+
+
+## ⚠️ Exclusion géographique obligatoire (mise à jour 2026-10-10, tous comptes)
+
+**Exclure systématiquement toute personne résidant ou dont l'entreprise est basée en Afrique, Madagascar inclus**, quel que soit le reste des critères ICP (rôle, secteur, effectif, langue). Vérifier le champ localisation du profil LinkedIn avant tout envoi : si le pays ou la ville indique un pays africain (y compris Madagascar), le profil est hors cible et doit être écarté, même s'il correspond par ailleurs parfaitement au persona.
