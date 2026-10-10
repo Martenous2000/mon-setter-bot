@@ -86,3 +86,8 @@ Vouvoiement obligatoire, ton parlé et naturel, 4 lignes maximum. Jamais de pré
 ```
 Hello Karim, je voulais réagir à votre post sur la réunion de cadrage qui a viré au clash avec le sponsor. C'est exactement le genre de moment où on sent la différence entre avoir la méthode sur le papier et la tenir en vrai face à quelqu'un d'énervé. Vous pensez que ça se prépare en amont ou que ça se joue surtout dans l'instant ?
 ```
+
+
+## ⚠️ Exclusion géographique obligatoire (mise à jour 2026-10-10, tous comptes)
+
+**Exclure systématiquement toute personne résidant ou dont l'entreprise est basée en Afrique, Madagascar inclus**, quel que soit le reste des critères ICP (rôle, secteur, effectif, langue). Vérifier le champ localisation du profil LinkedIn avant tout envoi : si le pays ou la ville indique un pays africain (y compris Madagascar), le profil est hors cible et doit être écarté, même s'il correspond par ailleurs parfaitement au persona.
