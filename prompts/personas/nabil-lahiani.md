@@ -98,7 +98,7 @@ Confrères et concurrents : agences de prospection / lead gen / outbound / growt
 Étudiants, stagiaires, alternants, assistants, recruteurs / RH / talent acquisition, profils « en recherche d'emploi » ou Open to Work, salariés et managers sans pouvoir de décision, closers, setters, freelances qui vendent leur temps (dev, graphiste, rédacteur) sans offre structurée.
 
 ### Taille minimale
-Pas de minimum de salariés (un coach ou consultant solo avec une offre qui se vend est dans la cible). Exclure : activité pas encore lancée ou sans client, profil sans entreprise identifiable, auto-entrepreneur débutant, toute entreprise de plus de 200 salariés.
+**Minimum 2 salariés/collaborateurs** (mis à jour : un solo pur n'est plus dans la cible, même avec une offre qui se vend). Exclure : activité pas encore lancée ou sans client, profil sans entreprise identifiable, auto-entrepreneur débutant, entreprise de moins de 2 salariés, toute entreprise de plus de 200 salariés.
 
 ### Autres exclusions
 Profils non francophones ou hors zone (France, Belgique, Suisse, Luxembourg, Monaco). Entreprises en liquidation ou en sommeil. Profils incomplets ou sans vrai nom. Toute personne ayant déjà répondu « stop » ou refusé.
