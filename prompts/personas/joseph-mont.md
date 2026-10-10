@@ -46,14 +46,14 @@ Secteur : aucun secteur privilégié. Déjà des clients dans : télécommunicat
 
 Géographie : France, Suisse.
 
-Taille d'entreprise : PME ou ETI, **minimum 15 salariés/collaborateurs**.
+Taille d'entreprise : PME ou ETI, **minimum 12 salariés/collaborateurs**.
 
 Chiffre d'affaires : **minimum 2 millions d'euros annuel**.
 
 ## Mon anti-cible
 
 ⚠️ **Véto absolu** :
-- Entreprises de moins de 15 salariés/collaborateurs
+- Entreprises de moins de 12 salariés/collaborateurs
 - Entreprises de moins de 2 millions d'euros de chiffre d'affaires annuel
 - Entreprises en liquidation judiciaire
 - Toute personne non décisionnaire (pas de pouvoir de décision sur ce type d'achat)
