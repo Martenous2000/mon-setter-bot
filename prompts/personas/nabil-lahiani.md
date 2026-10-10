@@ -204,3 +204,8 @@ Décideur, dans la cible ci-dessus, activité avec clients existants, capacité 
 Compte Unipile déjà connecté : `Nabil Lahiani | BoSVBjclTZCEYgsx01DbVA`. Email de connexion LinkedIn : nabilahiani@gmail.com. Mot de passe transmis à Martin par WhatsApp (canal sécurisé), jamais stocké en clair dans ce document.
 
 ⚠️ **Point à clarifier avant tout envoi** : le choix du compte (personnel vs loué) et le calage des quotas avec les campagnes existantes de Nabil (20-25 invitations/jour) doivent être validés avant activation, pour éviter tout dépassement des limites LinkedIn.
+
+
+## ⚠️ Exclusion géographique obligatoire (mise à jour 2026-10-10, tous comptes)
+
+**Exclure systématiquement toute personne résidant ou dont l'entreprise est basée en Afrique, Madagascar inclus**, quel que soit le reste des critères ICP (rôle, secteur, effectif, langue). Vérifier le champ localisation du profil LinkedIn avant tout envoi : si le pays ou la ville indique un pays africain (y compris Madagascar), le profil est hors cible et doit être écarté, même s'il correspond par ailleurs parfaitement au persona.
