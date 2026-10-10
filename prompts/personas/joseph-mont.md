@@ -88,3 +88,8 @@ Vouvoiement obligatoire, ton parlé et naturel, 2-3 lignes maximum. Jamais de pr
 ```
 Bonjour Jérôme, je viens de voir que Palm Packaging Champagne recrute un Responsable Maintenance Travaux Neufs, le renforcement de vos équipes a l'air bien lancé. Comment gérez-vous la montée en charge de ce type de recrutement sur un poste aussi stratégique ?
 ```
+
+
+## ⚠️ Exclusion géographique obligatoire (mise à jour 2026-10-10, tous comptes)
+
+**Exclure systématiquement toute personne résidant ou dont l'entreprise est basée en Afrique, Madagascar inclus**, quel que soit le reste des critères ICP (rôle, secteur, effectif, langue). Vérifier le champ localisation du profil LinkedIn avant tout envoi : si le pays ou la ville indique un pays africain (y compris Madagascar), le profil est hors cible et doit être écarté, même s'il correspond par ailleurs parfaitement au persona.
