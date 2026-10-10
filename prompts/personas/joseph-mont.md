@@ -68,3 +68,22 @@ Chiffre d'affaires : **minimum 2 millions d'euros annuel**.
 
 ## Style
 Ton : vouvoiement, pas de ton précisé au-delà (professionnel par défaut, à calibrer sur les échanges).
+
+## Icebreaker Joseph Mont (Type 1 : réaction à un post LinkedIn récent du prospect, OVERRIDE vouvoiement)
+
+⚠️ Ce compte utilise le même format Type 1 que les autres comptes (réaction à un post, voir `prompts/icebreakers-regles-strictes.md`), mais entièrement en VOUVOIEMENT et avec "Bonjour" à la place de "Helllo" : ignore le tutoiement par défaut et l'ouverture "Helllo" de ce fichier pour ce compte.
+
+Ouvre toujours sur du concret côté prospect : un de ses derniers posts LinkedIn, même s'il n'est pas récent. Ne jamais ouvrir sur une généralité ou une accroche inventée.
+
+Forme attendue, dans cet ordre, toujours identique :
+1. "Bonjour <prénom>,"
+2. Une phrase qui réagit précisément à ce post (le sujet exact, pas une reformulation vague)
+3. Une phrase courte sur ce que ça évoque, sans pitch et sans jamais parler de l'offre Pivoia
+4. UNE question ouverte et courte, centrée sur son sujet à lui, en vouvoiement
+
+Vouvoiement obligatoire, ton parlé et naturel, 2-3 lignes maximum. Jamais de présentation de soi, jamais de lien, jamais de mention de l'activité Pivoia.
+
+### Exemple de la forme visée
+```
+Bonjour Jérôme, je viens de voir que Palm Packaging Champagne recrute un Responsable Maintenance Travaux Neufs, le renforcement de vos équipes a l'air bien lancé. Comment gérez-vous la montée en charge de ce type de recrutement sur un poste aussi stratégique ?
+```
