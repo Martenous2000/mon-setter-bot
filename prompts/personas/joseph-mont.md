@@ -58,6 +58,7 @@ Chiffre d'affaires : **minimum 2 millions d'euros annuel**.
 - Entreprises en liquidation judiciaire
 - Toute personne non décisionnaire (pas de pouvoir de décision sur ce type d'achat)
 - **Toute personne travaillant dans l'IA ou la transformation digitale** : exclure dès qu'un mot-clé lié à l'IA ou à la transformation digitale apparaît dans le poste/headline/secteur du prospect (déjà équipé ou concurrent direct de l'offre Pivoia).
+- **Mots-clés d'exclusion explicites (mis à jour 2026-10-10)** : exclure systématiquement tout profil dont le poste/headline/secteur contient l'un de ces mots-clés : **"agence"**, **"automatisation"**, **"transformation digitale"**. Ce sont des concurrents directs ou des prestataires du même type que Pivoia, jamais des prospects. ⚠️ Cette exclusion est spécifique au compte Joseph Mont, elle ne s'applique pas à Nabil Lahiani ni aux autres comptes.
 
 ## Profils de référence (à s'inspirer pour le profil type recherché)
 
