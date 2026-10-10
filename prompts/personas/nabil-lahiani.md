@@ -66,20 +66,22 @@ Fondateur, co-fondateur, fondatrice, dirigeant, CEO, associé gérant d'une agen
 ### Secteurs
 Agence de prospection / growth / lead gen, agence IA ou automatisation B2B, agence conseil ou coaching B2B, ESN / agence web B2B, infopreneur avec programme B2B existant, cabinet de conseil commercial ou marketing.
 
-### Critères observables LinkedIn (proxy budget 3-4k€/mois)
-- Taille : **2 à 15 salariés** affichés (structure installée, pas solo)
-- Ancienneté : **18 mois minimum** sur la page entreprise
+### Critères observables LinkedIn (proxy budget 3-4k€/mois) — mis à jour 2026-10-10 (v2)
+- Taille : **2 à 15 salariés** affichés (structure installée)
+- **Solos autorisés en exception** : un solopreneur (0 collaborateur) reste dans la cible uniquement si son entreprise a **18 mois d'ancienneté minimum**.
+- Ancienneté : **12 mois minimum** sur la page entreprise pour les structures ≥2 personnes (abaissé de 18 à 12 mois).
 - Le fondateur est le décideur direct, visible dans le titre (Fondateur / CEO, pas Manager ou Responsable)
 - L'entreprise a des clients actifs visibles (témoignages, portfolio, ou activité LinkedIn régulière)
 - Secteur B2B uniquement, ticket moyen de l'offre du prospect estimé à **1 000 €+ par client**
 
 ### Anti-cible
-- Solopreneurs sans aucun collaborateur
-- Structures lancées il y a moins de 18 mois
-- Agences de prospection concurrentes directes (risque de copie du système)
+- Structures ≥2 personnes lancées il y a moins de 12 mois
+- Solopreneurs (0 collaborateur) lancés il y a moins de 18 mois
 - B2C
 - Structures de +20 personnes (cycle de décision trop long)
 - Profils sans pouvoir budgétaire direct
+
+⚠️ **Changement 2026-10-10** : les agences de prospection concurrentes ne sont plus exclues par principe. Tant qu'un profil respecte les critères ci-dessus (rôle, taille, ancienneté, ticket moyen), il est dans la cible — il n'y a plus de notion de "concurrent direct" à exclure sur ce seul critère sectoriel.
 
 ### Signaux LinkedIn (par ordre de priorité, conservés de l'ancienne version)
 1. Activité récente : poste ou commente régulièrement (30 derniers jours)
@@ -92,10 +94,12 @@ Agence de prospection / growth / lead gen, agence IA ou automatisation B2B, agen
 
 ## Anti-cible
 
-⚠️ Voir la section "ICP : ce compte cible" ci-dessus (mise à jour 2026-10-10) pour les critères de taille (2-15 salariés, hors cible sous 2 et au-dessus de 20), d'ancienneté (18 mois minimum) et de secteur. Les points ci-dessous complètent ces critères, sans les contredire.
+⚠️ Voir la section "ICP : ce compte cible" ci-dessus (mise à jour 2026-10-10, v2) pour les critères de taille (2-15 salariés), d'ancienneté (12 mois pour les structures ≥2 personnes, 18 mois pour les solos) et de secteur. Les points ci-dessous complètent ces critères, sans les contredire.
 
 ### Secteurs à exclure
-Confrères et concurrents : agences de prospection / lead gen / outbound / growth, éditeurs d'outils de prospection. Recrutement, RH, staffing, chasseurs de têtes. MLM / marketing de réseau, affiliation, dropshipping, e-commerce B2C pur, trading / crypto. Closers et setters indépendants. Associations, secteur public, grands groupes.
+⚠️ **Mis à jour 2026-10-10** : les agences de prospection / lead gen / outbound / growth ne sont PLUS exclues en tant que "confrères et concurrents" — elles font partie des secteurs cibles valides (voir section Secteurs ci-dessus), tant qu'elles respectent les critères de rôle/taille/ancienneté/ticket moyen.
+
+Restent exclus : éditeurs d'outils de prospection (logiciels, pas des agences). Recrutement, RH, staffing, chasseurs de têtes. MLM / marketing de réseau, affiliation, dropshipping, e-commerce B2C pur, trading / crypto. Closers et setters indépendants. Associations, secteur public, grands groupes.
 
 ### Rôles à exclure
 Étudiants, stagiaires, alternants, assistants, recruteurs / RH / talent acquisition, profils « en recherche d'emploi » ou Open to Work, salariés et managers sans pouvoir de décision, closers, setters, freelances qui vendent leur temps (dev, graphiste, rédacteur) sans offre structurée.
