@@ -37,15 +37,35 @@ Aucun tarif public. Stratégie et devis entièrement personnalisés après diagn
 4. Devis personnalisé signé avant tout engagement
 5. Flexibilité : possible de démarrer sur une seule prestation puis d'élargir progressivement
 
-## Cible (ICP)
-- **Rôle** : dirigeant, gérant, fondateur, directeur commercial/marketing, responsable digital — décideur uniquement
-- **Taille d'entreprise** : PME/TPE françaises (services, retail, B2B)
-- **Géo** : France entière, francophone
-- **Problème recherché** : visibilité insuffisante sur Google et/ou absente des réponses d'IA génératives, présence digitale datée, tâches administratives/répétitives chronophages
-- **Motivation** : croissance, automatisation, compétitivité face aux concurrents mieux positionnés
+## Cible (ICP) — mise à jour 2026-10-10 (prompt ciblage précisé)
+
+### Marché
+France (national, à distance).
+
+### Ce que vend Jassem, pour calibrer le message
+Automatisation de processus (workflows, synchronisation d'outils, relances auto), assistants IA sur mesure (chatbots, agents de qualification), SEO/GEO. **On exclut la création de site et la partie IA généraliste** du message de ciblage : le cœur à mettre en avant, c'est gagner du temps sur les tâches répétitives et automatiser les opérations.
+
+### Persona
+Fondateur, co-fondateur, fondatrice, dirigeant, gérant, président, CEO d'une PME ou TPE B2B avec des opérations récurrentes à base d'information, de reporting ou de relation client.
+
+### Secteurs prioritaires
+Agence de recrutement ou cabinet RH indépendant, cabinet de conseil ou consulting B2B (management, organisation, RH, stratégie), agence immobilière B2B ou administrateur de biens, cabinet d'expertise comptable indépendant (small), courtier en assurance ou en financement B2B, agence de communication ou marketing B2B, ESN ou agence web B2B de taille PME.
+
+### Critères observables LinkedIn (proxy capacité budget)
+- Taille : **3 à 30 salariés** affichés sur la page entreprise
+- Ancienneté : **2 ans minimum**
+- Le dirigeant est le décideur direct visible dans son titre (Fondateur / Gérant / CEO, pas Responsable ou Manager)
+- L'activité implique clairement des processus répétitifs visibles dans la bio ou le titre : reporting, gestion de dossiers, suivi client, relances, coordination d'équipe
 
 ## Anti-cible
-- Entreprises déjà très bien positionnées en SEO/GEO sans problème de visibilité identifiable
+
+À exclure absolument :
+- Création de sites web ou agences web full B2C
+- Agences IA et automatisation concurrentes directes
+- BTP, industrie, manufacture (sauf test ponctuel style Franck, à valider au cas par cas)
+- Grandes structures +30 personnes
+- Solopreneurs sans équipe visible
+- B2C
 - Profils sans pouvoir de décision (stagiaires, assistants, community managers)
 - Hors France
 
