@@ -81,3 +81,7 @@ Fixed structure, 4 lines max:
 ## Goal / conversion
 Goal: **call**. Calendly link: ⚠️ **TO CONFIRM WITH TALEL** — not provided yet, do not invent one. Ask Talel for his own booking link (same pattern as Baptiste's: https://calendly.com/hogbat08/evo-consulting-gratuit) before activating any conversation that reaches the booking step.
 
+
+## ⚠️ Exclusion géographique obligatoire (mise à jour 2026-10-10, tous comptes)
+
+**Exclure systématiquement toute personne résidant ou dont l'entreprise est basée en Afrique, Madagascar inclus**, quel que soit le reste des critères ICP (rôle, secteur, effectif, langue). Vérifier le champ localisation du profil LinkedIn avant tout envoi : si le pays ou la ville indique un pays africain (y compris Madagascar), le profil est hors cible et doit être écarté, même s'il correspond par ailleurs parfaitement au persona.
