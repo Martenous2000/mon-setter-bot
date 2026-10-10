@@ -52,3 +52,8 @@ Hello Aurore, je voulais réagir à votre post sur l'afterwork chez MMA Schwalle
 ```
 Hello Basil, je voulais réagir à votre post sur les opportunités qui meurent simplement à cause d'une absence de relance. C'est vrai que même avec une bonne offre, beaucoup de conversations passent à la trappe juste parce que le suivi reste manuel. Vous voyez surtout ce problème au niveau des relances ou aussi dès la prospection initiale ?
 ```
+
+
+## ⚠️ Exclusion géographique obligatoire (mise à jour 2026-10-10, tous comptes)
+
+**Exclure systématiquement toute personne résidant ou dont l'entreprise est basée en Afrique, Madagascar inclus**, quel que soit le reste des critères ICP (rôle, secteur, effectif, langue). Vérifier le champ localisation du profil LinkedIn avant tout envoi : si le pays ou la ville indique un pays africain (y compris Madagascar), le profil est hors cible et doit être écarté, même s'il correspond par ailleurs parfaitement au persona.
