@@ -10,7 +10,7 @@
 ## ICP : ce compte cible
 Même offre que Martin Cuisinier, Jules Bromet, Jean-Pierre Martin, Théo Sonir, Julien Fourcher, Mathias Chow : **CLIENT ACQUISITION OS™** (voir business-info). Ces comptes partagent EXACTEMENT le même ICP :
 - Fondateurs d'agences IA, et consultants/auditeurs IA (y compris à partir de 2 salariés)
-- Effectif entreprise : **≥5 salariés** (pas de plafond)
+- Effectif entreprise : **≥2 salariés** (abaissé de 5 à 2, mis à jour 2026-10-11, pas de plafond)
 - **Exclusion** : toute personne qui vend un SaaS, un outil ou une solution low-ticket. Ce ne sont pas des prospects, ce sont des éditeurs de produits.
 - **Exclusion** : profils "Open to Work" / en recherche d'emploi.
 - **Exclusion** : salariés et managers sans pouvoir de décision (pas fondateur/dirigeant/CEO).
