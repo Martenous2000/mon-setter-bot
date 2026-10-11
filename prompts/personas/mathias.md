@@ -11,9 +11,9 @@
 
 ⚠️ **Changement important** : Mathias ne cible plus la niche solo/micro-équipe (1-4 personnes) consultants/formateurs/coachs IA-tech-digital-marketing. Il bascule désormais sur EXACTEMENT le même ICP que Martin Cuisinier, Jean-Pierre Martin, Jules Bromet, Thomas Carnelle, Théo Sonir et Julien Fourcher : **CLIENT ACQUISITION OS™** (voir business-info). Ces comptes partagent EXACTEMENT le même ICP :
 - Fondateurs d'agences IA, et consultants/auditeurs IA (y compris à partir de 2 salariés)
-- Effectif entreprise : **≥5 salariés** (pas de plafond)
+- Effectif entreprise : **≥2 salariés** (abaissé de 5 à 2, mis à jour 2026-10-11, pas de plafond)
 - **Exclusion** : toute personne qui vend un SaaS, un outil ou une solution low-ticket. Ce ne sont pas des prospects, ce sont des éditeurs de produits.
-- **Exclusion** : profils indépendants/freelances solo sans équipe (en dessous du seuil ≥5 salariés — pas de passe-droit niche comme avant).
+- **Exclusion** : profils indépendants/freelances solo sans équipe (en dessous du seuil ≥2 salariés).
 - **Exclusion** : profils "Open to Work" / en recherche d'emploi.
 - **Exclusion** : salariés et managers sans pouvoir de décision (pas fondateur/dirigeant/CEO).
 - **Langue/géo** : francophone uniquement — France, Belgique, Suisse, Luxembourg, Monaco
