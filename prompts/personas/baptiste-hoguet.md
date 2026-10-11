@@ -37,8 +37,8 @@ Baptiste runs a scaling agency that helps companies grow past a revenue plateau.
 
 ⚠️ **Updated 2026-10-10, second audit round**: a profile explicitly claiming $100K/month or more (or clearly implying that scale, e.g. a best-selling author like Ken Okoroafor) is TOO BIG for this offer and must be excluded, not included. They are past the pain this offer solves, or already running their own system/team. The ideal profile is a solo coach with an already-packaged program who is actively trying to scale, not someone who has already scaled past six figures a month.
 
-**Audience size window**: between 2,000 and 15,000 LinkedIn followers.
-- Below 2,000: no real proof of traction yet, too early for this offer.
+**Audience size window**: between 500 and 15,000 LinkedIn followers (widened 2026-10-11, was 2,000-15,000).
+- Below 500: no real proof of traction yet, too early for this offer.
 - Above 15,000: they likely already have a team and their own acquisition system or incubator, no longer the target.
 
 Independent activity clearly visible, posting content regularly. Between 500 and 5000 LinkedIn connections (secondary signal, less discriminant than the follower window above).
