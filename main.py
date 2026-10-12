@@ -87,6 +87,8 @@ async def get_calendly_link(args):
         url = "https://calendly.com/enzo-vidiella83/30min"
     elif persona == "florian":
         url = "https://calendly.com/floriangrospro/call-rencontre"
+    elif persona == "younes-chaoui":
+        url = "https://calendly.com/packcreas/appel-15-min"
     else:
         url = CANONICAL_CALENDLY or "https://app.iclosed.io/e/visionary-consulting/visionary-consulting"
     return {"content": [{"type": "text", "text": url}]}
@@ -1239,3 +1241,4 @@ async def relance(req: RelanceRequest):
 
 
 
+# redeploy trigger 17: cree persona younes-chaoui (Pack Creas, pubs e-commerce IA) + skill business-info-pack-creas + lien Calendly
