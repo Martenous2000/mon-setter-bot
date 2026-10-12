@@ -18,6 +18,7 @@ description: PERSONA pour le compte Charlotte Mader : ICP B2B dirigeants décisi
 - **Type de cible** : B2B uniquement, dirigeants avec pouvoir de décision (pas de comité d'achat).
 - **Taille d'entreprise** : **3 à 300 salariés**.
 - **Géographie** : rayon d'environ 30 minutes autour d'Annecy. Villes citées : Annecy, Chambéry, Genève, La Roche-sur-Foron, Poisy, Aix-les-Bains.
+- ⚠️ **Genève est une priorité explicite de la cible** (mise à jour 2026-10-12) : à prioriser au même titre qu'Annecy dans le scraping et les envois, pas juste une ville citée parmi d'autres.
 
 ### Secteurs retenus
 - BTP et architecture
