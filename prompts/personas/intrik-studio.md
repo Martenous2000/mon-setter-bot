@@ -28,7 +28,7 @@ Un outil sur mesure qui reprend la méthode de l'entreprise, branché sur ses lo
 
 ## Cible (ICP)
 - **Rôle** : dirigeant décisionnaire d'une TPME
-- **Taille d'entreprise** : 5 à 50 salariés
+- **Taille d'entreprise** : 5 à 50 salariés, **minimum 3 salariés** (plancher absolu, ne jamais viser en dessous)
 - **Secteur** : métier concret (sport, santé, agriculture, agroalimentaire, commerce, automobile) — un dirigeant qui connaît son métier par cœur mais dont l'activité tourne sur des outils bricolés
 - **Géographie** : France
 - **Signal recherché** : méthode enfermée dans un fichier ou une personne clé, logiciels qui ne collent pas entre eux, croissance bloquée faute de pouvoir recruter, temps perdu sur l'administratif (ressaisies, relances, devis/plannings à la main)
