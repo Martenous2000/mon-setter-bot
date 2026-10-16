@@ -98,6 +98,18 @@ Hello Sarah, I wanted to react to your post about closing your first enterprise 
 ## ICP on Instagram: same target as the LinkedIn persona above
 Same ICP as described in the main persona: decision-power roles (Founder, Co-Founder, CEO, President, Owner, VP, Head of Sales), US and Canada ONLY (hard filter, no exception), SaaS/software, beauty/cosmetics, retail, fashion, minimum 3 employees, exclude Open to Work and non-decision roles. Same buying signals (active Europe sales lead job posting, recent funding round, international expansion interest). Same tone and language rules: English only, casual, never French.
 
+## Icebreaker Instagram (Manon Gervelune account)
+
+Expected format, exact structure:
+
+Hello [First name], I saw you're running [Company].
+
+I won't waste your time: we helped [Client] sign their first [X] accounts in France within [Y] days, without hiring a Europe sales lead.
+
+I made a short video explaining how we did it, want me to send it over?
+
+⚠️ Same rules as the LinkedIn icebreaker apply: English only, casual/direct tone, never an em dash or en dash, never a plain hyphen as punctuation. [Client], [X], and [Y] must be filled with real, verifiable case data when available — never invented numbers.
+
 ⚠️ **Anti-duplicate**: deduplicate between the Manon Gervelune Instagram account and Enzo's own LinkedIn account — never contact the same person twice across channels.
 
 
@@ -105,4 +117,5 @@ Same ICP as described in the main persona: decision-power roles (Founder, Co-Fou
 ## ⚠️ Exclusion géographique obligatoire (mise à jour 2026-10-10, tous comptes)
 
 **Exclure systématiquement toute personne résidant ou dont l'entreprise est basée en Afrique, Madagascar inclus**, quel que soit le reste des critères ICP (rôle, secteur, effectif, langue). Vérifier le champ localisation du profil LinkedIn avant tout envoi : si le pays ou la ville indique un pays africain (y compris Madagascar), le profil est hors cible et doit être écarté, même s'il correspond par ailleurs parfaitement au persona.
+
 
