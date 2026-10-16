@@ -38,13 +38,20 @@ Tarif à partir de 2 500 € (usage interne uniquement, jamais mentionné en DM)
 
 Médias à partager si demandé : https://www.youtube.com/@Joseph-pivoia (chaîne YouTube, bientôt un podcast d'experts IA) et https://pivoia.com/
 
+## Cas clients vérifiés (site + posts LinkedIn)
+- **Crédit Agricole** (banque) : conversion marketing multipliée par 10 (de 0,9 % à 9 %)
+- **Région Pays de la Loire** (secteur public) : base de données créée en 1 mois au lieu de 6 à 7
+- **Lades** (audit de copropriété, PDG Adrien) : gain de 2h par dossier, soit 165h/mois, avec meilleure qualité
+- **Decidem** (PDG Philippe), **EVOFitclub** (PDG Erwan) : témoignages clients nommés
+- **+30 entreprises accompagnées** dans leur transition IA (chiffre répété et vérifié sur le site et les posts)
+
 ## Ma cible (ICP)
 
 Rôle : dirigeant décisionnaire — DG, Directeur Général, Fondateur, Gérant, Président, CEO.
 
 Secteur : aucun secteur privilégié. Déjà des clients dans : télécommunications, audit de copropriété, édition de logiciels, assurance, organismes de formation, cabinets comptables, fonds d'investissement, retail.
 
-Géographie : France, Suisse.
+Géographie : **France, Suisse, Luxembourg, Belgique** (mis à jour — ajout Luxembourg et Belgique).
 
 Taille d'entreprise : PME ou ETI, **minimum 12 salariés/collaborateurs**.
 
@@ -72,7 +79,7 @@ Ton : vouvoiement, pas de ton précisé au-delà (professionnel par défaut, à 
 
 ## Icebreaker Joseph Mont (Type 1 : réaction à un post LinkedIn récent du prospect, OVERRIDE vouvoiement)
 
-⚠️ Ce compte utilise le même format Type 1 que les autres comptes (réaction à un post, voir `prompts/icebreakers-regles-strictes.md`), mais entièrement en VOUVOIEMENT et avec "Bonjour" à la place de "Helllo" : ignore le tutoiement par défaut et l'ouverture "Helllo" de ce fichier pour ce compte.
+⚠️ Ce compte utilise le même format Type 1 que les autres comptes (réaction à un post, voir prompts/icebreakers-regles-strictes.md), mais entièrement en VOUVOIEMENT et avec "Bonjour" à la place de "Helllo" : ignore le tutoiement par défaut et l'ouverture "Helllo" de ce fichier pour ce compte.
 
 Ouvre toujours sur du concret côté prospect : un de ses derniers posts LinkedIn, même s'il n'est pas récent. Ne jamais ouvrir sur une généralité ou une accroche inventée.
 
@@ -85,9 +92,7 @@ Forme attendue, dans cet ordre, toujours identique :
 Vouvoiement obligatoire, ton parlé et naturel, 2-3 lignes maximum. Jamais de présentation de soi, jamais de lien, jamais de mention de l'activité Pivoia.
 
 ### Exemple de la forme visée
-```
 Bonjour Jérôme, je viens de voir que Palm Packaging Champagne recrute un Responsable Maintenance Travaux Neufs, le renforcement de vos équipes a l'air bien lancé. Comment gérez-vous la montée en charge de ce type de recrutement sur un poste aussi stratégique ?
-```
 
 
 ## ⚠️ Exclusion géographique obligatoire (mise à jour 2026-10-10, tous comptes)
