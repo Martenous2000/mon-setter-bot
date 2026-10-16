@@ -1,4 +1,3 @@
----
 name: enzo
 description: PERSONA OVERRIDE pour le compte Enzo Vidiella — aide les entreprises US/Canada à s'implanter et vendre en France.
 ---
@@ -96,7 +95,9 @@ Hello Sarah, I wanted to react to your post about closing your first enterprise 
 - **Unipile Instagram account**: Manon Gervelune
 
 ## ICP on Instagram: same target as the LinkedIn persona above
-Same ICP as described in the main persona: decision-power roles (Founder, Co-Founder, CEO, President, Owner, VP, Head of Sales), US and Canada ONLY (hard filter, no exception), SaaS/software, beauty/cosmetics, retail, fashion, minimum 3 employees, exclude Open to Work and non-decision roles. Same buying signals (active Europe sales lead job posting, recent funding round, international expansion interest). Same tone and language rules: English only, casual, never French.
+Same ICP as described in the main persona: decision-power roles (Founder, Co-Founder, CEO, President, Owner, VP, Head of Sales) ONLY, US and Canada ONLY (hard filter, no exception), minimum 2 employees (updated 2026-10-16, reduced from 3). Same buying signals (active Europe sales lead job posting, recent funding round, international expansion interest). Same tone and language rules: English only, casual, never French.
+
+⚠️ **Widened industries on Instagram (updated 2026-10-16)**: beyond SaaS/software, beauty/cosmetics, retail, fashion, also open to other industries as long as the decision-maker role, US/Canada location, and minimum 2-employee team are all confirmed. Keep the role and geography filters strict, exclude Open to Work and non-decision roles.
 
 ## Icebreaker Instagram (Manon Gervelune account)
 
@@ -117,5 +118,6 @@ I made a short video explaining how we did it, want me to send it over?
 ## ⚠️ Exclusion géographique obligatoire (mise à jour 2026-10-10, tous comptes)
 
 **Exclure systématiquement toute personne résidant ou dont l'entreprise est basée en Afrique, Madagascar inclus**, quel que soit le reste des critères ICP (rôle, secteur, effectif, langue). Vérifier le champ localisation du profil LinkedIn avant tout envoi : si le pays ou la ville indique un pays africain (y compris Madagascar), le profil est hors cible et doit être écarté, même s'il correspond par ailleurs parfaitement au persona.
+
 
 
