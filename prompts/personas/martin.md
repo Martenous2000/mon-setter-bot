@@ -14,7 +14,7 @@
 ## ICP : ce compte cible
 Même offre que Jules Bromet, Jean-Pierre Martin, Thomas Carnelle, Théo Sonir, Julien Fourcher, Mathias Chow : **CLIENT ACQUISITION OS™** (voir business-info). Ces comptes partagent EXACTEMENT le même ICP :
 - Fondateurs d'agences IA, et consultants/auditeurs IA (y compris à partir de 2 salariés)
-- Effectif entreprise : **≥2 salariés** (abaissé de 5 à 2, mis à jour 2026-10-11, pas de plafond)
+- Effectif entreprise : **≥1 collaborateur** (abaissé de 2 à 1, mis à jour 2026-10-16, pas de plafond — un fondateur avec un seul associé, salarié ou freelance régulier suffit)
 - **Exclusion** : toute personne qui vend un SaaS, un outil ou une solution low-ticket. Ce ne sont pas des prospects, ce sont des éditeurs de produits.
 - **Exclusion** : profils "Open to Work" / en recherche d'emploi.
 - **Exclusion** : salariés et managers sans pouvoir de décision (pas fondateur/dirigeant/CEO).
@@ -60,7 +60,7 @@ Martin Cuisinier prospecte sur Instagram via 9 comptes connectés à Unipile, to
 
 ## ICP Instagram : même cible que la partie LinkedIn
 - **Priorité absolue** : fondateurs d'agences IA, et consultants/auditeurs IA, **qu'ils soient associés (cofondateurs) ou qu'ils aient des salariés** — les deux configurations comptent (mis à jour 2026-10-16, clarification).
-- Effectif entreprise : ≥2 salariés/associés, pas de plafond
+- Effectif entreprise : **≥1 collaborateur** (abaissé de 2 à 1, mis à jour 2026-10-16, pas de plafond)
 - Exclusion : SaaS/outil/solution low-ticket, profils "Open to Work", salariés/managers sans pouvoir de décision
 - Langue/géo : francophone uniquement — France, Belgique, Suisse, Luxembourg, Monaco
 
@@ -76,5 +76,6 @@ Avec 9 comptes actifs sur la même cible stricte (agences IA/consultants IA), le
 ## ⚠️ Exclusion géographique obligatoire (mise à jour 2026-10-10, tous comptes, tous canaux)
 
 **Exclure systématiquement toute personne résidant ou dont l'entreprise est basée en Afrique, Madagascar inclus**, quel que soit le reste des critères ICP (rôle, secteur, effectif, langue). Vérifier le champ localisation du profil avant tout envoi : si le pays ou la ville indique un pays africain (y compris Madagascar), le profil est hors cible et doit être écarté, même s'il correspond par ailleurs parfaitement au persona.
+
 
 
