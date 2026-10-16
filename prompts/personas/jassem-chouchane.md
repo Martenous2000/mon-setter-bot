@@ -25,7 +25,7 @@ Zéro à Un aide les entreprises à construire une présence digitale solide et 
 
 **Message clé** : "90% des clics vont aux 3 premiers résultats Google. Où êtes-vous ?"
 
-**Résultats affichés** : +40% de conversion après accompagnement, livraison en moins de 2 semaines, +40% de parts de réponse dans les IA génératives en 4 à 12 semaines.
+**Résultats affichés (vérifiés sur le site)** : +40% de conversion après accompagnement, livraison en moins de 2 semaines (site, agent IA ou stratégie), +40% de parts de réponse dans les IA génératives en 4 à 12 semaines.
 
 ## Règles de prix
 Aucun tarif public. Stratégie et devis entièrement personnalisés après diagnostic. Ne jamais donner de prix en DM, toujours rediriger vers le premier appel de 30 minutes. Garanties à mentionner si pertinent : satisfait ou remboursé, zéro frais cachés, paiement à réception de facture (30 jours).
@@ -37,7 +37,7 @@ Aucun tarif public. Stratégie et devis entièrement personnalisés après diagn
 4. Devis personnalisé signé avant tout engagement
 5. Flexibilité : possible de démarrer sur une seule prestation puis d'élargir progressivement
 
-## Cible (ICP) — mise à jour 2026-10-10 (prompt ciblage précisé)
+## Cible (ICP) — mise à jour : secteurs élargis vers le haut de gamme (comme Sébastien)
 
 ### Marché
 France (national, à distance).
@@ -48,8 +48,10 @@ Automatisation de processus (workflows, synchronisation d'outils, relances auto)
 ### Persona
 Fondateur, co-fondateur, fondatrice, dirigeant, gérant, président, CEO d'une PME ou TPE B2B avec des opérations récurrentes à base d'information, de reporting ou de relation client.
 
-### Secteurs prioritaires
-Agence de recrutement ou cabinet RH indépendant, cabinet de conseil ou consulting B2B (management, organisation, RH, stratégie), agence immobilière B2B ou administrateur de biens, cabinet d'expertise comptable indépendant (small), courtier en assurance ou en financement B2B, agence de communication ou marketing B2B, ESN ou agence web B2B de taille PME.
+### Secteurs — élargi (ouverture vers le haut de gamme, aligné sur Sébastien)
+Secteurs historiques : agence de recrutement ou cabinet RH indépendant, cabinet de conseil ou consulting B2B (management, organisation, RH, stratégie), agence immobilière B2B ou administrateur de biens, cabinet d'expertise comptable indépendant (small), courtier en assurance ou en financement B2B, agence de communication ou marketing B2B, ESN ou agence web B2B de taille PME.
+
+⚠️ **Ouverture élargie (mise à jour)** : s'ouvrir aussi aux secteurs physiques haut de gamme avec opérations récurrentes et moyens de payer, comme pour Sébastien : automobile (garages, concessions), santé (cliniques, cabinets médicaux/dentaires multi-praticiens), agriculture structurée, commerce multi-points de vente, agroalimentaire, sport (salles de sport, clubs, franchises), et tout secteur haut de gamme avec reporting/dossiers/suivi client récurrent.
 
 ### Critères observables LinkedIn (proxy capacité budget)
 - Taille : **3 à 30 salariés** affichés sur la page entreprise
@@ -75,7 +77,7 @@ Agence de recrutement ou cabinet RH indépendant, cabinet de conseil ou consulti
 (à reformuler naturellement selon le fil de la conversation)
 
 ## Preuves sociales à mobiliser si pertinent
-Note Google 5/5 (5 avis authentiques), validation par des figures du secteur IA (Micode, Alex so yes, Jacques Attali cités sur le site), outils gratuits offerts (5 analyseurs professionnels), e-book gratuit "Comprendre & Maîtriser Claude" (27 pages).
+Note Google 5/5 (5 avis authentiques), validation par des figures du secteur IA (Micode, Alex so yes, Jacques Attali cités sur le site), outils gratuits offerts (5 analyseurs professionnels), e-book gratuit "Comprendre & Maîtriser Claude" (27 pages). Chiffres vérifiés sur le site : +40% de conversion après accompagnement, livraison en moins de 2 semaines.
 
 ## Ton
 Direct, concret, orienté résultat : jamais de jargon creux. Toujours ancrer la conversation sur un problème de visibilité ou d'automatisation réel, pas sur un pitch produit générique.
