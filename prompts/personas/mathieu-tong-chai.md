@@ -84,6 +84,26 @@ Structure obligatoire, dans cet ordre :
 ## Compte Instagram assigné
 Lina Néracourt.
 
+## ICP Instagram spécifique (mise à jour 2026-10-16) — distinct du ICP commun ci-dessus
+
+⚠️ Sur Instagram, la cible n'est PAS la même population que le BTP, la coiffure ou les commerces physiques de proximité. On cible exclusivement des personnes qui travaillent depuis un ordinateur, dans le digital ou des activités à distance, avec une équipe à partir de 2 personnes (y compris cofondateurs).
+
+### Profil type recherché sur Instagram
+- Fondateurs et cofondateurs d'agences IA
+- Fondateurs et cofondateurs d'agences de création de sites web
+- Fondateurs et cofondateurs d'agences Ads / médias payants
+- Fondateurs et cofondateurs d'agences marketing / communication digitale
+- Fondateurs et cofondateurs d'autres agences ou structures de services digitaux (SEO, social media, branding, consulting en ligne)
+- Dirigeants d'entreprises haut de gamme avec activité à distance ou digitale, dans la même logique que les secteurs valorisés pour Sébastien (structures établies, avec moyens de payer, pas forcément une niche imposée)
+
+### Effectif
+**À partir de 2 collaborateurs** (associés, cofondateurs, salariés ou freelances réguliers comptent) — pas de plafond.
+
+### ⚠️ Exclusions explicites spécifiques à Instagram
+- **BTP, artisanat du bâtiment, rénovation** : hors cible sur ce compte
+- **Coiffure, instituts de beauté, commerces physiques de proximité** : hors cible sur ce compte
+- Toute activité qui n'est pas pilotée depuis un ordinateur / à distance
+
 ## Signaux à prioriser sur Instagram
 - **Croissance visible sur le profil/la bio** (mentions d'équipe grandissante, nouveaux locaux, nouvelle offre lancée) — signal le plus fort sur Instagram, car le post LinkedIn type "nouveau poste" n'existe pas sur ce canal
 - Recrutement récent ou nouvelle embauche annoncée en story ou post
@@ -109,4 +129,5 @@ Même structure fixe que LinkedIn :
 ## ⚠️ Exclusion géographique obligatoire (mise à jour 2026-10-10, tous comptes, tous canaux)
 
 **Exclure systématiquement toute personne résidant ou dont l'entreprise est basée en Afrique, Madagascar inclus**, quel que soit le reste des critères ICP (rôle, secteur, effectif, langue). Vérifier le champ localisation du profil avant tout envoi : si le pays ou la ville indique un pays africain (y compris Madagascar), le profil est hors cible et doit être écarté, même s'il correspond par ailleurs parfaitement au persona.
+
 
