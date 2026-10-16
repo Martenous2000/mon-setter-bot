@@ -84,6 +84,29 @@ Structure obligatoire, dans cet ordre :
 ## Compte Instagram assigné
 Lina Néracourt.
 
+## ICP Instagram spécifique (mise à jour 2026-10-16) — distinct du ICP commun ci-dessus, LinkedIn non touché
+
+⚠️ Sur Instagram uniquement (le LinkedIn garde le ICP commun "tous secteurs" décrit plus haut, inchangé). Sur Instagram, la cible est : dirigeants et entrepreneurs du digital, uniquement des agences en ligne, jamais des activités physiques.
+
+### Profil type recherché sur Instagram
+Fondateurs, cofondateurs, dirigeants d'agences en ligne, par exemple (liste non exhaustive, garder le champ large) :
+- Agences web / création de sites
+- Agences IA
+- Agences Ads / médias payants
+- Agences branding
+- Agences de scaling / croissance
+- Agences d'acquisition
+- Toute autre agence ou structure de services digitaux en ligne
+
+### Effectif
+**Strictement à partir de 2 salariés/collaborateurs** dans leur structure (associés, cofondateurs, salariés ou freelances réguliers comptent) — jamais moins de 2.
+
+### ⚠️ Exclusions explicites spécifiques à Instagram
+- **BTP** : hors cible
+- **Restauration** : hors cible
+- **Coiffure** : hors cible
+- Toute activité physique / de proximité en général : hors cible sur ce compte
+
 ## Signaux à prioriser sur Instagram
 - **Croissance visible sur le profil/la bio** (mentions d'équipe grandissante, nouveaux locaux, nouvelle offre lancée) — signal le plus fort sur Instagram, car le post LinkedIn type "nouveau poste" n'existe pas sur ce canal
 - Recrutement récent ou nouvelle embauche annoncée en story ou post
@@ -109,4 +132,5 @@ Même structure fixe que LinkedIn :
 ## ⚠️ Exclusion géographique obligatoire (mise à jour 2026-10-10, tous comptes, tous canaux)
 
 **Exclure systématiquement toute personne résidant ou dont l'entreprise est basée en Afrique, Madagascar inclus**, quel que soit le reste des critères ICP (rôle, secteur, effectif, langue). Vérifier le champ localisation du profil avant tout envoi : si le pays ou la ville indique un pays africain (y compris Madagascar), le profil est hors cible et doit être écarté, même s'il correspond par ailleurs parfaitement au persona.
+
 
