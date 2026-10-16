@@ -40,7 +40,7 @@ Appel découverte de 30 min → audit payant, closé pendant l'appel (3 000 € 
 
 ## Cible (ICP)
 - **Rôle** : Fondateur, Gérant, CEO — le décideur uniquement
-- **Secteurs** : tous secteurs, pas de niche verticale imposée. Affinités historiques à valoriser si pertinent : entreprises du bâtiment, repreneurs d'entreprises.
+- **Secteurs** : tous secteurs, pas de niche verticale imposée. ⚠️ **Affinité prioritaire élargie (mise à jour, alignée sur Ghali)** : secteurs physiques haut de gamme avec opérations récurrentes et moyens de payer — automobile (garages, concessions), santé (cliniques, cabinets médicaux/dentaires multi-praticiens), agriculture structurée, commerce multi-points de vente, agroalimentaire, sport (salles, clubs, franchises fitness), bâtiment, repreneurs d'entreprises.
 - **Géographie** : francophonie — France, Belgique, Suisse
 - **Taille d'entreprise** : PME en priorité, TPE acceptées au départ. Idéalement ≥6 salariés ; plancher absolu ≥4 salariés, ne jamais viser en dessous. Solopreneurs exclus. Entreprises déjà installées uniquement (pas de startups en phase de lancement).
 - **Signaux LinkedIn prioritaires** : personnes qui commentent des posts pour recevoir des ressources sur des systèmes IA (vente, marketing, automatisation...) — signal le plus fort. Sinon : prise de poste récente, entreprise qui recrute, présence digitale faible.
