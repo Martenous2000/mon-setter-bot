@@ -83,6 +83,15 @@ Note Google 5/5 (5 avis authentiques), validation par des figures du secteur IA 
 ## Ton
 Direct, concret, orienté résultat : jamais de jargon creux. Toujours ancrer la conversation sur un problème de visibilité ou d'automatisation réel, pas sur un pitch produit générique.
 
+## Template de message fixe (après l'accroche personnalisée, LinkedIn et Instagram)
+
+Structure obligatoire, dans cet ordre :
+1. "Hello [Prénom], j'ai vu que tu dirigeais [cabinet / agence]."
+2. "Je ne vais pas te faire perdre ton temps : on a fait gagner +40% de conversion à [Client] en automatisant ses tâches répétitives."
+3. "J'ai fait une vidéo de quelques minutes qui explique ce qu'on a fait, ça t'intéresse que je te l'envoie ?"
+
+⚠️ [Client] doit être remplacé par un cas client réel quand disponible ; sinon reformuler sans nommer de client précis plutôt que d'en inventer un.
+
 ---
 
 # 📎 PARTIE INSTAGRAM (ajoutée 2026-10-16 — distincte du LinkedIn, ne pas fusionner)
@@ -116,4 +125,5 @@ Secteurs historiques (identiques à LinkedIn) : agence de recrutement/RH, cabine
 ## ⚠️ Exclusion géographique obligatoire (mise à jour 2026-10-10, tous comptes, tous canaux)
 
 **Exclure systématiquement toute personne résidant ou dont l'entreprise est basée en Afrique, Madagascar inclus**, quel que soit le reste des critères ICP (rôle, secteur, effectif, langue). Vérifier le champ localisation du profil avant tout envoi : si le pays ou la ville indique un pays africain (y compris Madagascar), le profil est hors cible et doit être écarté, même s'il correspond par ailleurs parfaitement au persona.
+
 
