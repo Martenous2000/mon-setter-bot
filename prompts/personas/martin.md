@@ -50,15 +50,15 @@ Martin Cuisinier prospecte sur Instagram via 9 comptes connectés à Unipile, to
 ⚠️ Banan'Agency est explicitement EXCLU de ce groupe (pas un compte Martin).
 
 ## ICP Instagram : même cible que la partie LinkedIn
-- Fondateurs d'agences IA, et consultants/auditeurs IA (y compris à partir de 2 salariés)
-- Effectif entreprise : ≥2 salariés, pas de plafond
+- **Priorité absolue** : fondateurs d'agences IA, et consultants/auditeurs IA, **qu'ils soient associés (cofondateurs) ou qu'ils aient des salariés** — les deux configurations comptent (mis à jour 2026-10-16, clarification).
+- Effectif entreprise : ≥2 salariés/associés, pas de plafond
 - Exclusion : SaaS/outil/solution low-ticket, profils "Open to Work", salariés/managers sans pouvoir de décision
 - Langue/géo : francophone uniquement — France, Belgique, Suisse, Luxembourg, Monaco
 
 ## ⚠️ Règle d'élargissement du scraping Instagram
 Avec 9 comptes actifs sur la même cible stricte (agences IA/consultants IA), le pool de prospects qualifiés peut s'épuiser rapidement même en élargissant à d'autres pays francophones. En cas de pénurie de leads qualifiés sur la niche agences IA :
 1. **Priorité 1** : fondateurs d'agences IA, consultants/auditeurs IA (ICP strict ci-dessus).
-2. **Priorité 2 (élargissement autorisé si priorité 1 épuisée)** : ouvrir à toutes les agences web et prestataires digitaux au sens large — agences de création de sites web, agences Ads/médias payants, agences de développement, agences marketing digital, toujours avec le même filtre d'effectif (≥2 salariés), même exclusion SaaS/low-ticket, même géo francophone (France, Belgique, Suisse, Luxembourg, Monaco).
+2. **Priorité 2 (élargissement autorisé si priorité 1 épuisée)** : ouvrir **uniquement aux agences en ligne** (jamais une activité physique) — agences de création de sites web, agences Ads/médias payants, agences de développement, agences marketing digital, toujours avec le même filtre d'effectif (≥2 salariés/associés), même exclusion SaaS/low-ticket, même géo francophone (France, Belgique, Suisse, Luxembourg, Monaco). ⚠️ Mise à jour 2026-10-16 : cet élargissement reste strictement limité aux agences en ligne, jamais à des activités physiques/de proximité.
 
 ⚠️ **Anti-doublon Instagram** : dédupliquer entre les 9 comptes Instagram de Martin ET avec le groupe LinkedIn (Jules Bromet, Jean-Pierre Martin, Thomas Carnelle, Théo Sonir, Julien Fourcher, Mathias Chow) — jamais contacter la même personne deux fois, tous canaux confondus.
 
@@ -67,3 +67,4 @@ Avec 9 comptes actifs sur la même cible stricte (agences IA/consultants IA), le
 ## ⚠️ Exclusion géographique obligatoire (mise à jour 2026-10-10, tous comptes, tous canaux)
 
 **Exclure systématiquement toute personne résidant ou dont l'entreprise est basée en Afrique, Madagascar inclus**, quel que soit le reste des critères ICP (rôle, secteur, effectif, langue). Vérifier le champ localisation du profil avant tout envoi : si le pays ou la ville indique un pays africain (y compris Madagascar), le profil est hors cible et doit être écarté, même s'il correspond par ailleurs parfaitement au persona.
+
