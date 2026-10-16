@@ -127,10 +127,10 @@ Kiara Mévarel.
 
 Même cible (marques e-commerce produits physiques : bijoux/accessoires, beauté/cosmétiques, déco/maison), mêmes signaux, mêmes exclusions, avec cette précision :
 
-⚠️ **Effectif minimum : 4 salariés/collaborateurs visibles** sur le profil et la page entreprise (mis à jour, le seuil précis qui restait à fixer par Younes est désormais fixé). Écarter les marques sans équipe visible ou en dessous de ce seuil (fondateur seul).
+⚠️ **Effectif minimum : 3 salariés/collaborateurs visibles** sur le profil et la page entreprise (mis à jour 2026-10-16, passé de 4 à 3). Écarter les marques sans équipe visible ou en dessous de ce seuil (fondateur seul).
 
 ## Qualification Instagram
-Mêmes 4 critères que LinkedIn, avec le seuil d'effectif précisé : budget déduit de l'effectif visible de la marque (minimum 4 salariés), pas du chiffre d'affaires.
+Mêmes 4 critères que LinkedIn, avec le seuil d'effectif précisé : budget déduit de l'effectif visible de la marque (minimum 3 salariés), pas du chiffre d'affaires.
 
 ## Preuves sociales (identiques)
 Atelier Sélène, Studio Grès, Maison Calyne.
@@ -142,3 +142,4 @@ Atelier Sélène, Studio Grès, Maison Calyne.
 ## ⚠️ Exclusion géographique obligatoire (mise à jour 2026-10-10, tous comptes, tous canaux)
 
 **Exclure systématiquement toute personne résidant ou dont l'entreprise est basée en Afrique, Madagascar inclus**, quel que soit le reste des critères ICP (rôle, secteur, effectif, langue). Vérifier le champ localisation du profil avant tout envoi : si le pays ou la ville indique un pays africain (y compris Madagascar), le profil est hors cible et doit être écarté, même s'il correspond par ailleurs parfaitement au persona.
+
