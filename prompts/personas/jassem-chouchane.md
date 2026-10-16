@@ -100,6 +100,10 @@ Secteurs historiques (identiques à LinkedIn) : agence de recrutement/RH, cabine
 
 ⚠️ **Ouverture élargie (mise à jour, aligné sur Sébastien/Ghali)** : s'ouvrir aussi aux secteurs physiques haut de gamme avec opérations récurrentes et moyens de payer — automobile (garages, concessions), santé (cliniques, cabinets médicaux/dentaires multi-praticiens), agriculture structurée, commerce multi-points de vente, agroalimentaire, sport (salles de sport, clubs, franchises), et tout secteur haut de gamme avec reporting/dossiers/suivi client récurrent.
 
+## Géographie Instagram — élargie (mise à jour 2026-10-16, aligné sur Joseph)
+
+⚠️ **France, Belgique, Suisse, Luxembourg** (élargi par rapport au LinkedIn qui reste limité à la France).
+
 ## Critères observables Instagram (identiques à LinkedIn)
 3 à 30 salariés, ancienneté ≥ 2 ans, décideur direct visible, processus répétitifs visibles.
 
@@ -112,3 +116,4 @@ Secteurs historiques (identiques à LinkedIn) : agence de recrutement/RH, cabine
 ## ⚠️ Exclusion géographique obligatoire (mise à jour 2026-10-10, tous comptes, tous canaux)
 
 **Exclure systématiquement toute personne résidant ou dont l'entreprise est basée en Afrique, Madagascar inclus**, quel que soit le reste des critères ICP (rôle, secteur, effectif, langue). Vérifier le champ localisation du profil avant tout envoi : si le pays ou la ville indique un pays africain (y compris Madagascar), le profil est hors cible et doit être écarté, même s'il correspond par ailleurs parfaitement au persona.
+
