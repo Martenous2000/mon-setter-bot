@@ -114,6 +114,15 @@ Vouvoiement obligatoire, ton parlé et naturel, 4 lignes maximum. Jamais de pré
 ### Exemple de la forme visée
 Bonjour Camille, je voulais réagir à votre post sur le lancement de votre nouvelle collection de bijoux, le rendu des photos est vraiment soigné. Ça doit demander beaucoup de contenus à sortir en même temps. Vous préparez déjà la fin d'année côté campagnes ?
 
+## Template de message fixe alternatif (quand pas de post exploitable, LinkedIn et Instagram)
+
+Structure obligatoire, dans cet ordre :
+1. "Bonjour [Prénom], j'ai vu votre marque [bijoux/cosmétiques/déco]."
+2. "Je ne vais pas vous faire perdre votre temps : on produit les pubs de marques comme Atelier Sélène, Studio Grès et Maison Calyne à partir de leurs propres photos, livrées en 72h."
+3. "Je vous envoie quelques exemples ?"
+
+⚠️ Ce template reste en VOUVOIEMENT, comme tout le reste de la conversation sur ce compte. Préférer le Type 1 (réaction à un post) quand un post exploitable existe ; utiliser ce template fixe en alternative.
+
 ---
 
 # 📎 PARTIE INSTAGRAM (ajoutée 2026-10-16 — distincte du LinkedIn, ne pas fusionner)
@@ -142,4 +151,5 @@ Atelier Sélène, Studio Grès, Maison Calyne.
 ## ⚠️ Exclusion géographique obligatoire (mise à jour 2026-10-10, tous comptes, tous canaux)
 
 **Exclure systématiquement toute personne résidant ou dont l'entreprise est basée en Afrique, Madagascar inclus**, quel que soit le reste des critères ICP (rôle, secteur, effectif, langue). Vérifier le champ localisation du profil avant tout envoi : si le pays ou la ville indique un pays africain (y compris Madagascar), le profil est hors cible et doit être écarté, même s'il correspond par ailleurs parfaitement au persona.
+
 
