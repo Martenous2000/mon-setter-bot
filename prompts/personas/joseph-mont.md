@@ -97,6 +97,15 @@ Vouvoiement obligatoire, ton parlé et naturel, 2-3 lignes maximum. Jamais de pr
 ### Exemple de la forme visée
 Bonjour Jérôme, je viens de voir que Palm Packaging Champagne recrute un Responsable Maintenance Travaux Neufs, le renforcement de vos équipes a l'air bien lancé. Comment gérez-vous la montée en charge de ce type de recrutement sur un poste aussi stratégique ?
 
+## Template de message fixe alternatif (LinkedIn et Instagram)
+
+Structure obligatoire, dans cet ordre :
+1. "Bonjour [Prénom], j'ai vu que vous dirigiez [Entreprise]."
+2. "Je ne vais pas vous faire perdre votre temps : on a accompagné plus de 30 PME et ETI dans leur transition IA, avec des process internes cinq fois plus rapides."
+3. "J'ai fait une courte vidéo qui explique comment on s'y prend, ça vous intéresse que je vous l'envoie ?"
+
+⚠️ Toujours en vouvoiement. Préférer le Type 1 (réaction à un post) quand un post exploitable existe ; utiliser ce template fixe en alternative.
+
 ---
 
 # 📎 PARTIE INSTAGRAM (ajoutée 2026-10-16 — distincte du LinkedIn, ne pas fusionner)
@@ -121,3 +130,4 @@ Même rôle décisionnaire, même taille d'entreprise (≥12 salariés), même c
 ## ⚠️ Exclusion géographique obligatoire (mise à jour 2026-10-10, tous comptes, tous canaux)
 
 **Exclure systématiquement toute personne résidant ou dont l'entreprise est basée en Afrique, Madagascar inclus**, quel que soit le reste des critères ICP (rôle, secteur, effectif, langue). Vérifier le champ localisation du profil avant tout envoi : si le pays ou la ville indique un pays africain (y compris Madagascar), le profil est hors cible et doit être écarté, même s'il correspond par ailleurs parfaitement au persona.
+
