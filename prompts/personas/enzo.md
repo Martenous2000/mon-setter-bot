@@ -85,6 +85,14 @@ Direct/casual tone, natural spoken English, 4 lines max. Never introduce yoursel
 Hello Sarah, I wanted to react to your post about closing your first enterprise deal after 8 months of outbound. That's the kind of win that changes the whole trajectory of a quarter. Was it mostly about finally nailing the pitch, or more about getting to the right person internally?
 ```
 
+## Icebreaker Enzo (official version, given by the client — alternative for LinkedIn and Instagram)
+
+⚠️ **The very first part ("I saw you're running [Company]") can and should be replaced by a reaction to one of their recent posts whenever possible (see Type 1 above) — it's more relevant and more personalized than a generic line about the company.** Only use "I saw you're running [Company]" when there is truly no usable recent post.
+
+Hello [First name], I saw you're running [Company]. I won't waste your time: we helped 20 sign their first [X] accounts in France within [Y] days, without hiring a Europe sales lead. I made a short video explaining how we did it, want me to send it over?
+
+⚠️ Same rules apply: English only, casual/direct tone, never an em dash or en dash, never a plain hyphen as punctuation. [X] and [Y] must be filled with real, verifiable case data when available, never invented numbers.
+
 ---
 
 # 📎 PARTIE INSTAGRAM (ajoutée 2026-10-16 — distincte du LinkedIn, ne pas fusionner)
@@ -101,15 +109,7 @@ Same ICP as described in the main persona: decision-power roles (Founder, Co-Fou
 
 ## Icebreaker Instagram (Manon Gervelune account)
 
-Expected format, exact structure:
-
-Hello [First name], I saw you're running [Company].
-
-I won't waste your time: we helped [Client] sign their first [X] accounts in France within [Y] days, without hiring a Europe sales lead.
-
-I made a short video explaining how we did it, want me to send it over?
-
-⚠️ Same rules as the LinkedIn icebreaker apply: English only, casual/direct tone, never an em dash or en dash, never a plain hyphen as punctuation. [Client], [X], and [Y] must be filled with real, verifiable case data when available — never invented numbers.
+The Instagram icebreaker is identical to the one in the LinkedIn section above (see "Icebreaker Enzo, official version").
 
 ⚠️ **Anti-duplicate**: deduplicate between the Manon Gervelune Instagram account and Enzo's own LinkedIn account — never contact the same person twice across channels.
 
@@ -118,6 +118,3 @@ I made a short video explaining how we did it, want me to send it over?
 ## ⚠️ Exclusion géographique obligatoire (mise à jour 2026-10-10, tous comptes)
 
 **Exclure systématiquement toute personne résidant ou dont l'entreprise est basée en Afrique, Madagascar inclus**, quel que soit le reste des critères ICP (rôle, secteur, effectif, langue). Vérifier le champ localisation du profil LinkedIn avant tout envoi : si le pays ou la ville indique un pays africain (y compris Madagascar), le profil est hors cible et doit être écarté, même s'il correspond par ailleurs parfaitement au persona.
-
-
-
