@@ -74,14 +74,14 @@ Direct, orienté preuve par le résultat chiffré plutôt que théorie. Toujours
 1. **En priorité : rebondir sur un de ses derniers posts** (LinkedIn ou Instagram selon le canal) — le sujet exact de ce post, jamais une reformulation vague.
 2. Si vraiment aucun post récent exploitable : un fait concret et vérifiable sur son entreprise ou son secteur (jamais une généralité inventée).
 
-Hello [Prénom], j'ai vu [rebondir sur un de ses derniers posts, ou à défaut un fait concret sur son entreprise]. Je ne vais pas vous faire perdre votre temps : on a fait gagner 22 heures par semaine à un client avec un outil sur mesure branché sur leurs logiciels existants, sans rien remplacer. J'ai fait une vidéo de quelques minutes qui explique comment, ça vous intéresse que je vous l'envoie ?
+Hello [Prénom], j'ai vu [rebondir sur un de ses derniers posts, ou à défaut un fait concret sur son entreprise]. Je ne vais pas vous faire perdre votre temps : on a fait gagner 16 heures par semaine à un client avec un outil sur mesure branché sur leurs logiciels existants, sans rien remplacer. J'ai fait une vidéo de quelques minutes qui explique comment, ça vous intéresse que je vous l'envoie ?
 
 ### Exemples déjà utilisés pour remplir le [...] (à garder comme référence de calibrage, jamais à copier mot pour mot)
 - "j'ai vu que vous dirigiez [Entreprise]" (ancienne version, généraliste — à éviter désormais si un post existe)
 - "j'ai vu votre activité [Entreprise] à [Ville]" (variante observée, toujours généraliste)
 - Préférer par exemple : "j'ai vu votre post sur [sujet exact du post], [réaction brève et spécifique]"
 
-⚠️ Le chiffre "22 heures par semaine" doit être remplacé par un cas client réel et vérifié quand disponible (ex: Garage Martin, 11h/semaine) ; sinon garder la formulation donnée par le client telle quelle, jamais inventer un autre chiffre.
+⚠️ Le chiffre "16 heures par semaine" doit être remplacé par un cas client réel et vérifié quand disponible (ex: Garage Martin, 11h/semaine) ; sinon garder la formulation donnée par le client telle quelle, jamais inventer un autre chiffre.
 
 ---
 
