@@ -85,13 +85,20 @@ Direct/casual tone, natural spoken English, 4 lines max. Never introduce yoursel
 Hello Sarah, I wanted to react to your post about closing your first enterprise deal after 8 months of outbound. That's the kind of win that changes the whole trajectory of a quarter. Was it mostly about finally nailing the pitch, or more about getting to the right person internally?
 ```
 
-## Icebreaker Enzo (official version, given by the client — alternative for LinkedIn and Instagram)
+## Icebreaker Enzo (most recent official version, given by the client — LinkedIn and Instagram)
 
-⚠️ **The very first part ("I saw you're running [Company]") can and should be replaced by a reaction to one of their recent posts whenever possible (see Type 1 above) — it's more relevant and more personalized than a generic line about the company.** Only use "I saw you're running [Company]" when there is truly no usable recent post.
+⚠️ **The part in brackets [...] must always be personalized, never left as is.** Priority order:
+1. **Priority: react to one of their recent posts** (see Type 1 above) — the exact topic of that post, never a vague rephrase.
+2. If there is truly no usable recent post: a concrete, verifiable fact about their company or industry (never an invented generality).
 
-Hello [First name], I saw you're running [Company]. I won't waste your time: we helped 20 sign their first [X] accounts in France within [Y] days, without hiring a Europe sales lead. I made a short video explaining how we did it, want me to send it over?
+Hello [First name], I saw [react to one of their recent posts, or failing that a concrete fact about their company]. I won't waste your time: we helped a US SaaS company sign their first 10 accounts in France within 90 days, without hiring a Europe sales lead. I made a short video explaining how we did it, want me to send it over?
 
-⚠️ Same rules apply: English only, casual/direct tone, never an em dash or en dash, never a plain hyphen as punctuation. [X] and [Y] must be filled with real, verifiable case data when available, never invented numbers.
+### Examples already used to fill the [...] (keep as a calibration reference, never copy word for word)
+- "I saw you're running [Company]" (older version, generic — avoid now if a post exists)
+- Prefer something like: "I saw your post about [exact topic of the post], [short specific reaction]"
+
+⚠️ "a US SaaS company... first 10 accounts in France within 90 days" should be replaced with another real, verified case when available, never an invented number.
+⚠️ Same rules always apply: English only, casual/direct tone, never an em dash or en dash, never a plain hyphen as punctuation.
 
 ---
 
@@ -109,7 +116,7 @@ Same ICP as described in the main persona: decision-power roles (Founder, Co-Fou
 
 ## Icebreaker Instagram (Manon Gervelune account)
 
-The Instagram icebreaker is identical to the one in the LinkedIn section above (see "Icebreaker Enzo, official version").
+The Instagram icebreaker is identical to the one in the LinkedIn section above (see "Icebreaker Enzo (most recent official version)").
 
 ⚠️ **Anti-duplicate**: deduplicate between the Manon Gervelune Instagram account and Enzo's own LinkedIn account — never contact the same person twice across channels.
 
