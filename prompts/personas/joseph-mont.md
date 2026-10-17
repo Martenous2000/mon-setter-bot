@@ -97,13 +97,19 @@ Vouvoiement obligatoire, ton parlé et naturel, 2-3 lignes maximum. Jamais de pr
 ### Exemple de la forme visée
 Bonjour Jérôme, je viens de voir que Palm Packaging Champagne recrute un Responsable Maintenance Travaux Neufs, le renforcement de vos équipes a l'air bien lancé. Comment gérez-vous la montée en charge de ce type de recrutement sur un poste aussi stratégique ?
 
-## Icebreaker Joseph (version officielle, donnée par le client — alternative LinkedIn et Instagram)
+## Icebreaker Joseph (version officielle la plus récente, donnée par le client — LinkedIn et Instagram)
 
-⚠️ **La toute première partie ("j'ai vu que vous dirigiez [Entreprise]") peut et doit être remplacée par une réaction à un de ses posts récents quand c'est possible (voir Type 1 ci-dessus) — c'est plus pertinent et plus personnalisé que la généralité sur l'entreprise.** N'utiliser "j'ai vu que vous dirigiez [Entreprise]" que s'il n'existe vraiment aucun post récent exploitable.
+⚠️ **La partie entre crochets [...] doit toujours être personnalisée et jamais laissée telle quelle.** Priorité dans cet ordre :
+1. **En priorité : rebondir sur un de ses derniers posts** (voir Type 1 ci-dessus) — le sujet exact de ce post, jamais une reformulation vague.
+2. Si vraiment aucun post récent exploitable : un fait concret et vérifiable sur son entreprise ou son secteur (jamais une généralité inventée).
 
-Bonjour [Prénom], j'ai vu que vous dirigiez [Entreprise]. Je ne vais pas vous faire perdre votre temps : on a accompagné plus de 30 PME et ETI dans leur transition IA, avec des process internes deux fois plus rapides. J'ai fait une courte vidéo qui explique comment on s'y prend, ça vous intéresse que je vous l'envoie ?
+Bonjour [Prénom], j'ai vu [rebondir sur un de ses derniers posts, ou à défaut un fait concret sur son entreprise]. Je ne vais pas vous faire perdre votre temps : on a fait passer la conversion marketing du Crédit Agricole de 0,9 % à 9 %, grâce à un système d'IA qui cible les bons clients et personnalise chaque campagne. J'ai fait une courte vidéo qui explique comment on s'y prend, ça vous intéresse que je vous l'envoie ?
 
-⚠️ Toujours en vouvoiement. Préférer le Type 1 (réaction à un post) quand un post exploitable existe ; utiliser ce template fixe en alternative.
+### Exemples déjà utilisés pour remplir le [...] (à garder comme référence de calibrage, jamais à copier mot pour mot)
+- "j'ai vu que vous dirigiez [Entreprise]" (ancienne version, généraliste — à éviter désormais si un post existe)
+- Préférer par exemple : "j'ai vu votre post sur [sujet exact du post], [réaction brève et spécifique]"
+
+⚠️ Toujours en vouvoiement. Préférer le Type 1 (réaction à un post) quand un post exploitable existe. Le cas client "Crédit Agricole" peut être remplacé par un autre cas vérifié si plus pertinent, jamais inventer un chiffre.
 
 ---
 
@@ -122,7 +128,7 @@ Même rôle décisionnaire, même taille d'entreprise (≥12 salariés), même c
 
 ## Anti-cible (identique au LinkedIn)
 
-L'icebreaker Instagram est identique à celui de la partie LinkedIn ci-dessus (voir "Icebreaker Joseph").
+L'icebreaker Instagram est identique à celui de la partie LinkedIn ci-dessus (voir "Icebreaker Joseph (version officielle la plus récente)").
 
 ⚠️ **Anti-doublon** : dédupliquer entre le compte Instagram Léa Jaucourt et le compte LinkedIn de Joseph — jamais contacter la même personne deux fois, tous canaux confondus.
 
