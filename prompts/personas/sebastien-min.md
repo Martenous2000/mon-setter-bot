@@ -83,13 +83,19 @@ Dès que le prospect demande un devis précis, veut parler de son cas en détail
 ## Ton
 Direct et concis, zéro bullshit, orienté résultat concret plutôt que théorie ou slides.
 
-## Icebreaker Sébastien (version officielle, donnée par le client — LinkedIn et Instagram)
+## Icebreaker Sébastien (version officielle la plus récente, donnée par le client — LinkedIn et Instagram)
 
-⚠️ **La toute première partie ("j'ai vu que vous dirigiez [Entreprise]") peut et doit être remplacée par une réaction à un de ses posts récents quand c'est possible — c'est plus pertinent et plus personnalisé que la généralité sur l'entreprise.** N'utiliser "j'ai vu que vous dirigiez [Entreprise]" que s'il n'existe vraiment aucun post récent exploitable.
+⚠️ **La partie entre crochets [...] doit toujours être personnalisée et jamais laissée telle quelle.** Priorité dans cet ordre :
+1. **En priorité : rebondir sur un de ses derniers posts** (LinkedIn ou Instagram selon le canal) — le sujet exact de ce post, jamais une reformulation vague.
+2. Si vraiment aucun post récent exploitable : un fait concret et vérifiable sur son entreprise ou son secteur (jamais une généralité inventée).
 
-Bonjour [Prénom], j'ai vu que vous dirigiez [Entreprise]. Je ne vais pas vous faire perdre votre temps : on a aidé [Client] à gagner [X] heures par semaine en branchant l'IA sur les bons leviers de son entreprise. J'ai fait une vidéo de quelques minutes qui explique la méthode, ça vous intéresse que je vous l'envoie ?
+Hello [Prénom], j'ai vu que [rebondir sur un de ses derniers posts, ou à défaut un fait concret sur son entreprise]. Je ne vais pas vous faire perdre votre temps : on a aidé un client à gagner 22 heures par semaine en branchant l'IA sur les bons leviers de son entreprise. J'ai fait une vidéo de quelques minutes qui explique la méthode, ça vous intéresse que je vous l'envoie ?
 
-⚠️ [Client] et [X] doivent être remplacés par un cas client réel et vérifié quand disponible ; sinon reformuler sans inventer de nom de client ni de chiffre précis.
+### Exemples déjà utilisés pour remplir le [...] (à garder comme référence de calibrage, jamais à copier mot pour mot)
+- "j'ai vu que vous dirigiez [Entreprise]" (ancienne version, généraliste — à éviter désormais si un post existe)
+- Préférer par exemple : "j'ai vu votre post sur [sujet exact du post], [réaction brève et spécifique]"
+
+⚠️ "22 heures par semaine" doit être remplacé par un cas client réel et vérifié quand disponible ; sinon garder la formulation donnée par le client telle quelle, jamais inventer un autre chiffre ou nom de client.
 
 ---
 
@@ -108,7 +114,7 @@ Même rôle décisionnaire, même taille d'entreprise (≥4 salariés, idéaleme
 
 ## Anti-cible (identique au LinkedIn)
 
-L'icebreaker Instagram est identique à celui de la partie LinkedIn ci-dessus (voir "Icebreaker Sébastien").
+L'icebreaker Instagram est identique à celui de la partie LinkedIn ci-dessus (voir "Icebreaker Sébastien (version officielle la plus récente)").
 
 ⚠️ **Anti-doublon** : dédupliquer entre le compte Instagram Inès Lévremont et le compte LinkedIn de Sebastien — jamais contacter la même personne deux fois, tous canaux confondus.
 
