@@ -65,13 +65,19 @@ Direct, orienté structuration et passage de palier — jamais de motivation gé
 ## Icebreaker LinkedIn (Type 1, réaction à un post récent)
 Ouvre toujours sur du concret côté prospect : un de ses derniers posts LinkedIn. Jamais de généralité inventée. Format : "Bonjour <prénom>," puis réaction précise au post, puis une phrase courte sans pitch, puis une question ouverte centrée sur son sujet.
 
-## Icebreaker Mathieu (version officielle, donnée par le client — alternative LinkedIn et Instagram)
+## Icebreaker Mathieu (version officielle la plus récente, donnée par le client — LinkedIn et Instagram)
 
-⚠️ **La toute première partie ("j'ai vu que vous dirigiez [Entreprise] avec votre équipe") peut et doit être remplacée par une réaction à un de ses posts récents quand c'est possible (voir Type 1 ci-dessus) — c'est plus pertinent et plus personnalisé que la généralité sur l'entreprise.** N'utiliser "j'ai vu que vous dirigiez [Entreprise]" que s'il n'existe vraiment aucun post récent exploitable.
+⚠️ **La partie entre crochets [...] doit toujours être personnalisée et jamais laissée telle quelle.** Priorité dans cet ordre :
+1. **En priorité : rebondir sur un de ses derniers posts** (voir Type 1 ci-dessus) — le sujet exact de ce post, jamais une reformulation vague.
+2. Si vraiment aucun post récent exploitable : un fait concret et vérifiable sur son entreprise ou son secteur (jamais une généralité inventée).
 
-Bonjour [Prénom], j'ai vu que vous dirigiez [Entreprise] avec votre équipe. Je ne vais pas vous faire perdre votre temps : on a accompagné [Client], dirigeant comme vous, de [X] € à [Y] € par mois en [Z] mois. J'ai fait une vidéo de quelques minutes qui explique comment, ça vous intéresse que je vous l'envoie ?
+Hello [Prénom], j'ai vu que [rebondir sur un de ses derniers posts, ou à défaut un fait concret sur son entreprise]. Je ne vais pas vous faire perdre votre temps : on a accompagné un client dirigeant comme vous, de 6 000 € à 15 000 € par mois en 8 semaines. J'ai fait une vidéo de quelques minutes qui explique comment, ça vous intéresse que je vous l'envoie ?
 
-⚠️ [Client], [X], [Y] et [Z] doivent être remplis avec un cas client réel et vérifié quand disponible — jamais de chiffre inventé. Tant qu'aucun cas client chiffré n'est fourni, rester sur la formulation qualitative "multiplier son chiffre d'affaires par 3" (x3).
+### Exemples déjà utilisés pour remplir le [...] (à garder comme référence de calibrage, jamais à copier mot pour mot)
+- "j'ai vu que vous dirigiez [Entreprise] avec votre équipe" (ancienne version, généraliste — à éviter désormais si un post existe)
+- Préférer par exemple : "j'ai vu votre post sur [sujet exact du post], [réaction brève et spécifique]"
+
+⚠️ "6 000 € à 15 000 € par mois en 8 semaines" doit être remplacé par un cas client réel et vérifié quand disponible — jamais de chiffre inventé. Tant qu'aucun autre cas client chiffré n'est fourni, garder cette formulation telle quelle.
 
 ---
 
@@ -113,7 +119,7 @@ Fondateurs, cofondateurs, dirigeants d'agences en ligne, par exemple (liste non 
 ## Icebreaker Instagram (Type 1, réaction au profil/dernier post)
 Ouvre toujours sur du concret côté prospect : son dernier post Instagram ou un élément visible de sa bio/activité. Jamais de généralité inventée. Même structure que LinkedIn : accroche précise, phrase courte sans pitch, question ouverte.
 
-L'icebreaker alternatif Instagram (sans post exploitable) est identique à celui de la partie LinkedIn ci-dessus (voir "Icebreaker Mathieu").
+L'icebreaker alternatif Instagram (sans post exploitable) est identique à celui de la partie LinkedIn ci-dessus (voir "Icebreaker Mathieu (version officielle la plus récente)").
 
 ⚠️ **Anti-doublon** : dédupliquer entre le compte Instagram Lina Néracourt et le compte LinkedIn de Mathieu — jamais contacter la même personne deux fois, tous canaux confondus.
 
