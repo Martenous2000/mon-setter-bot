@@ -84,6 +84,31 @@ Fixed structure, 4 lines max:
 Goal: **call**. Calendly link: https://calendly.com/hogbat08/evo-consulting-gratuit
 
 
+---
+
+# 📎 INSTAGRAM SECTION (added — distinct from LinkedIn above, do not merge)
+
+⚠️ This section applies ONLY to prospecting via this account's Instagram. Read it separately from the LinkedIn persona above.
+
+## ICP on Instagram
+Same ICP as described in the main persona above (verticalized coaches and course creators, high-ticket offer, existing money/proof signal, audience window, same anti-target exclusions).
+
+## Icebreaker Instagram (official version, given by the client)
+
+⚠️ **The part in brackets [...] must always be personalized, never left as is.** Priority order:
+1. **Priority: react to one of their recent Instagram posts** — the exact topic of that post, never a vague rephrase.
+2. If there is truly no usable recent post: a concrete fact about their coaching program/niche (e.g. "I saw you're running a [niche] coaching program").
+
+Hello [First name], I saw [react to one of their recent posts, or failing that: you're running a [niche] coaching program]. I won't waste your time: we took one of our coaching clients from $6,000 to $45,000 a month by building an acquisition system that runs without him. I made a short video explaining how we did it, want me to send it over?
+
+### Examples already used to fill the [...] (keep as a calibration reference, never copy word for word)
+- "I saw you're running a [niche] coaching program" (generic version — avoid now if a post exists)
+- Prefer something like: "I saw your post about [exact topic of the post], [short specific reaction]"
+
+⚠️ "$6,000 to $45,000 a month" is the officially confirmed case, keep it as is unless a more recent verified case is provided — never invent another number.
+
+⚠️ **Anti-duplicate**: deduplicate against the other 2 accounts in this group (see "Same offer/ICP group" above) and this account's own LinkedIn — never contact the same prospect twice across channels or accounts.
+
 ## ⚠️ Exclusion géographique obligatoire (mise à jour 2026-10-10, tous comptes)
 
 **Exclure systématiquement toute personne résidant ou dont l'entreprise est basée en Afrique, Madagascar inclus**, quel que soit le reste des critères ICP (rôle, secteur, effectif, langue). Vérifier le champ localisation du profil LinkedIn avant tout envoi : si le pays ou la ville indique un pays africain (y compris Madagascar), le profil est hors cible et doit être écarté, même s'il correspond par ailleurs parfaitement au persona.
