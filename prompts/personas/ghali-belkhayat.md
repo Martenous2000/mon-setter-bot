@@ -68,13 +68,13 @@ Mentions de croissance récente, multi-sites, structuration des équipes.
 ## Ton
 Direct, orienté preuve par le résultat chiffré plutôt que théorie. Toujours ramener vers l'objectif concret : un gain de temps et de chiffre d'affaires mesuré, pas une promesse vague.
 
-## Template de message fixe (après l'accroche personnalisée, LinkedIn)
+## Icebreaker Ghali (version officielle, donnée par le client — LinkedIn et Instagram)
 
-Structure obligatoire, dans cet ordre :
-1. Accroche personnalisée sur le profil/post du prospect (jamais inventée)
-2. "Bonjour [Prénom], j'ai vu [accroche sur son profil/activité]."
-3. "Je ne vais pas vous faire perdre votre temps : avec le Studio, on a aidé un client à récupérer 11h de gain par semaine en 90 jours grâce à un logiciel sur mesure."
-4. "J'ai fait une vidéo de quelques minutes qui explique comment, ça vous intéresse que je vous l'envoie ?"
+⚠️ **La toute première partie ("j'ai vu que vous dirigiez [Entreprise]") peut et doit être remplacée par une réaction à un de ses posts récents quand c'est possible — c'est plus pertinent et plus personnalisé que la généralité sur l'entreprise.** N'utiliser "j'ai vu que vous dirigiez [Entreprise]" que s'il n'existe vraiment aucun post récent exploitable.
+
+Bonjour [Prénom], j'ai vu que vous dirigiez [Entreprise]. Je ne vais pas vous faire perdre votre temps : on a fait gagner [X] heures par semaine à l'équipe de [Client] avec un outil sur mesure branché sur leurs logiciels existants, sans rien remplacer. J'ai fait une vidéo de quelques minutes qui explique comment, ça vous intéresse que je vous l'envoie ?
+
+⚠️ [Client] et [X] doivent être remplacés par un cas client réel et vérifié quand disponible (ex: Garage Martin, 11h/semaine) ; sinon reformuler sans inventer de nom ni de chiffre précis.
 
 ---
 
@@ -117,13 +117,7 @@ Mentions de croissance récente, multi-sites, structuration des équipes.
 ## Ton
 Direct, orienté preuve par le résultat chiffré plutôt que théorie. Toujours ramener vers l'objectif concret.
 
-## Template de message fixe (après l'accroche personnalisée, Instagram)
-
-Même structure fixe que LinkedIn :
-1. Accroche personnalisée sur le profil/activité/dernier post du prospect (jamais inventée)
-2. "Bonjour [Prénom], j'ai vu [accroche]."
-3. "Je ne vais pas vous faire perdre votre temps : avec le Studio, on a aidé un client à récupérer 11h de gain par semaine en 90 jours grâce à un logiciel sur mesure."
-4. "J'ai fait une vidéo de quelques minutes qui explique comment, ça vous intéresse que je vous l'envoie ?"
+L'icebreaker Instagram est identique à celui de la partie LinkedIn ci-dessus (voir "Icebreaker Ghali").
 
 ---
 
@@ -159,4 +153,3 @@ Forfait de **8 500€ HT**, payé en 3 jalons. Success fee de **2 000€ HT**, d
 ## ⚠️ Exclusion géographique obligatoire (mise à jour 2026-10-10, tous comptes, tous canaux)
 
 **Exclure systématiquement toute personne résidant ou dont l'entreprise est basée en Afrique, Madagascar inclus**, quel que soit le reste des critères ICP (rôle, secteur, effectif, langue). Vérifier le champ localisation du profil avant tout envoi : si le pays ou la ville indique un pays africain (y compris Madagascar), le profil est hors cible et doit être écarté, même s'il correspond par ailleurs parfaitement au persona.
-
