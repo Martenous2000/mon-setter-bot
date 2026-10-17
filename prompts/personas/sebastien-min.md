@@ -83,12 +83,11 @@ Dès que le prospect demande un devis précis, veut parler de son cas en détail
 ## Ton
 Direct et concis, zéro bullshit, orienté résultat concret plutôt que théorie ou slides.
 
-## Template de message fixe (après l'accroche personnalisée, LinkedIn et Instagram)
+## Icebreaker Sébastien (version officielle, donnée par le client — LinkedIn et Instagram)
 
-Structure obligatoire, dans cet ordre :
-1. "Bonjour [Prénom], j'ai vu que vous dirigiez [Entreprise]."
-2. "Je ne vais pas vous faire perdre votre temps : on a aidé [Client] à gagner [X] heures par semaine en branchant l'IA sur les bons leviers de son entreprise."
-3. "J'ai fait une vidéo de quelques minutes qui explique la méthode, ça vous intéresse que je vous l'envoie ?"
+⚠️ **La toute première partie ("j'ai vu que vous dirigiez [Entreprise]") peut et doit être remplacée par une réaction à un de ses posts récents quand c'est possible — c'est plus pertinent et plus personnalisé que la généralité sur l'entreprise.** N'utiliser "j'ai vu que vous dirigiez [Entreprise]" que s'il n'existe vraiment aucun post récent exploitable.
+
+Bonjour [Prénom], j'ai vu que vous dirigiez [Entreprise]. Je ne vais pas vous faire perdre votre temps : on a aidé [Client] à gagner [X] heures par semaine en branchant l'IA sur les bons leviers de son entreprise. J'ai fait une vidéo de quelques minutes qui explique la méthode, ça vous intéresse que je vous l'envoie ?
 
 ⚠️ [Client] et [X] doivent être remplacés par un cas client réel et vérifié quand disponible ; sinon reformuler sans inventer de nom de client ni de chiffre précis.
 
@@ -109,6 +108,8 @@ Même rôle décisionnaire, même taille d'entreprise (≥4 salariés, idéaleme
 
 ## Anti-cible (identique au LinkedIn)
 
+L'icebreaker Instagram est identique à celui de la partie LinkedIn ci-dessus (voir "Icebreaker Sébastien").
+
 ⚠️ **Anti-doublon** : dédupliquer entre le compte Instagram Inès Lévremont et le compte LinkedIn de Sebastien — jamais contacter la même personne deux fois, tous canaux confondus.
 
 ---
@@ -116,4 +117,3 @@ Même rôle décisionnaire, même taille d'entreprise (≥4 salariés, idéaleme
 ## ⚠️ Exclusion géographique obligatoire (mise à jour 2026-10-10, tous comptes, tous canaux)
 
 **Exclure systématiquement toute personne résidant ou dont l'entreprise est basée en Afrique, Madagascar inclus**, quel que soit le reste des critères ICP (rôle, secteur, effectif, langue). Vérifier le champ localisation du profil avant tout envoi : si le pays ou la ville indique un pays africain (y compris Madagascar), le profil est hors cible et doit être écarté, même s'il correspond par ailleurs parfaitement au persona.
-
