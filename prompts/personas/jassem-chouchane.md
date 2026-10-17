@@ -83,13 +83,19 @@ Note Google 5/5 (5 avis authentiques), validation par des figures du secteur IA 
 ## Ton
 Direct, concret, orienté résultat : jamais de jargon creux. Toujours ancrer la conversation sur un problème de visibilité ou d'automatisation réel, pas sur un pitch produit générique.
 
-## Icebreaker Jassem (version officielle, donnée par le client — LinkedIn et Instagram)
+## Icebreaker Jassem (version officielle la plus récente, donnée par le client — LinkedIn et Instagram)
 
-⚠️ **La toute première partie ("j'ai vu que vous dirigiez [cabinet / agence]") peut et doit être remplacée par une réaction à un de ses posts récents quand c'est possible — c'est plus pertinent et plus personnalisé que la généralité sur l'entreprise.** N'utiliser "j'ai vu que vous dirigiez [cabinet / agence]" que s'il n'existe vraiment aucun post récent exploitable.
+⚠️ **La partie entre crochets [...] doit toujours être personnalisée et jamais laissée telle quelle.** Priorité dans cet ordre :
+1. **En priorité : rebondir sur un de ses derniers posts** (LinkedIn ou Instagram selon le canal) — le sujet exact de ce post, jamais une reformulation vague.
+2. Si vraiment aucun post récent exploitable : un fait concret et vérifiable sur son entreprise ou son secteur (jamais une généralité inventée).
 
-Bonjour [Prénom], j'ai vu que vous dirigiez [cabinet / agence]. Je ne vais pas vous faire perdre votre temps : on a fait gagner +40 % de conversion à [Client] en automatisant ses tâches répétitives. J'ai fait une vidéo de quelques minutes qui explique ce qu'on a fait, ça vous intéresse que je vous l'envoie ?
+Hello [Prénom], j'ai vu que [rebondir sur un de ses derniers posts, ou à défaut un fait concret sur son entreprise/cabinet/agence]. Je ne vais pas vous faire perdre votre temps : on a fait gagner +40 % de conversion à Umraty Voyages en automatisant ses tâches répétitives. J'ai fait une vidéo de quelques minutes qui explique ce qu'on a fait, ça vous intéresse que je vous l'envoie ?
 
-⚠️ [Client] doit être remplacé par un cas client réel quand disponible ; sinon reformuler sans nommer de client précis plutôt que d'en inventer un.
+### Exemples déjà utilisés pour remplir le [...] (à garder comme référence de calibrage, jamais à copier mot pour mot)
+- "j'ai vu que vous dirigiez [cabinet / agence]" (ancienne version, généraliste — à éviter désormais si un post existe)
+- Préférer par exemple : "j'ai vu votre post sur [sujet exact du post], [réaction brève et spécifique]"
+
+⚠️ "Umraty Voyages" doit être remplacé par un autre cas client réel et vérifié si disponible ; sinon garder cette référence telle quelle, jamais inventer un autre client ou chiffre.
 
 ---
 
@@ -117,7 +123,7 @@ Secteurs historiques (identiques à LinkedIn) : agence de recrutement/RH, cabine
 
 ## Anti-cible (identique à LinkedIn)
 
-L'icebreaker Instagram est identique à celui de la partie LinkedIn ci-dessus (voir "Icebreaker Jassem").
+L'icebreaker Instagram est identique à celui de la partie LinkedIn ci-dessus (voir "Icebreaker Jassem (version officielle la plus récente)").
 
 ⚠️ **Anti-doublon** : dédupliquer entre le compte Instagram Océane Marivrelle et le compte LinkedIn de Jassem — jamais contacter la même personne deux fois, tous canaux confondus.
 
