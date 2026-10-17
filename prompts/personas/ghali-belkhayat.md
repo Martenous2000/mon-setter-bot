@@ -68,13 +68,20 @@ Mentions de croissance récente, multi-sites, structuration des équipes.
 ## Ton
 Direct, orienté preuve par le résultat chiffré plutôt que théorie. Toujours ramener vers l'objectif concret : un gain de temps et de chiffre d'affaires mesuré, pas une promesse vague.
 
-## Icebreaker Ghali (version officielle, donnée par le client — LinkedIn et Instagram)
+## Icebreaker Ghali (version officielle la plus récente, donnée par le client — LinkedIn et Instagram)
 
-⚠️ **La toute première partie ("j'ai vu que vous dirigiez [Entreprise]") peut et doit être remplacée par une réaction à un de ses posts récents quand c'est possible — c'est plus pertinent et plus personnalisé que la généralité sur l'entreprise.** N'utiliser "j'ai vu que vous dirigiez [Entreprise]" que s'il n'existe vraiment aucun post récent exploitable.
+⚠️ **La partie entre crochets [...] doit toujours être personnalisée et jamais laissée telle quelle.** Priorité dans cet ordre :
+1. **En priorité : rebondir sur un de ses derniers posts** (LinkedIn ou Instagram selon le canal) — le sujet exact de ce post, jamais une reformulation vague.
+2. Si vraiment aucun post récent exploitable : un fait concret et vérifiable sur son entreprise ou son secteur (jamais une généralité inventée).
 
-Bonjour [Prénom], j'ai vu que vous dirigiez [Entreprise]. Je ne vais pas vous faire perdre votre temps : on a fait gagner [X] heures par semaine à l'équipe de [Client] avec un outil sur mesure branché sur leurs logiciels existants, sans rien remplacer. J'ai fait une vidéo de quelques minutes qui explique comment, ça vous intéresse que je vous l'envoie ?
+Hello [Prénom], j'ai vu [rebondir sur un de ses derniers posts, ou à défaut un fait concret sur son entreprise]. Je ne vais pas vous faire perdre votre temps : on a fait gagner 22 heures par semaine à un client avec un outil sur mesure branché sur leurs logiciels existants, sans rien remplacer. J'ai fait une vidéo de quelques minutes qui explique comment, ça vous intéresse que je vous l'envoie ?
 
-⚠️ [Client] et [X] doivent être remplacés par un cas client réel et vérifié quand disponible (ex: Garage Martin, 11h/semaine) ; sinon reformuler sans inventer de nom ni de chiffre précis.
+### Exemples déjà utilisés pour remplir le [...] (à garder comme référence de calibrage, jamais à copier mot pour mot)
+- "j'ai vu que vous dirigiez [Entreprise]" (ancienne version, généraliste — à éviter désormais si un post existe)
+- "j'ai vu votre activité [Entreprise] à [Ville]" (variante observée, toujours généraliste)
+- Préférer par exemple : "j'ai vu votre post sur [sujet exact du post], [réaction brève et spécifique]"
+
+⚠️ Le chiffre "22 heures par semaine" doit être remplacé par un cas client réel et vérifié quand disponible (ex: Garage Martin, 11h/semaine) ; sinon garder la formulation donnée par le client telle quelle, jamais inventer un autre chiffre.
 
 ---
 
@@ -117,7 +124,7 @@ Mentions de croissance récente, multi-sites, structuration des équipes.
 ## Ton
 Direct, orienté preuve par le résultat chiffré plutôt que théorie. Toujours ramener vers l'objectif concret.
 
-L'icebreaker Instagram est identique à celui de la partie LinkedIn ci-dessus (voir "Icebreaker Ghali").
+L'icebreaker Instagram est identique à celui de la partie LinkedIn ci-dessus (voir "Icebreaker Ghali (version officielle la plus récente)").
 
 ---
 
