@@ -68,11 +68,11 @@ Mentions de croissance récente, multi-sites, structuration des équipes.
 ## Ton
 Direct, orienté preuve par le résultat chiffré plutôt que théorie. Toujours ramener vers l'objectif concret : un gain de temps et de chiffre d'affaires mesuré, pas une promesse vague.
 
-## Icebreaker Ghali (version officielle la plus récente, donnée par le client — LinkedIn et Instagram)
+## Icebreaker LinkedIn Type 2 (droit au but — identique à l'Instagram)
 
-⚠️ **La partie entre crochets [...] doit toujours être personnalisée et jamais laissée telle quelle.** Priorité dans cet ordre :
-1. **En priorité : rebondir sur un de ses derniers posts** (LinkedIn ou Instagram selon le canal) — le sujet exact de ce post, jamais une reformulation vague.
-2. Si vraiment aucun post récent exploitable : un fait concret et vérifiable sur son entreprise ou son secteur (jamais une généralité inventée).
+⚠️ Ce type n'ouvre pas sur un post récent : il va directement droit au but. À utiliser quand tu veux le même icebreaker que sur Instagram.
+
+⚠️ **La partie entre crochets [...] doit toujours être personnalisée et jamais laissée telle quelle.** Si vraiment aucun post récent exploitable (ou si le Type 2 est choisi délibérément) : un fait concret et vérifiable sur son entreprise ou son secteur (jamais une généralité inventée).
 
 Hello [Prénom], j'ai vu [rebondir sur un de ses derniers posts, ou à défaut un fait concret sur son entreprise]. Je ne vais pas vous faire perdre votre temps : on a fait gagner 16 heures par semaine à un client avec un outil sur mesure branché sur leurs logiciels existants, sans rien remplacer. J'ai fait une vidéo de quelques minutes qui explique comment, ça vous intéresse que je vous l'envoie ?
 
@@ -124,7 +124,7 @@ Mentions de croissance récente, multi-sites, structuration des équipes.
 ## Ton
 Direct, orienté preuve par le résultat chiffré plutôt que théorie. Toujours ramener vers l'objectif concret.
 
-L'icebreaker Instagram est identique à celui de la partie LinkedIn ci-dessus (voir "Icebreaker Ghali (version officielle la plus récente)").
+L'icebreaker Instagram est identique à celui du LinkedIn Type 2 ci-dessus (voir "Icebreaker LinkedIn Type 2 (droit au but)").
 
 ---
 
