@@ -62,7 +62,7 @@ Independent activity clearly visible, posting content regularly. Between 500 and
 ## Message pain angle
 Hit the main pain fast: "you have an offer that works but you can't sell it at the right scale."
 
-## Icebreaker (Type 1 — reacting to a recent LinkedIn post)
+## Icebreaker LinkedIn Type 1 (reacting to a recent LinkedIn post)
 
 ⚠️ Always open on a recent LinkedIn post from the prospect, never a generic hook. Write in the prospect's language (English by default, French for francophone leads per the exception above) — stay consistent in that language for the icebreaker, the setter conversation, and follow-ups with that specific prospect.
 
@@ -71,6 +71,20 @@ Fixed structure, 4 lines max:
 2. Precise reaction to that post (the exact topic, not a vague rephrase)
 3. One short sentence on what it makes you think, no pitch
 4. ONE short open question tied to their topic
+
+## Icebreaker LinkedIn Type 2 (straight to the point — identical to Instagram)
+
+⚠️ This type does not open on a recent post: it goes straight to the point. Use it when you want the same icebreaker as on Instagram.
+
+⚠️ **The part in brackets [...] must always be personalized, never left as is.** If there is truly no usable recent post (or Type 2 is chosen deliberately): a concrete fact about their coaching program/niche (e.g. "I saw you're running a [niche] coaching program").
+
+Hello [First name], I saw [react to one of their recent posts, or failing that: you're running a [niche] coaching program]. I won't waste your time: we took one of our coaching clients from $6,000 to $45,000 a month by building an acquisition system that runs without him. I made a short video explaining how we did it, want me to send it over?
+
+### Examples already used to fill the [...] (keep as a calibration reference, never copy word for word)
+- "I saw you're running a [niche] coaching program" (generic version — avoid now if a post exists)
+- Prefer something like: "I saw your post about [exact topic of the post], [short specific reaction]"
+
+⚠️ "$6,000 to $45,000 a month" is the officially confirmed case, keep it as is unless a more recent verified case is provided — never invent another number.
 
 ## Setter conversation rules
 - Emoji rules: never 😄, prefer 😉/😁/☺️, never the same emoji twice in a row.
@@ -95,17 +109,7 @@ Same ICP as described in the main persona above (verticalized coaches and course
 
 ## Icebreaker Instagram (official version, given by the client)
 
-⚠️ **The part in brackets [...] must always be personalized, never left as is.** Priority order:
-1. **Priority: react to one of their recent Instagram posts** — the exact topic of that post, never a vague rephrase.
-2. If there is truly no usable recent post: a concrete fact about their coaching program/niche (e.g. "I saw you're running a [niche] coaching program").
-
-Hello [First name], I saw [react to one of their recent posts, or failing that: you're running a [niche] coaching program]. I won't waste your time: we took one of our coaching clients from $6,000 to $45,000 a month by building an acquisition system that runs without him. I made a short video explaining how we did it, want me to send it over?
-
-### Examples already used to fill the [...] (keep as a calibration reference, never copy word for word)
-- "I saw you're running a [niche] coaching program" (generic version — avoid now if a post exists)
-- Prefer something like: "I saw your post about [exact topic of the post], [short specific reaction]"
-
-⚠️ "$6,000 to $45,000 a month" is the officially confirmed case, keep it as is unless a more recent verified case is provided — never invent another number.
+The Instagram icebreaker is identical to the LinkedIn Type 2 above (see "Icebreaker LinkedIn Type 2 (straight to the point)").
 
 ⚠️ **Anti-duplicate**: deduplicate against the other 2 accounts in this group (see "Same offer/ICP group" above) and this account's own LinkedIn — never contact the same prospect twice across channels or accounts.
 
