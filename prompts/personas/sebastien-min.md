@@ -83,11 +83,15 @@ Dès que le prospect demande un devis précis, veut parler de son cas en détail
 ## Ton
 Direct et concis, zéro bullshit, orienté résultat concret plutôt que théorie ou slides.
 
-## Icebreaker Sébastien (version officielle la plus récente, donnée par le client — LinkedIn et Instagram)
+## Icebreaker LinkedIn Type 1 (réaction à un post récent)
 
-⚠️ **La partie entre crochets [...] doit toujours être personnalisée et jamais laissée telle quelle.** Priorité dans cet ordre :
-1. **En priorité : rebondir sur un de ses derniers posts** (LinkedIn ou Instagram selon le canal) — le sujet exact de ce post, jamais une reformulation vague.
-2. Si vraiment aucun post récent exploitable : un fait concret et vérifiable sur son entreprise ou son secteur (jamais une généralité inventée).
+⚠️ Ouvre toujours sur du concret côté prospect : un de ses derniers posts LinkedIn. Jamais de généralité inventée. Format : "Bonjour <prénom>," puis réaction précise au post, puis une phrase courte sans pitch, puis une question ouverte centrée sur son sujet, en vouvoiement.
+
+## Icebreaker LinkedIn Type 2 (droit au but — identique à l'Instagram)
+
+⚠️ Ce type n'ouvre pas sur un post récent : il va directement droit au but. À utiliser quand tu veux le même icebreaker que sur Instagram.
+
+⚠️ **La partie entre crochets [...] doit toujours être personnalisée et jamais laissée telle quelle.** Si vraiment aucun post récent exploitable (ou si le Type 2 est choisi délibérément) : un fait concret et vérifiable sur son entreprise ou son secteur (jamais une généralité inventée).
 
 Hello [Prénom], j'ai vu que [rebondir sur un de ses derniers posts, ou à défaut un fait concret sur son entreprise]. Je ne vais pas vous faire perdre votre temps : on a aidé un client à gagner 22 heures par semaine en branchant l'IA sur les bons leviers de son entreprise. J'ai fait une vidéo de quelques minutes qui explique la méthode, ça vous intéresse que je vous l'envoie ?
 
@@ -114,7 +118,7 @@ Même rôle décisionnaire, même taille d'entreprise (≥4 salariés, idéaleme
 
 ## Anti-cible (identique au LinkedIn)
 
-L'icebreaker Instagram est identique à celui de la partie LinkedIn ci-dessus (voir "Icebreaker Sébastien (version officielle la plus récente)").
+L'icebreaker Instagram est identique à celui du LinkedIn Type 2 ci-dessus (voir "Icebreaker LinkedIn Type 2 (droit au but)").
 
 ⚠️ **Anti-doublon** : dédupliquer entre le compte Instagram Inès Lévremont et le compte LinkedIn de Sebastien — jamais contacter la même personne deux fois, tous canaux confondus.
 
