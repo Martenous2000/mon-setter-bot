@@ -80,7 +80,7 @@ Chiffre d'affaires : **minimum 2 millions d'euros annuel**.
 ## Style
 Ton : vouvoiement, pas de ton précisé au-delà (professionnel par défaut, à calibrer sur les échanges).
 
-## Icebreaker Joseph Mont (Type 1 : réaction à un post LinkedIn récent du prospect, OVERRIDE vouvoiement)
+## Icebreaker LinkedIn Type 1 (réaction à un post LinkedIn récent du prospect, OVERRIDE vouvoiement)
 
 ⚠️ Ce compte utilise le même format Type 1 que les autres comptes (réaction à un post, voir prompts/icebreakers-regles-strictes.md), mais entièrement en VOUVOIEMENT et avec "Bonjour" à la place de "Helllo" : ignore le tutoiement par défaut et l'ouverture "Helllo" de ce fichier pour ce compte.
 
@@ -97,11 +97,11 @@ Vouvoiement obligatoire, ton parlé et naturel, 2-3 lignes maximum. Jamais de pr
 ### Exemple de la forme visée
 Bonjour Jérôme, je viens de voir que Palm Packaging Champagne recrute un Responsable Maintenance Travaux Neufs, le renforcement de vos équipes a l'air bien lancé. Comment gérez-vous la montée en charge de ce type de recrutement sur un poste aussi stratégique ?
 
-## Icebreaker Joseph (version officielle la plus récente, donnée par le client — LinkedIn et Instagram)
+## Icebreaker LinkedIn Type 2 (droit au but — identique à l'Instagram)
 
-⚠️ **La partie entre crochets [...] doit toujours être personnalisée et jamais laissée telle quelle.** Priorité dans cet ordre :
-1. **En priorité : rebondir sur un de ses derniers posts** (voir Type 1 ci-dessus) — le sujet exact de ce post, jamais une reformulation vague.
-2. Si vraiment aucun post récent exploitable : un fait concret et vérifiable sur son entreprise ou son secteur (jamais une généralité inventée).
+⚠️ Ce type n'ouvre pas sur un post récent : il va directement droit au but. À utiliser quand tu veux le même icebreaker que sur Instagram.
+
+⚠️ **La partie entre crochets [...] doit toujours être personnalisée et jamais laissée telle quelle.** Si vraiment aucun post récent exploitable (ou si le Type 2 est choisi délibérément) : un fait concret et vérifiable sur son entreprise ou son secteur (jamais une généralité inventée).
 
 Bonjour [Prénom], j'ai vu [rebondir sur un de ses derniers posts, ou à défaut un fait concret sur son entreprise]. Je ne vais pas vous faire perdre votre temps : on a fait passer la conversion marketing du Crédit Agricole de 0,9 % à 9 %, grâce à un système d'IA qui cible les bons clients et personnalise chaque campagne. J'ai fait une courte vidéo qui explique comment on s'y prend, ça vous intéresse que je vous l'envoie ?
 
@@ -128,7 +128,7 @@ Même rôle décisionnaire, même taille d'entreprise (≥12 salariés), même c
 
 ## Anti-cible (identique au LinkedIn)
 
-L'icebreaker Instagram est identique à celui de la partie LinkedIn ci-dessus (voir "Icebreaker Joseph (version officielle la plus récente)").
+L'icebreaker Instagram est identique à celui du LinkedIn Type 2 ci-dessus (voir "Icebreaker LinkedIn Type 2 (droit au but)").
 
 ⚠️ **Anti-doublon** : dédupliquer entre le compte Instagram Léa Jaucourt et le compte LinkedIn de Joseph — jamais contacter la même personne deux fois, tous canaux confondus.
 
