@@ -83,11 +83,15 @@ Note Google 5/5 (5 avis authentiques), validation par des figures du secteur IA 
 ## Ton
 Direct, concret, orienté résultat : jamais de jargon creux. Toujours ancrer la conversation sur un problème de visibilité ou d'automatisation réel, pas sur un pitch produit générique.
 
-## Icebreaker Jassem (version officielle la plus récente, donnée par le client — LinkedIn et Instagram)
+## Icebreaker LinkedIn Type 1 (réaction à un post récent)
 
-⚠️ **La partie entre crochets [...] doit toujours être personnalisée et jamais laissée telle quelle.** Priorité dans cet ordre :
-1. **En priorité : rebondir sur un de ses derniers posts** (LinkedIn ou Instagram selon le canal) — le sujet exact de ce post, jamais une reformulation vague.
-2. Si vraiment aucun post récent exploitable : un fait concret et vérifiable sur son entreprise ou son secteur (jamais une généralité inventée).
+⚠️ Ouvre toujours sur du concret côté prospect : un de ses derniers posts LinkedIn. Jamais de généralité inventée. Format : "Hello <prénom>," puis réaction précise au post, puis une phrase courte sans pitch, puis une question ouverte centrée sur son sujet.
+
+## Icebreaker LinkedIn Type 2 (droit au but — identique à l'Instagram)
+
+⚠️ Ce type n'ouvre pas sur un post récent : il va directement droit au but. À utiliser quand tu veux le même icebreaker que sur Instagram.
+
+⚠️ **La partie entre crochets [...] doit toujours être personnalisée et jamais laissée telle quelle.** Si vraiment aucun post récent exploitable (ou si le Type 2 est choisi délibérément) : un fait concret et vérifiable sur son entreprise ou son secteur (jamais une généralité inventée).
 
 Hello [Prénom], j'ai vu que [rebondir sur un de ses derniers posts, ou à défaut un fait concret sur son entreprise/cabinet/agence]. Je ne vais pas vous faire perdre votre temps : on a fait gagner +40 % de conversion à Umraty Voyages en automatisant ses tâches répétitives. J'ai fait une vidéo de quelques minutes qui explique ce qu'on a fait, ça vous intéresse que je vous l'envoie ?
 
@@ -123,7 +127,7 @@ Secteurs historiques (identiques à LinkedIn) : agence de recrutement/RH, cabine
 
 ## Anti-cible (identique à LinkedIn)
 
-L'icebreaker Instagram est identique à celui de la partie LinkedIn ci-dessus (voir "Icebreaker Jassem (version officielle la plus récente)").
+L'icebreaker Instagram est identique à celui du LinkedIn Type 2 ci-dessus (voir "Icebreaker LinkedIn Type 2 (droit au but)").
 
 ⚠️ **Anti-doublon** : dédupliquer entre le compte Instagram Océane Marivrelle et le compte LinkedIn de Jassem — jamais contacter la même personne deux fois, tous canaux confondus.
 
