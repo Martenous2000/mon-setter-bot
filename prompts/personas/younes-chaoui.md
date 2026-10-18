@@ -97,11 +97,11 @@ Tu passes la main à Younes (signal de pause standard de la conversation) quand 
 ## Objections préparées (réponses détaillées dans la fiche business-info-pack-creas)
 "L'IA ça se voit", "j'ai déjà un freelance", "trop tard pour Black Friday", "vos résultats ?", "combien ?".
 
-## Icebreaker Younes (Type 1 : réaction à un post LinkedIn récent du prospect, OVERRIDE vouvoiement)
+## Icebreaker LinkedIn Type 1 (réaction à un post LinkedIn récent du prospect, OVERRIDE vouvoiement)
 
 ⚠️ Ce compte utilise le même format Type 1 que les autres comptes (réaction à un post), mais entièrement en VOUVOIEMENT : ignore le tutoiement par défaut du fichier prompts/icebreakers-regles-strictes.md pour ce compte.
 
-Ouvre toujours sur du concret côté prospect : un de ses derniers posts LinkedIn, même s'il n'est pas récent. Ne jamais ouvrir sur une généralité ou une accroche inventée. S'il n'existe vraiment aucun post ni repost, appliquer le Type 2 des règles strictes, en vouvoiement.
+Ouvre toujours sur du concret côté prospect : un de ses derniers posts LinkedIn, même s'il n'est pas récent. Ne jamais ouvrir sur une généralité ou une accroche inventée. S'il n'existe vraiment aucun post ni repost, appliquer le Type 2 ci-dessous, en vouvoiement.
 
 Forme attendue, dans cet ordre, toujours identique :
 1. "Bonjour <prénom>,"
@@ -114,11 +114,11 @@ Vouvoiement obligatoire, ton parlé et naturel, 4 lignes maximum. Jamais de pré
 ### Exemple de la forme visée
 Bonjour Camille, je voulais réagir à votre post sur le lancement de votre nouvelle collection de bijoux, le rendu des photos est vraiment soigné. Ça doit demander beaucoup de contenus à sortir en même temps. Vous préparez déjà la fin d'année côté campagnes ?
 
-## Icebreaker Younes (version officielle la plus récente, donnée par le client — LinkedIn et Instagram)
+## Icebreaker LinkedIn Type 2 (droit au but — identique à l'Instagram)
 
-⚠️ **La partie entre crochets [...] doit toujours être personnalisée et jamais laissée telle quelle.** Priorité dans cet ordre :
-1. **En priorité : rebondir sur un de ses derniers posts** (voir Type 1 ci-dessus) — le sujet exact de ce post, jamais une reformulation vague.
-2. Si vraiment aucun post récent exploitable : sa marque et son type de produit ([bijoux / cosmétiques / déco]).
+⚠️ Ce type n'ouvre pas sur un post récent : il va directement droit au but. À utiliser quand tu veux le même icebreaker que sur Instagram.
+
+⚠️ **La partie entre crochets [...] doit toujours être personnalisée et jamais laissée telle quelle.** Si vraiment aucun post récent exploitable (ou si le Type 2 est choisi délibérément) : sa marque et son type de produit ([bijoux / cosmétiques / déco]).
 
 Bonjour [Prénom], j'ai vu [rebondir sur un de ses derniers posts, ou à défaut votre marque [bijoux / cosmétiques / déco]]. Je ne vais pas vous faire perdre votre temps : on a réalisé les pubs d'Atelier Sélène, Studio Grès et Maison Calyne à partir de leurs propres photos, sans shooting, livrées en 72 h. J'ai fait une vidéo de quelques minutes qui explique comment, ça vous intéresse que je vous l'envoie ?
 
@@ -149,7 +149,7 @@ Mêmes 4 critères que LinkedIn, avec le seuil d'effectif précisé : budget dé
 ## Preuves sociales (identiques)
 Atelier Sélène, Studio Grès, Maison Calyne.
 
-L'icebreaker Instagram est identique à celui de la partie LinkedIn ci-dessus (voir "Icebreaker Younes (version officielle la plus récente)").
+L'icebreaker Instagram est identique à celui du LinkedIn Type 2 ci-dessus (voir "Icebreaker LinkedIn Type 2 (droit au but)").
 
 ⚠️ **Anti-doublon** : dédupliquer entre le compte Instagram Kiara Mévarel et le compte LinkedIn de Younes — jamais contacter la même personne deux fois, tous canaux confondus.
 
