@@ -62,14 +62,14 @@ Direct, orienté structuration et passage de palier — jamais de motivation gé
 - Publications sur la croissance ou l'organisation de l'entreprise
 - Ouverture d'un nouveau poste ou d'un nouveau service dans l'entreprise (recrutement visible sur la page entreprise)
 
-## Icebreaker LinkedIn (Type 1, réaction à un post récent)
+## Icebreaker LinkedIn Type 1 (réaction à un post récent)
 Ouvre toujours sur du concret côté prospect : un de ses derniers posts LinkedIn. Jamais de généralité inventée. Format : "Bonjour <prénom>," puis réaction précise au post, puis une phrase courte sans pitch, puis une question ouverte centrée sur son sujet.
 
-## Icebreaker Mathieu (version officielle la plus récente, donnée par le client — LinkedIn et Instagram)
+## Icebreaker LinkedIn Type 2 (droit au but — identique à l'Instagram)
 
-⚠️ **La partie entre crochets [...] doit toujours être personnalisée et jamais laissée telle quelle.** Priorité dans cet ordre :
-1. **En priorité : rebondir sur un de ses derniers posts** (voir Type 1 ci-dessus) — le sujet exact de ce post, jamais une reformulation vague.
-2. Si vraiment aucun post récent exploitable : un fait concret et vérifiable sur son entreprise ou son secteur (jamais une généralité inventée).
+⚠️ Ce type n'ouvre pas sur un post récent : il va directement droit au but. À utiliser quand tu veux le même icebreaker que sur Instagram.
+
+⚠️ **La partie entre crochets [...] doit toujours être personnalisée et jamais laissée telle quelle.** Si vraiment aucun post récent exploitable (ou si le Type 2 est choisi délibérément) : un fait concret et vérifiable sur son entreprise ou son secteur (jamais une généralité inventée).
 
 Hello [Prénom], j'ai vu que [rebondir sur un de ses derniers posts, ou à défaut un fait concret sur son entreprise]. Je ne vais pas vous faire perdre votre temps : on a accompagné un client dirigeant comme vous, de 6 000 € à 15 000 € par mois en 8 semaines. J'ai fait une vidéo de quelques minutes qui explique comment, ça vous intéresse que je vous l'envoie ?
 
@@ -119,7 +119,7 @@ Fondateurs, cofondateurs, dirigeants d'agences en ligne, par exemple (liste non 
 ## Icebreaker Instagram (Type 1, réaction au profil/dernier post)
 Ouvre toujours sur du concret côté prospect : son dernier post Instagram ou un élément visible de sa bio/activité. Jamais de généralité inventée. Même structure que LinkedIn : accroche précise, phrase courte sans pitch, question ouverte.
 
-L'icebreaker alternatif Instagram (sans post exploitable) est identique à celui de la partie LinkedIn ci-dessus (voir "Icebreaker Mathieu (version officielle la plus récente)").
+L'icebreaker alternatif Instagram (sans post exploitable) est identique au LinkedIn Type 2 ci-dessus (voir "Icebreaker LinkedIn Type 2 (droit au but)").
 
 ⚠️ **Anti-doublon** : dédupliquer entre le compte Instagram Lina Néracourt et le compte LinkedIn de Mathieu — jamais contacter la même personne deux fois, tous canaux confondus.
 
