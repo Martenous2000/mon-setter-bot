@@ -28,7 +28,7 @@ Le produit reste celui des photos du client : on ne le redessine pas. L'IA crée
 
 ## Qualification avant de proposer l'appel
 Vérifier au fil de la conversation (une ou deux questions naturelles, jamais d'interrogatoire) :
-1. Budget d'au moins 390 € HT (déduit du nombre de salariés ou collaborateurs visibles, jamais d'un chiffre d'affaires)
+1. Budget d'au moins 390 € HT
 2. Il décide (fondateur, gérant, head of marketing, growth ou acquisition)
 3. E-commerce de produits physiques (bijoux et accessoires, beauté et cosmétiques, déco et maison en priorité)
 4. Il viendra au rendez-vous

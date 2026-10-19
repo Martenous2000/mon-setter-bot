@@ -46,7 +46,7 @@ Marques e-commerce qui vendent des **produits physiques**, en priorité :
 - déco et maison
 
 Critères : produit déjà validé, panier moyen indicatif de 50 à 100 €.
-⚠️ **Plus aucun seuil de chiffre d'affaires** (supprimé). Le budget se déduit du **nombre de salariés ou de collaborateurs visibles** sur le profil et la page entreprise : une marque avec une vraie équipe a le budget. Écarter les marques sans équipe visible (fondateur seul). Le seuil d'effectif précis reste à fixer par Younes.
+⚠️ **Plus aucun seuil de chiffre d'affaires ni d'effectif** (supprimés le 2026-10-19, à la demande du client). Ne jamais écarter une marque sur son nombre de salariés ou son chiffre d'affaires.
 
 ### Géographie
 France en priorité. Belgique et Suisse francophones possibles.
@@ -65,7 +65,7 @@ France en priorité. Belgique et Suisse francophones possibles.
 - hors francophonie
 
 ## Qualification (4 critères de Younes)
-1. Budget pour au moins 390 € HT (déduit de l'effectif visible de la marque, pas du chiffre d'affaires)
+1. Budget pour au moins 390 € HT
 2. Décisionnaire
 3. Correspond au profil e-commerce produit physique
 4. Viendra au rendez-vous
@@ -137,14 +137,14 @@ Bonjour [Prénom], j'ai vu [rebondir sur un de ses derniers posts, ou à défaut
 ## Compte Instagram assigné
 Kiara Mévarel.
 
-## ICP Instagram : identique au LinkedIn, sauf effectif minimum désormais fixé
+## ICP Instagram : identique au LinkedIn (aucun seuil de CA ni d'effectif)
 
 Même cible (marques e-commerce produits physiques : bijoux/accessoires, beauté/cosmétiques, déco/maison), mêmes signaux, mêmes exclusions, avec cette précision :
 
-⚠️ **Effectif minimum : 3 salariés/collaborateurs visibles** sur le profil et la page entreprise (mis à jour 2026-10-16, passé de 4 à 3). Écarter les marques sans équipe visible ou en dessous de ce seuil (fondateur seul).
+⚠️ **Plus aucun effectif minimum** (supprimé le 2026-10-19 à la demande du client ; il était fixé à 3 salariés depuis le 2026-10-16). Ne jamais écarter une marque sur son nombre de salariés.
 
 ## Qualification Instagram
-Mêmes 4 critères que LinkedIn, avec le seuil d'effectif précisé : budget déduit de l'effectif visible de la marque (minimum 3 salariés), pas du chiffre d'affaires.
+Mêmes 4 critères que LinkedIn, sans seuil de chiffre d'affaires ni d'effectif.
 
 ## Preuves sociales (identiques)
 Atelier Sélène, Studio Grès, Maison Calyne.
