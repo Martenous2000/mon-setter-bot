@@ -33,19 +33,33 @@ J'inonde les agendas des fondateurs de rendez-vous. J'installe une infrastructur
 
 ⚠️ Ouvre toujours sur du concret côté prospect : un de ses derniers posts LinkedIn. Jamais de généralité inventée. Format : "Hello <prénom>," puis réaction précise au post, puis une phrase courte sans pitch, puis une question ouverte centrée sur son sujet, en tutoiement.
 
-## Icebreaker LinkedIn Type 2 (droit au but)
+## Icebreaker LinkedIn Type 2 (modèle fourni par le client, enregistré le 2026-10-19)
 
-⚠️ Ce type n'ouvre pas sur un post récent : il va directement droit au but. **Reste anonyme sur LinkedIn** ("un de nos clients") — contrairement à la version Instagram ci-dessous qui nomme Baptiste Hoguet.
+⚠️ Ce type s'appuie sur le dernier post du prospect, puis va droit au but. **Il nomme Baptiste Hoguet comme cas client**, comme la version Instagram ci-dessous (cela remplace l'ancienne consigne "rester anonyme sur LinkedIn").
 
-⚠️ **La partie entre crochets [...] doit toujours être personnalisée et jamais laissée telle quelle.** Priorité dans cet ordre :
-1. **En priorité : rebondir sur un de ses derniers posts** — le sujet exact de ce post, jamais une reformulation vague.
-2. Si vraiment aucun post récent exploitable : "j'ai vu que tu avais une agence IA".
+⚠️ **La partie entre crochets [...] doit toujours être personnalisée et jamais laissée telle quelle** : une courte remarque d'une seule phrase sur le sujet exact de son dernier post.
 
-Hello [Prénom], j'ai vu [rebondir sur un de ses derniers posts, ou à défaut que tu avais une agence IA]. Je ne vais pas te faire perdre ton temps : on installe un système IA qui remplit l'agenda des fondateurs d'agences, avec 15 rendez-vous qualifiés par mois garantis, sinon on rembourse. J'ai fait une vidéo de quelques minutes qui explique comment, ça t'intéresse que je te l'envoie ?
+Modèle exact :
+
+Hello [prénom], j'ai vu ton dernier post sur [courte remarque, 1 phrase]
+
+Je ne vais pas te faire perdre ton temps : on a fait passer Baptiste Hoguet, dirigeant d'agence comme toi, de 8 à une quarantaine de rendez-vous qualifiés par mois en 4 semaines, sans qu'il prospecte lui-même.
+
+J'ai fait une vidéo de quelques minutes qui explique ce qu'on a fait, ça t'intéresse que je te l'envoie ?
+
+Exemple fourni par le client :
+
+Hello Florian, j'ai vu ton dernier post, le coup du webdesigner qui n'a toujours pas son propre site, assez ironique mais tellement vrai.
+
+Je ne vais pas te faire perdre ton temps : on a fait passer Baptiste Hoguet, dirigeant d'agence comme toi, de 8 à une quarantaine de rendez-vous qualifiés par mois en 4 semaines, sans qu'il prospecte lui-même.
+
+J'ai fait une vidéo de quelques minutes qui explique ce qu'on a fait, ça t'intéresse que je te l'envoie ?
+
+Règles : tutoiement, "Hello", trois paragraphes séparés par une ligne vide, une seule phrase pour la remarque sur le post, message qui finit par une question. Le cas "aucun post" n'est pas défini par le client pour ce type : à confirmer avant de l'utiliser. Voir aussi `prompts/icebreakers-regles-strictes.md` (Type 2).
 
 ## Icebreaker Instagram (version officielle la plus récente, donnée par le client, avec cas client nommé)
 
-⚠️ Cette version est spécifique à Instagram, tous les 9 comptes du groupe. Elle nomme explicitement Baptiste Hoguet comme cas client vérifié — différent du LinkedIn Type 2 ci-dessus qui reste anonyme ("un de nos clients").
+⚠️ Cette version est spécifique à Instagram, tous les 9 comptes du groupe. Elle nomme explicitement Baptiste Hoguet comme cas client vérifié, comme le LinkedIn Type 2 ci-dessus (mis à jour le 2026-10-19).
 
 ⚠️ **La partie entre crochets [...] doit toujours être personnalisée et jamais laissée telle quelle.** Priorité dans cet ordre :
 1. **En priorité : rebondir sur un de ses derniers posts Instagram** — le sujet exact de ce post, jamais une reformulation vague.
@@ -57,7 +71,7 @@ Hello [Prénom], j'ai vu [rebondir sur un de ses derniers posts, ou à défaut q
 - "j'ai vu que tu avais une agence IA" (ancienne version, généraliste — à éviter désormais si un post existe)
 - Préférer par exemple : "j'ai vu ton post sur [sujet exact du post], [réaction brève et spécifique]"
 
-⚠️ Sur LinkedIn (Type 2), continuer à ne jamais citer de nom de client précis (rester sur "un de nos clients, dirigeant d'agence comme toi"). Sur Instagram uniquement, Baptiste Hoguet peut être cité nommément, confirmé par le client.
+⚠️ Sur LinkedIn (Type 2) comme sur Instagram, Baptiste Hoguet peut être cité nommément (confirmé par le client, mise à jour du 2026-10-19).
 
 ---
 
