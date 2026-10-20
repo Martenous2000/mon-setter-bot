@@ -103,7 +103,21 @@ Bonjour Jérôme, je viens de voir que Palm Packaging Champagne recrute un Respo
 
 ⚠️ **La partie entre crochets [...] doit toujours être personnalisée et jamais laissée telle quelle.** Si vraiment aucun post récent exploitable (ou si le Type 2 est choisi délibérément) : un fait concret et vérifiable sur son entreprise ou son secteur (jamais une généralité inventée).
 
-Bonjour [Prénom], j'ai vu [rebondir sur un de ses derniers posts, ou à défaut un fait concret sur son entreprise]. Je ne vais pas vous faire perdre votre temps : on a fait passer la conversion marketing du Crédit Agricole de 0,9 % à 9 %, grâce à un système d'IA qui cible les bons clients et personnalise chaque campagne. J'ai fait une courte vidéo qui explique comment on s'y prend, ça vous intéresse que je vous l'envoie ?
+Modèle retenu (validé par le client le 2026-10-20, À TOUJOURS UTILISER pour le Type 2 LinkedIn), trois paragraphes séparés par une ligne vide :
+
+Je tenais à vous dire que j'ai vu votre post sur [sujet exact du post : un court détail, une phrase].
+
+Je ne vais pas vous faire perdre votre temps : on a fait passer la conversion marketing du Crédit Agricole de 0,9 % à 9 %, grâce à un système d'IA qui cible les bons clients et personnalise chaque campagne.
+
+J'ai fait une courte vidéo qui explique comment on s'y prend, ça vous intéresse que je vous l'envoie ?
+
+Exemple fourni par le client :
+
+Je tenais à vous dire que j'ai vu votre post sur ce qu'est vraiment un comptable : bien plus que saisir, contrôler et justifier, quelqu'un qui aligne les données pour que l'ensemble soit cohérent, comme l'architecture du Taj Mahal.
+
+Je ne vais pas vous faire perdre votre temps : on a fait passer la conversion marketing du Crédit Agricole de 0,9 % à 9 %, grâce à un système d'IA qui cible les bons clients et personnalise chaque campagne.
+
+J'ai fait une courte vidéo qui explique comment on s'y prend, ça vous intéresse que je vous l'envoie ?
 
 ### Exemples déjà utilisés pour remplir le [...] (à garder comme référence de calibrage, jamais à copier mot pour mot)
 - "j'ai vu que vous dirigiez [Entreprise]" (ancienne version, généraliste — à éviter désormais si un post existe)
