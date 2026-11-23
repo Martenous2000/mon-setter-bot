@@ -197,7 +197,7 @@ Décideur, dans la cible ci-dessus, activité avec clients existants, capacité 
 - **Compte LinkedIn** : à confirmer avec Nabil (personnel / loué / les deux) — voir note ci-dessous.
 - **Coordination des quotas** : ⚠️ le compte LinkedIn personnel de Nabil est déjà utilisé par ses propres campagnes (environ 20-25 invitations/jour). Les quotas du système doivent être coordonnés avec Nabil avant tout branchement pour ne pas dépasser les limites LinkedIn et risquer une restriction.
 - **Dédoublonnage** : obligatoire avec l'export Close de Nabil avant chaque envoi.
-- **Fenêtre d'envoi** : lundi-vendredi, 8h-19h heure de Paris. Aucun message vocal, aucune pièce jointe.
+- **Fenêtre d'envoi** : tous les jours, sans plage horaire imposée, comme les autres comptes (mis à jour 2026-11-23). Aucun message vocal, aucune pièce jointe.
 - **Reporting** : hebdomadaire — invitations envoyées, acceptées, réponses, RDV pris, RDV honorés.
 
 ## Statut connexion (2026-09-19)
